@@ -145,7 +145,7 @@ class Mail extends \Zotlabs\Web\Controller {
 	
 		$o = '';
 		nav_set_selected('Mail');
-	
+
 		if(! local_channel()) {
 			notice( t('Permission denied.') . EOL);
 			return login();

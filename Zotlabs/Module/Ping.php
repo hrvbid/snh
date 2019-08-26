@@ -25,10 +25,10 @@ class Ping extends \Zotlabs\Web\Controller {
 		$result = array();
 		$notifs = array();
 
-		$result['notify'] = 0;
-		$result['home'] = 0;
-		$result['network'] = 0;
-		$result['intros'] = 0;
+		$result['notify'] = 0; //done
+		$result['home'] = 0; //done
+		$result['network'] = 0; //done
+		$result['intros'] = 0; //done
 		$result['mail'] = 0;
 		$result['register'] = 0;
 		$result['events'] = 0;
@@ -344,6 +344,7 @@ class Ping extends \Zotlabs\Web\Controller {
 		}
 
 		if(argc() > 1 && (argv(1) === 'network' || argv(1) === 'home')) {
+
 			$result = array();
 
 			if(argv(1) === 'home') {
@@ -528,7 +529,7 @@ class Ping extends \Zotlabs\Web\Controller {
 		$t3 = dba_timer();
 
 		if($vnotify & (VNOTIFY_NETWORK|VNOTIFY_CHANNEL)) {
-
+			/*
 			$r = q("SELECT id, item_wall FROM item 
 				WHERE uid = %d and item_unseen = 1 
 				$item_normal
@@ -549,6 +550,7 @@ class Ping extends \Zotlabs\Web\Controller {
 						$result['network'] ++;
 				}
 			}
+			*/
 		}
 		if(! ($vnotify & VNOTIFY_NETWORK))
 			$result['network'] = 0;

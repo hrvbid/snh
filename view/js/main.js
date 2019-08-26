@@ -545,7 +545,7 @@ function handleNotifications(data) {
 
 	$.each(data, function(index, item) {
 		//do not process those
-		var arr = ['notice', 'info', 'invalid'];
+		var arr = ['notice', 'info', 'invalid', 'network', 'home', 'notify', 'intros'];
 		if(arr.indexOf(index) !== -1)
 			return;
 
@@ -565,10 +565,11 @@ function handleNotificationsItems(notifyType, data) {
 
 	notify_menu.html('');
 
-	$(data).each(function() {
+	$(data.reverse()).each(function() {
 		html = notifications_tpl.format(this.notify_link,this.photo,this.name,this.addr,this.message,this.when,this.hclass,this.b64mid,this.notify_id,this.thread_top,this.unseen,this.private_forum);
-		notify_menu.append(html);
+		notify_menu.prepend(html);
 	});
+	$(".notifications-autotime").timeago();
 
 	datasrc2src('#notifications .notification img[data-src]');
 
@@ -900,7 +901,7 @@ function updateInit() {
 	}
 
 	if(! src) {
-		notificationsUpdate();
+		// notificationsUpdate();
 	}
 	else {
 		liveUpdate();
@@ -1039,7 +1040,7 @@ function liveUpdate(notify_id) {
 
 	})
 	.done(function() {
-		notificationsUpdate();
+	//	notificationsUpdate();
 	});
 }
 
@@ -1089,6 +1090,8 @@ function justifyPhotosAjax(id) {
 }
 
 function loadNotificationItems(notifyType) {
+
+/*
 	var pingExCmd = 'ping/' + notifyType + ((localUser != 0) ? '?f=&uid=' + localUser : '');
 
 	var clicked = $('[data-type=\'' + notifyType + '\']').data('clicked');
@@ -1118,6 +1121,7 @@ function loadNotificationItems(notifyType) {
 			sessionStorage.setItem(notifyType + '_notifications_cache', JSON.stringify(data.notify));
 		}
 	});
+*/
 }
 
 // Since our ajax calls are asynchronous, we will give a few
