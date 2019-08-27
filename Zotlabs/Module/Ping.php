@@ -529,7 +529,6 @@ class Ping extends \Zotlabs\Web\Controller {
 		$t3 = dba_timer();
 
 		if($vnotify & (VNOTIFY_NETWORK|VNOTIFY_CHANNEL)) {
-			/*
 			$r = q("SELECT id, item_wall FROM item 
 				WHERE uid = %d and item_unseen = 1 
 				$item_normal
@@ -550,7 +549,6 @@ class Ping extends \Zotlabs\Web\Controller {
 						$result['network'] ++;
 				}
 			}
-			*/
 		}
 		if(! ($vnotify & VNOTIFY_NETWORK))
 			$result['network'] = 0;
