@@ -37,12 +37,12 @@ class Ping extends \Zotlabs\Web\Controller {
 		$result['birthdays_today'] = 0;
 		$result['all_events'] = 0;
 		$result['all_events_today'] = 0;
-		$result['notice'] = [];
-		$result['info'] = [];
-		$result['pubs'] = 0;
+		$result['notice'] = []; //done
+		$result['info'] = []; //done 
+		$result['pubs'] = 0; //done
 		$result['files'] = 0;
-		$result['forums'] = 0;
-		$result['forums_sub'] = [];
+		$result['forums'] = 0; //done bootstrap - no realtime updates yet
+		$result['forums_sub'] = []; //deprecated
 
 		if(! $_SESSION['static_loadtime'])
 			$_SESSION['static_loadtime'] = datetime_convert();
