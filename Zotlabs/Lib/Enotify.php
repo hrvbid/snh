@@ -918,4 +918,21 @@ class Enotify {
 
 	}
 
+	static public function format_files($rr) {
+
+		$x = [
+			'notify_link' => z_root() . '/sharedwithme',
+			'name' => $rr['author']['xchan_name'],
+			'addr' => $rr['author']['xchan_addr'],
+			'url' => $rr['author']['xchan_url'],
+			'photo' => $rr['author']['xchan_photo_s'],
+			'when' => datetime_convert('UTC', date_default_timezone_get(), $rr['created']),
+			'hclass' => ('notify-unseen'),
+			'message' => t('shared a file with you')
+		];
+
+		return $x;
+
+	}
+
 }

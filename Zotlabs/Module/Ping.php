@@ -40,7 +40,7 @@ class Ping extends \Zotlabs\Web\Controller {
 		$result['notice'] = []; //done
 		$result['info'] = []; //done 
 		$result['pubs'] = 0; //done
-		$result['files'] = 0;
+		$result['files'] = 0; //done
 		$result['forums'] = 0; //done bootstrap - no realtime updates yet
 		$result['forums_sub'] = []; //deprecated
 
@@ -108,9 +108,10 @@ class Ping extends \Zotlabs\Web\Controller {
 		}
 
 		/**
-		 * Update chat presence indication (if applicable)
+		 * Update chat presence indication (if applicable) 
 		 */
 
+		// done
 		if(get_observer_hash() && (! $result['invalid'])) {
 			$r = q("select cp_id, cp_room from chatpresence where cp_xchan = '%s' and cp_client = '%s' and cp_room = 0 limit 1",
 				dbesc(get_observer_hash()),
