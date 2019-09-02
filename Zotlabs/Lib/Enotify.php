@@ -935,4 +935,42 @@ class Enotify {
 
 	}
 
+	static public function format_mail($rr) {
+
+		$x = [
+			'notify_link' => z_root() . '/mail/' . $rr['id'],
+			'name' => $rr['xchan_name'],
+			'addr' => $rr['xchan_addr'],
+			'url' => $rr['xchan_url'],
+			'photo' => $rr['xchan_photo_s'],
+			'when' => datetime_convert('UTC', date_default_timezone_get(), $rr['created']),
+			'hclass' => (intval($rr['mail_seen']) ? 'notify-seen' : 'notify-unseen'),
+			'message' => t('sent you a private message'),
+		];
+
+		return $x;
+
+	}
+
+	static public function format_all_events($rr) {
+
+		$bd_format = t('g A l F d') ; // 8 AM Friday January 18
+		$strt = datetime_convert('UTC', (($rr['adjust']) ? date_default_timezone_get() : 'UTC'), $rr['dtstart']);
+		$today = ((substr($strt, 0, 10) === datetime_convert('UTC', date_default_timezone_get(), 'now', 'Y-m-d')) ? true : false);
+		$when = day_translate(datetime_convert('UTC', (($rr['adjust']) ? date_default_timezone_get() : 'UTC'), $rr['dtstart'], $bd_format)) . (($today) ?  ' ' . t('[today]') : '');
+
+		$x = [
+			'notify_link' => z_root() . '/cdav/calendar/' . $rr['event_hash'],
+			'name'        => $rr['xchan_name'],
+			'addr'        => $rr['xchan_addr'],
+			'url'         => $rr['xchan_url'],
+			'photo'       => $rr['xchan_photo_s'],
+			'when'        => $when,
+			'hclass'       => ('notify-unseen'),
+			'message'     => t('posted an event')
+		];
+
+		return $x;
+
+	}
 }

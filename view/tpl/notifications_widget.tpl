@@ -139,7 +139,7 @@
 			<img class="menu-img-3" src="{1}">
 			<span class="contactname">{2}</span>
 			<span class="dropdown-sub-text">{4}</span><br>
-			<span class="dropdown-sub-text notifications-autotime" title="{5}"></span>
+			<span class="dropdown-sub-text notifications-autotime" title="{5}">{5}</span>
 		</a>
 	</div>
 	<div id="nav-notifications-forums-template" rel="template">
