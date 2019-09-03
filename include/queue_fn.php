@@ -286,7 +286,7 @@ function queue_deliver($outq, $immediate = false) {
 		$host_crypto = null;
 
 		if($channel && $base) {
-			$h = q("select hubloc_sitekey, site_crypto from hubloc left join site on hubloc_url = site_url where site_url = '%s' order by hubloc_id desc limit 1",
+			$h = q("select hubloc_sitekey, site_crypto from hubloc left join site on hubloc_url = site_url where site_url = '%s' and hubloc_sitekey != ''  order by hubloc_id desc limit 1",
 				dbesc($base)
 			);
 			if($h) {

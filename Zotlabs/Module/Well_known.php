@@ -63,6 +63,18 @@ class Well_known extends \Zotlabs\Web\Controller {
 				case 'dnt-policy.txt':
 					echo file_get_contents('doc/dnt-policy.txt');
 					killme();
+					
+				case 'caldav':
+				    if ($_SERVER['REQUEST_METHOD'] == 'PROPFIND') {
+				        http_status('301', 'moved permanently');
+				        goaway(z_root() . '/cdav');
+				    };
+				    
+				case 'carddav':
+				    if ($_SERVER['REQUEST_METHOD'] == 'PROPFIND') {
+				        http_status('301', 'moved permanently');
+				        goaway(z_root() . '/cdav');
+				    };
 
 				default:
 					if(file_exists(\App::$cmd)) {

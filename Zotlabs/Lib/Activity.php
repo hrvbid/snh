@@ -516,6 +516,25 @@ class Activity {
 				xchan_query($p,true);
 				$p = fetch_post_tags($p,true);
 				$i['obj'] = self::encode_item($p[0]);
+
+				// convert to zot6 emoji reaction encoding which uses the target object to indicate the
+				// specific emoji instead of overloading the verb or type.
+				
+				$im = explode('#',$i['verb']);
+				if($im && count($im) > 1)
+					$emoji = $im[1];
+				if(preg_match("/\[img(.*?)\](.*?)\[\/img\]/ism", $i['body'], $match)) {
+					$ln = $match[2];
+				}
+
+				$i['tgt_type'] = 'Image';
+			
+				$i['target'] = [
+					'type' => 'Image',
+					'name' => $emoji,
+					'url'  => (($ln) ? $ln : z_root() . '/images/emoji/' . $emoji . '.png')
+				];
+				
 			}
 		}
 
@@ -596,7 +615,7 @@ class Activity {
 				$i['obj'] = json_decode($i['obj'],true);
 			}
 			if($i['obj']['type'] === ACTIVITY_OBJ_PHOTO) {
-				$i['obj']['id'] = $i['id'];
+				$i['obj']['id'] = $i['mid'];
 			}
 
 			$obj = self::encode_object($i['obj']);

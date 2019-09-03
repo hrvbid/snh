@@ -264,6 +264,9 @@ function bb_to_markdown($Text, $options = []) {
 
 	// Remove empty zrl links
 	$Text = preg_replace("/\[zrl\=\].*?\[\/zrl\]/is", "", $Text);
+	
+	// Remove unprocessed spoiler HTML tags
+	$Text = preg_replace("/<div.+>([^<]+)<.+>(>.+)$/im", "$1\n$2", $Text);
 
 	$Text = trim($Text);
 

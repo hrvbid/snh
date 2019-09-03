@@ -345,7 +345,7 @@ class Directory extends \Zotlabs\Web\Controller {
 								'pdesc_label' => t('Description:'),
 								'marital'  => $marital,
 								'homepage' => $homepage,
-								'homepageurl' => linkify($homepageurl),
+								'homepageurl' => linkify($homepageurl, true),
 								'hometown' => $hometown,
 								'hometown_label' => t('Hometown:'),
 								'about' => $about,

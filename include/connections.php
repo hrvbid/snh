@@ -299,6 +299,11 @@ function remove_all_xchan_resources($xchan, $channel_id = 0) {
 		$r = q("delete from pgrp_member where xchan = '%s'",
 			dbesc($xchan)
 		);
+
+		// Cannot delete just one side of the conversation since we do not allow
+		// you to block private mail replies. This would leave open a gateway for abuse. 
+		// Both participants are owners of the conversation and both can remove it.
+		
 		$r = q("delete from mail where ( from_xchan = '%s' or to_xchan = '%s' )",
 			dbesc($xchan),
 			dbesc($xchan)
