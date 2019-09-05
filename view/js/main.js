@@ -719,20 +719,6 @@ function updateConvItems(mode,data) {
 			}
 		}
 
-
-
-		// trigger the autotime function on all newly created content
-
-		$("> .wall-item-outside-wrapper .autotime, > .thread-wrapper .autotime",this).timeago();
-		$("> .shared_header .autotime",this).timeago();
-
-		var nmid = 'b64.' + window.btoa($(".wall-item-outside-wrapper",this).data('mid')).replace(/[\+\=]/g,'');
-
-		if($('.notification[data-b64mid=\'' + nmid + '\']').length)
-			$('.notification[data-b64mid=\'' + nmid + '\']').remove();
-
-		//todo: adjust count
-			
 		if((mode === 'append' || mode === 'replace') && (loadingPage)) {
 			loadingPage = false;
 		}
@@ -751,6 +737,25 @@ function updateConvItems(mode,data) {
 			}
 		}
 	});
+
+
+	// take care of the notifications count updates
+	$('.thread-wrapper', data).each(function() {
+
+		var nmid = 'b64.' + window.btoa($(".wall-item-outside-wrapper",this).data('mid')).replace(/[\+\=]/g,'');
+
+		if($('.notification[data-b64mid=\'' + nmid + '\']').length) {
+			$('.notification[data-b64mid=\'' + nmid + '\']').each(function() {
+				var n = this.parentElement.id.split('-');
+				var count = $('.' + n[1] + '-update').html();
+				$('.' + n[1] + '-update').html(Number(count) - 1);
+			});
+
+			$('.notification[data-b64mid=\'' + nmid + '\']').fadeOut();
+		}
+
+	});
+
 
 	// reset rotators and cursors we may have set before reaching this place
 
