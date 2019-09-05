@@ -725,7 +725,14 @@ function updateConvItems(mode,data) {
 
 		$("> .wall-item-outside-wrapper .autotime, > .thread-wrapper .autotime",this).timeago();
 		$("> .shared_header .autotime",this).timeago();
-		
+
+		var nmid = 'b64.' + window.btoa($(".wall-item-outside-wrapper",this).data('mid')).replace(/[\+\=]/g,'');
+
+		if($('.notification[data-b64mid=\'' + nmid + '\']').length)
+			$('.notification[data-b64mid=\'' + nmid + '\']').remove();
+
+		//todo: adjust count
+			
 		if((mode === 'append' || mode === 'replace') && (loadingPage)) {
 			loadingPage = false;
 		}
