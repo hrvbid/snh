@@ -752,7 +752,11 @@ function updateConvItems(mode,data) {
 			$('.notification[data-b64mid=\'' + nmid + '\']').each(function() {
 				var n = this.parentElement.id.split('-');
 				var count = $('.' + n[1] + '-update').html();
-				$('.' + n[1] + '-update').html(Number(count) - 1);
+				count = Number(count) - 1;
+
+				$('.' + n[1] + '-update').html(count);
+				if(count < 1)
+					$('.' + n[1] + '-button').fadeOut();
 			});
 
 			$('.notification[data-b64mid=\'' + nmid + '\']').fadeOut();
