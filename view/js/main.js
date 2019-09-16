@@ -754,11 +754,11 @@ function updateConvItems(mode,data) {
 				var count = $('.' + n[1] + '-update').html();
 				count = Number(count) - 1;
 
-				$('.' + n[1] + '-update').html(count);
 				if(count < 1)
 					$('.' + n[1] + '-button').fadeOut();
+				else
+					$('.' + n[1] + '-update').html(count);
 			});
-
 			$('.notification[data-b64mid=\'' + nmid + '\']').fadeOut();
 		}
 
