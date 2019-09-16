@@ -2392,7 +2392,6 @@ function process_mail_delivery($sender, $arr, $deliveries) {
 			}
 		}
 
-
 		$r = q("select id, conv_guid from mail where mid = '%s' and channel_id = %d limit 1",
 			dbesc($arr['mid']),
 			intval($channel['channel_id'])

@@ -293,8 +293,14 @@ class Activity {
 
 		$ret = [];
 
-		$objtype = self::activity_obj_mapper($i['obj_type']);
-
+		if($i['verb'] === ACTIVITY_FRIEND) {
+			// Hubzilla 'make-friend' activity, no direct mapping from AS1 to AS2 - make it a note
+			$objtype = 'Note';
+		}
+		else {		
+			$objtype = self::activity_obj_mapper($i['obj_type']);
+		}
+		
 		if(intval($i['item_deleted'])) {
 			$ret['type'] = 'Tombstone';
 			$ret['formerType'] = $objtype;
@@ -486,6 +492,12 @@ class Activity {
 		$ret   = [];
 		$reply = false;
 
+
+		if($i['verb'] === ACTIVITY_FRIEND) {
+			// Hubzilla 'make-friend' activity, no direct mapping from AS1 to AS2 - make it a note
+			$ret['obj'] = [];
+		}
+
 		if(intval($i['item_deleted'])) {
 			$ret['type'] = 'Tombstone';
 			$ret['formerType'] = self::activity_obj_mapper($i['obj_type']);
@@ -498,11 +510,6 @@ class Activity {
 			return $ret;
 		}
 
-		if($i['verb'] === ACTIVITY_FRIEND) {
-			// Hubzilla 'make-friend' activity, no direct mapping from AS1 to AS2 - make it a note
-			$ret['obj_type'] = ACTIVITY_OBJ_NOTE;
-			$ret['obj'] = [];
-		}
 
 		$ret['type'] = self::activity_mapper($i['verb']);
 
@@ -795,6 +802,9 @@ class Activity {
 		if(strpos($verb,ACTIVITY_REACT) !== false)
 			return 'emojiReaction';
 		if(strpos($verb,ACTIVITY_MOOD) !== false)
+			return 'Create';
+
+		if(strpos($verb,ACTIVITY_FRIEND) !== false)
 			return 'Create';
 
 		if(strpos($verb,ACTIVITY_POKE) !== false)

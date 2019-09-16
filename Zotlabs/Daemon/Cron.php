@@ -215,7 +215,7 @@ class Cron {
 			$restart = true;
 			$generation = intval($argv[2]);
 			if(! $generation)
-				killme();		
+				return;
 		}
 
 		reload_plugins();

@@ -17,7 +17,7 @@ if($x) {
 		$width = $xx['width'];
 		$height = $xx['height'];
 
-		$n = q("SELECT * FROM photo WHERE resource_id = '%s' AND imgscale > 0",
+		$n = q("SELECT * FROM photo WHERE resource_id = '%s' AND imgscale > 0 ORDER BY imgscale",
 			dbesc($xx['resource_id'])
 		);
 					

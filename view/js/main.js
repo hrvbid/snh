@@ -1170,8 +1170,8 @@ function doreply(parent, ident, owner, hint) {
 	var i = form.find('button[type=submit]');
 	var btn = i.html().replace(/<[^>]*>/g, '').trim();
 	i.html('<i class="fa fa-reply" ></i> ' + btn);
-	i.prop('title', hint);
-	form.find('textarea').val("@{" + owner + "} ");
+	var sel = 'wall-item-body-' + ident.toString();
+	form.find('textarea').val("@{" + owner + "}" + (($(window.getSelection().anchorNode).closest("#" + sel).attr("id") != sel) ? " " : "\n[quote]" + window.getSelection().toString() + "[/quote]\n"));
 	$('#comment-edit-text-' + parent.toString()).focus();
 }
 

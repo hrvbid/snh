@@ -9,7 +9,7 @@ if(array_search( __file__ , get_included_files()) === 0) {
 
 	if($argc)
 		Master::Release($argc,$argv);
-	killme();
+	return;
 }
 
 
