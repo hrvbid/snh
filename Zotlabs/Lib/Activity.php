@@ -6,6 +6,7 @@ use Zotlabs\Daemon\Master;
 use Zotlabs\Web\HTTPSig;
 
 require_once('include/event.php');
+require_once('include/html2plain.php');
 
 class Activity {
 
@@ -204,7 +205,8 @@ class Activity {
 				$y = [ 
 					'type'      => 'Event',
 					'id'        => z_root() . '/event/' . $ev['event_hash'],
-					'summary'   => bbcode($ev['summary'], [ 'cache' => true ]),
+					'name'      => $ev['summary'],
+//					'summary'   => bbcode($ev['summary'], [ 'cache' => true ]),
 					// RFC3339 Section 4.3
 					'startTime' => (($ev['adjust']) ? datetime_convert('UTC','UTC',$ev['dtstart'], ATOM_TIME) : datetime_convert('UTC','UTC',$ev['dtstart'],'Y-m-d\\TH:i:s-00:00')),
 					'content'   => bbcode($ev['description'], [ 'cache' => true ]),
@@ -2559,7 +2561,12 @@ class Activity {
 		}
 
 		if($event) {
-			$event['summary'] = html2bbcode($content['summary']);
+			$event['summary'] = $content['name'];
+			if(! $event['summary']) {
+				if($content['summary']) {
+					$event['summary'] = html2plain($content['summary']);
+				}
+			}
 			$event['description'] = html2bbcode($content['content']);
 			if($event['summary'] && $event['dtstart']) {
 				$content['event'] = $event;

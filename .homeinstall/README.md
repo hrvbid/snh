@@ -1,10 +1,65 @@
-# Hubzilla at Home next to your Router
+# How to use
 
-This readme will show you how to install and run Hubzilla (or Zap) at home.
+## Disclaimers
 
-The installation is done by a script.
+- This script does work with Debian 10 only.
+- This script has to be used on a fresh debian install only (it does not take account for a possibly already installed and configured webserver or sql implementation).
 
-What the script will do for you...
+## Preconditions
+
+Hardware
+
++ Internet connection and router at home
++ Mini-pc connected to your router (a Raspberry 3 will do for very small Hubs)
++ USB drive for backups
+
+Software
+
++ Fresh installation of Debian 10 (Stretch)
++ Router with open ports 80 and 443 for your web server
+
+## How to run the script
+
++ Register your own domain (for example at selfHOST) or a free subdomain (for example at freeDNS)
++ Log on to your fresh Debian
+  - apt-get install git
+  - mkdir -p /var/www
+  - cd /var/www
+  - git clone https://framagit.org/hubzilla/core.git html
+  - cd html/.homeinstall
+  - cp hubzilla-config.txt.template hubzilla-config.txt
+  - nano hubzilla-config.txt
+    - Read the comments carefully
+    - Enter your values: db pass, domain, values for dyn DNS
+    - Prepare your external disk for backups
+  - hubzilla-setup.sh as root
+    - ... wait, wait, wait until the script is finised
++ Open your domain with a browser and step throught the initial configuration of hubzilla.
+
+## Optional - Set path to imagemagick
+
+In Admin settings of hubzilla or via terminal
+
+    cd /var/www/html
+    util/config system.imagick_convert_path /usr/bin/convert
+
+## Optional - Switch verification of email on/off
+
+Do this just befor you register the user.
+
+In Admin settings of hubzilla or via terminal
+
+    cd /var/www/html
+
+Check the current setting 
+
+    util/config system verify_email
+
+Switch the verification on/off (1/0)
+
+    util/config system verify_email 0
+
+## What the script will do for you...
 
 + install everything required by Hubzilla, basically a web server (Apache), PHP, a database (MySQL), certbot,...
 + create a database
@@ -38,69 +93,11 @@ The script can install both [Hubzilla](https://zotlabs.org/page/hubzilla/hubzill
   - core: git clone https://framagit.org/zot/zap.git html (in this readme)
   - addons: util/add_addon_repo https://framagit.org/zot/zap-addons.git zaddons (in hubzilla-setup.sh)
 
-## Disclaimers
 
-- This script does work with Debian 10 only.
-- This script has to be used on a fresh debian install only (it does not take account for a possibly already installed and configured webserver or sql implementation).
 
-# Step-by-Step Overwiew
+# Step-by-Step - some Details
 
-## Preconditions
-
-Hardware
-
-+ Internet connection and router at home
-+ Mini-pc connected to your router (a Raspberry 3 will do for very small Hubs)
-+ USB drive for backups
-
-Software
-
-+ Fresh installation of Debian 10 (Stretch)
-+ Router with open ports 80 and 443 for your web server
-
-## The basic steps (quick overview)
-
-+ Register your own domain (for example at selfHOST) or a free subdomain (for example at freeDNS)
-+ Log on to your fresh Debian
-  - apt-get install git
-  - mkdir -p /var/www
-  - cd /var/www
-  - git clone https://framagit.org/hubzilla/core.git html
-  - cd html/.homeinstall
-  - cp hubzilla-config.txt.template hubzilla-config.txt
-  - nano hubzilla-config.txt
-    - Read the comments carefully
-    - Enter your values: db pass, domain, values for dyn DNS
-    - Prepare your external disk for backups
-  - hubzilla-setup.sh as root
-    - ... wait, wait, wait until the script is finised
-+ Open your domain with a browser and step throught the initial configuration of hubzilla.
-
-## Troubleshooting
-
-If the check of the mail address fails when you try to register the very first user in the browser. Do...
-
-    cd /var/www/html
-    util/config system.do_not_check_dns 1
-
-## Optional - Set path to imagemagick
-
-In Admin settings of hubzilla or via terminal
-
-    cd /var/www/html
-    util/config system.imagick_convert_path /usr/bin/convert
-
-# Step-by-Step in Detail
-
-## Preparations Software
-
-## Install Debian 9
-
-Provided you use a Raspberry Pi 3...
-
-Download the OS Raspbian from https://www.raspberrypi.org/downloads/raspbian/
-
-Follow the installation instruction there.
+## Preparations
 
 ## Configure your Router
 
@@ -146,12 +143,5 @@ to boot the Rapsi to the client console.
 
 DO NOT FORGET TO CHANGE THE DEFAULT PASSWORD FOR USER PI!
 
-On a Raspian Stretch (Debian 10) the validation of the mail address fails for the very first user.
-This used to happen on some *bsd distros but there was some work to fix that a year ago (2017).
-
-So if your system isn't registered in DNS or DNS isn't active do
-
-    cd /var/www/html
-    util/config system.do_not_check_dns 1
 
 

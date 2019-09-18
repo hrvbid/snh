@@ -28,14 +28,13 @@
 #        * php,  
 #        * mariadb - the database for hubzilla,  
 #        * adminer,  
-#        * git to download and update hubzilla addon
-# - download hubzilla core and addons
+#        * git to download and update addons
 # - configure cron
 #        * "Master.php" for regular background prozesses of hubzilla
 #        * "apt-get update" and "apt-get dist-upgrade" and "apt-get autoremove" to keep linux up-to-date
 #        * run command to keep the IP up-to-date > DynDNS provided by selfHOST.de or freedns.afraid.org
 #        * backup hubzillas database and files (rsync)
-# - letsencrypt
+# - run letsencrypt to create, register and use a certifacte for https
 # 
 # 
 # Discussion
@@ -56,7 +55,7 @@
 # - creates a daily cron that runs the hubzilla-daily.sh
 #
 # hubzilla-daily.sh makes a (daily) backup of all relevant files
-# - /var/lib/mysql/ > hubzilla database
+# - /var/lib/mysql/ > database
 # - /var/www/ > hubzilla/zap from github
 # - /etc/letsencrypt/ > certificates
 # 
@@ -223,6 +222,11 @@ function install_curl {
     nocheck_install "curl"
 }
 
+function install_wget {
+    print_info "installing wget..."
+    nocheck_install "wget"
+}
+
 function install_sendmail {
     print_info "installing sendmail..."
     nocheck_install "sendmail sendmail-bin"
@@ -269,7 +273,19 @@ function install_adminer {
     else
         print_info "file /etc/adminer/adminer.conf exists already"
     fi
+
+    a2enmod rewrite
+
+    if [ ! -f /etc/apache2/apache2.conf ]
+    then
+        die "could not find file /etc/apache2/apache2.conf"
+    fi
+    sed -i \
+        "s/AllowOverride None/AllowOverride all/" \
+        /etc/apache2/apache2.conf
+
     a2enconf adminer
+    systemctl restart mariadb
     systemctl reload apache2
 }
 
@@ -407,10 +423,9 @@ function install_letsencrypt {
     then
         die "Failed to install let's encrypt: 'le_domain' is empty in $configfile"
     fi
-    # check if user gave mail address
     if [ -z "$le_email" ]
     then
-        die "Failed to install let's encrypt: 'le_domain' is empty in $configfile"
+        die "Failed to install let's encrypt: 'le_email' is empty in $configfile"
     fi
     nocheck_install "certbot python-certbot-apache" 
     print_info "run certbot ..."
@@ -431,12 +446,19 @@ function check_https {
 }
 
 function install_hubzilla {
-    print_info "installing hubzilla addons..."
+    print_info "installing addons..."
     cd /var/www/html/
-    # if you install Hubzilla
-    # util/add_addon_repo https://framagit.org/hubzilla/addons hzaddons
-    # if you install ZAP
-    util/add_addon_repo https://framagit.org/zot/zap-addons.git zaddons
+    if git remote -v | grep -i "origin.*core.git"
+    then
+        print_info "hubzilla"
+        util/add_addon_repo https://framagit.org/hubzilla/addons hzaddons
+    elif git remote -v | grep -i "origin.*zap.git"
+    then
+        print_info "zap"
+        util/add_addon_repo https://framagit.org/zot/zap-addons.git zaddons
+    else
+        die "neither zap nor hubzilla repository > did not install addons or zap/hubzilla"
+    fi
     mkdir -p "store/[data]/smarty3"
     chmod -R 777 store
     touch .htconfig.php
@@ -446,7 +468,7 @@ function install_hubzilla {
 	chown root:www-data /var/www/html/
 	chown root:www-data /var/www/html/.htaccess
 	chmod 0644 /var/www/html/.htaccess
-    print_info "installed hubzilla"
+    print_info "installed addons"
 }
 
 function install_rsync {
@@ -585,6 +607,7 @@ check_config
 stop_hubzilla
 update_upgrade
 install_curl
+install_wget
 install_sendmail
 install_apache
 install_imagemagick
@@ -600,23 +623,34 @@ configure_cron_selfhost
 
 if [ "$le_domain" != "localhost" ]
 then
-	install_letsencrypt
-	check_https
+    install_letsencrypt
+    configure_apache_for_https
+    check_https
 else
-	print_info "is localhost - skipped installation of letsencrypt and configuration of apache for https"
+    print_info "is localhost - skipped installation of letsencrypt and configuration of apache for https"
 fi     
 
 install_hubzilla
+
+if [ "$le_domain" != "localhost" ]
+then
+    rewrite_to_https
+    install_rsnapshot
+else
+    print_info "is localhost - skipped rewrite to https and installation of rsnapshot"
+fi     
 
 configure_cron_daily
 
 if [ "$le_domain" != "localhost" ]
 then
-	install_rsync
-	install_cryptosetup
+    install_cryptosetup
+    write_uninstall_script
 else
-	print_info "is localhost - skipped installation of cryptosetup"
+    print_info "is localhost - skipped installation of cryptosetup"
 fi     
 
+
 #set +x    # stop debugging from here
+
 
