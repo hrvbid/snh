@@ -38,9 +38,14 @@ class SessionHandler implements \SessionHandlerInterface {
 
 	function write ($id, $data) {
 
+		// Pretend everything is hunky-dory, even though it isn't.
+		// There probably isn't anything we can do about it in any event.
+		// See: https://stackoverflow.com/a/43636110
+
 		if(! $id || ! $data) {
-			return false;
+			return true;
 		}
+
 
 		// Unless we authenticate somehow, only keep a session for 5 minutes
 		// The viewer can extend this by performing any web action using the
