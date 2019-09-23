@@ -1049,17 +1049,17 @@
     },
     {
         "name": "simplepie/simplepie",
-        "version": "1.5.2",
-        "version_normalized": "1.5.2.0",
+        "version": "1.5.3",
+        "version_normalized": "1.5.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/simplepie/simplepie.git",
-            "reference": "0e8fe72132dad765d25db4cabc69a91139af1263"
+            "reference": "173663382a9346acd53df60c7ffb20689c9cf1f6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/simplepie/simplepie/zipball/0e8fe72132dad765d25db4cabc69a91139af1263",
-            "reference": "0e8fe72132dad765d25db4cabc69a91139af1263",
+            "url": "https://api.github.com/repos/simplepie/simplepie/zipball/173663382a9346acd53df60c7ffb20689c9cf1f6",
+            "reference": "173663382a9346acd53df60c7ffb20689c9cf1f6",
             "shasum": ""
         },
         "require": {
@@ -1078,7 +1078,7 @@
             "ext-mbstring": "",
             "mf2/mf2": "Microformat module that allows for parsing HTML for microformats"
         },
-        "time": "2018-08-02T05:43:58+00:00",
+        "time": "2019-09-22T23:21:30+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1120,7 +1120,7 @@
             "rss"
         ],
         "support": {
-            "source": "https://github.com/simplepie/simplepie/tree/1.5.2",
+            "source": "https://github.com/simplepie/simplepie/tree/1.5.3",
             "issues": "https://github.com/simplepie/simplepie/issues"
         }
     },
