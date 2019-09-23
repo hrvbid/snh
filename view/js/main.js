@@ -746,7 +746,7 @@ function updateConvItems(mode,data) {
 	// take care of the notifications count updates
 	$('.thread-wrapper', data).each(function() {
 
-		var nmid = 'b64.' + window.btoa($(".wall-item-outside-wrapper",this).data('mid')).replace(/[\+\=]/g,'');
+		var nmid = $(this).data('b64mid');
 
 		if($('.notification[data-b64mid=\'' + nmid + '\']').length) {
 			$('.notification[data-b64mid=\'' + nmid + '\']').each(function() {
@@ -823,18 +823,15 @@ function updateConvItems(mode,data) {
 
 function scrollToItem() {
 	// auto-scroll to a particular comment in a thread (designated by mid) when in single-thread mode
-	// use the same method to generate the submid as we use in ThreadItem, 
-	// base64_encode + replace(['+','='],['','']);
 
 	if(justifiedGalleryActive)
 		return;
 
 	var submid = ((bParam_mid.length) ? bParam_mid : 'abcdefg');
 	var encoded = ((submid.substr(0,4) == 'b64.') ? true : false);
-	var submid_encoded = ((encoded) ? submid.substr(4) : window.btoa(submid));
+	var submid_encoded = ((encoded) ? submid : window.btoa(submid));
 
-	submid_encoded = submid_encoded.replace(/[\+\=]/g,'');
-	if($('.item_' + submid_encoded).length && !$('.item_' + submid_encoded).hasClass('toplevel_item')) {
+	if($('.thread-wrapper[data-b64mid=\'' + submid_encoded + '\']').length && !$('.thread-wrapper[data-b64mid=\'' + submid_encoded + '\']').hasClass('toplevel_item')) {
 		if($('.collapsed-comments').length) {
 			var scrolltoid = $('.collapsed-comments').attr('id').substring(19);
 			$('#collapsed-comments-' + scrolltoid + ' .autotime').timeago();
@@ -842,8 +839,8 @@ function scrollToItem() {
 			$('#hide-comments-' + scrolltoid).html(aStr.showfewer);
 			$('#hide-comments-total-' + scrolltoid).hide();
 		}
-		$('html, body').animate({ scrollTop: $('.item_' + submid_encoded).offset().top - $('nav').outerHeight(true) }, 'slow');
-		$('.item_' + submid_encoded).addClass('item-highlight');
+		$('html, body').animate({ scrollTop: $('.thread-wrapper[data-b64mid=\'' + submid_encoded + '\']').offset().top - $('nav').outerHeight(true) }, 'slow');
+		$('.thread-wrapper[data-b64mid=\'' + submid_encoded + '\']').addClass('item-highlight');
 	}
 }
 
@@ -1191,7 +1188,7 @@ function doscroll(parent, hidden) {
 		}
 	}
 	back.remove();
-	var id = $('[data-mid="' + parent + '"]');
+	var id = $('[data-b64mid="' + parent + '"]');
 	$('html, body').animate({scrollTop:(id.offset().top) - 50}, 'slow');
 	$('<a href="javascript:doscrollback(' + pos + ');" id="back-to-reply" class="float-right" title="' + aStr['to_reply'] + '"><i class="fa fa-angle-double-down">&nbsp;&nbsp;&nbsp;</i></a>').insertBefore('#wall-item-info-' + id.attr('id').replace(/\D/g,''));
 }
