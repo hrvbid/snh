@@ -285,8 +285,21 @@ class Notifier {
 			}
 
 			if(! in_array(intval($target_item['item_type']), [ ITEM_TYPE_POST ] )) {
-				logger('notifier: target item not forwardable: type ' . $target_item['item_type'], LOGGER_DEBUG);
-				return;
+				$hookinfo=[
+					'targetitem'=>$target_item,
+					'deliver'=>false
+				];
+				if (intval($target_item['item_type'] == ITEM_TYPE_CUSTOM)) {
+					call_hooks('customitem_deliver',$hookinfo);
+				}
+
+				if (!$hookinfo['deliver']) {
+					logger('notifier: target item not forwardable: type ' . $target_item['item_type'], LOGGER_DEBUG);
+					return;
+				}
+
+				$target_item = $hookinfo['targetitem'];
+
 			}
 
 			// Check for non published items, but allow an exclusion for transmitting hidden file activities

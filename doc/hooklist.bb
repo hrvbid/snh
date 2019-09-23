@@ -34,6 +34,18 @@ Hooks allow plugins/addons to "hook into" the code at many points and alter the 
 [zrl=[baseurl]/help/hook/activity_filter]activity_filter[/zrl]
 	Called when generating the list of filters for the network page
 
+[zrl=[baseurl]/help/hook/activity_filter]activity_mapper[/zrl]
+	Called when determining the activity type for transmission.
+
+[zrl=[baseurl]/help/hook/activity_filter]activity_decode_mapper[/zrl]
+	Called when determining the activity type for transmission.
+
+[zrl=[baseurl]/help/hook/activity_filter]activity_obj_mapper[/zrl]
+	Called when determining the object type for transmission.
+
+[zrl=[baseurl]/help/hook/activity_filter]activity_obj_decode_mapper[/zrl]
+	Called when determining the object type for transmission.
+
 [zrl=[baseurl]/help/hook/activity_order]activity_order[/zrl]
 	Called when generating the list of order options for the network page
 
@@ -232,6 +244,9 @@ Hooks allow plugins/addons to "hook into" the code at many points and alter the 
 [zrl=[baseurl]/help/hook/drop_item]drop_item[/zrl]
 	called when an 'item' is removed
 
+[zrl=[baseurl]/help/hook/encode_object]encode_object[/zrl]
+	called when encoding an object for transmission.
+
 [zrl=[baseurl]/help/hook/enotify]enotify[/zrl]
 	called before any notification
 
@@ -264,6 +279,9 @@ Hooks allow plugins/addons to "hook into" the code at many points and alter the 
 
 [zrl=[baseurl]/help/hook/feature_settings_post]feature_settings_post[/zrl]
 	called from settings page when posting from 'addon/feature settings'
+
+[zrl=[baseurl]/help/hook/fetch_and_store]fetch_and_store[/zrl]
+	called to allow filtering of 'decoded' items before storage.
 
 [zrl=[baseurl]/help/hook/file_thumbnail]file_thumbnail[/zrl]
 	called when generating thumbnail images for cloud page in 'view tiles' mode
