@@ -80,6 +80,7 @@ class Activity {
 							$token = substr($p,2);
 						}
 					}
+					$m = parse_url($url);
 				}
 			}
 
