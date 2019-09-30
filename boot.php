@@ -1835,6 +1835,13 @@ function notice($s) {
 	if (! $hash)
 		return;
 
+
+	$t = get_xconfig($hash, 'sse', 'timestamp');
+
+	if(datetime_convert('UTC', 'UTC', $t) < datetime_convert('UTC', 'UTC', '- 30 seconds')) {
+		del_xconfig($hash, 'sse', 'notifications');
+	}
+
 	hz_syslog($hash);
 	hz_syslog($s);
 
@@ -1884,6 +1891,12 @@ function info($s) {
 
 	if (! $hash)
 		return;
+
+	$t = get_xconfig($hash, 'sse', 'timestamp');
+
+	if(datetime_convert('UTC', 'UTC', $t) < datetime_convert('UTC', 'UTC', '- 30 seconds')) {
+		del_xconfig($hash, 'sse', 'notifications');
+	}
 
 	$x = get_xconfig($hash, 'sse', 'notifications');
 
