@@ -1811,6 +1811,7 @@ function can_view_public_stream() {
  * @param string $s Text to display
  */
 function notice($s) {
+
 /*
 	if(! session_id())
 		return;
@@ -1829,22 +1830,27 @@ function notice($s) {
 	}
 */
 
-	$uid = get_observer_hash();
+	$hash = get_observer_hash();
 
-	hz_syslog($uid);
+	if (! $hash)
+		return;
+
+	hz_syslog($hash);
 	hz_syslog($s);
 
-	$x = get_xconfig($uid, 'sse', 'notifications');
+	$x = get_xconfig($hash, 'sse', 'notifications');
 
-	if($x === false)
+	if ($x === false)
 		$x = [];
 
-	$x['notice']['notifications'][] = $s;
+	if (isset($x['notice']) && in_array($s, $x['notice']['notifications']))
+		return;
 
-	set_xconfig($uid, 'sse', 'timestamp', datetime_convert());
-	set_xconfig($uid, 'sse', 'notifications', $x);
-
-
+	if (App::$interactive) {
+		$x['notice']['notifications'][] = $s;
+		set_xconfig($hash, 'sse', 'timestamp', datetime_convert());
+		set_xconfig($hash, 'sse', 'notifications', $x);
+	}
 
 }
 
@@ -1859,6 +1865,7 @@ function notice($s) {
  * @param string $s Text to display
  */
 function info($s) {
+
 /*
 	if(! session_id())
 		return;
@@ -1872,20 +1879,26 @@ function info($s) {
 	if(App::$interactive)
 		$_SESSION['sysmsg_info'][] = $s;
 */
-	$uid = get_observer_hash();
 
-	hz_syslog($uid);
-	hz_syslog($s);
+	$hash = get_observer_hash();
 
-	$x = get_xconfig($uid, 'sse', 'notifications');
+	if (! $hash)
+		return;
+
+	$x = get_xconfig($hash, 'sse', 'notifications');
 
 	if($x === false)
 		$x = [];
 
-	$x['info']['notifications'][] = $s;
+	if(isset($x['info']) && in_array($s, $x['info']['notifications']))
+		return;
 
-	set_xconfig($uid, 'sse', 'timestamp', datetime_convert());
-	set_xconfig($uid, 'sse', 'notifications', $x);
+	if(App::$interactive) {
+		$x['info']['notifications'][] = $s;
+		set_xconfig($hash, 'sse', 'timestamp', datetime_convert());
+		set_xconfig($hash, 'sse', 'notifications', $x);
+	}
+
 }
 
 /**
