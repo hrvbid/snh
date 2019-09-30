@@ -1232,13 +1232,7 @@ class Item extends Controller {
 			killme();
 		}
 		
-		if(($parent) && ($parent != $post_id)) {
-			// Store the comment signature information in case we need to relay to Diaspora
-			//$ditem = $datarray;
-			//$ditem['author'] = $observer;
-			//store_diaspora_comment_sig($ditem,$channel,$parent_item, $post_id, (($walltowall_comment) ? 1 : 0));
-		}
-		else {
+		if(($parent == $post_id) || ($datarray['item_private'] == 1)) {
 			$r = q("select * from item where id = %d",
 				intval($post_id)
 			);
