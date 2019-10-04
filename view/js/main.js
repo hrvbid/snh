@@ -85,6 +85,7 @@ $(document).ready(function() {
 
 	updateInit();
 
+/*
 	$('a.notification-link').click(function(e){
 		var notifyType = $(this).data('type');
 
@@ -96,12 +97,14 @@ $(document).ready(function() {
 			sessionStorage.removeItem('notification_open');
 		}
 	});
-
+*/
+/*
 	if(sessionStorage.getItem('notification_open') !== null) {
 		var notifyType = sessionStorage.getItem('notification_open');
 		$('#nav-' + notifyType + '-sub').addClass('show');
 		loadNotificationItems(notifyType);
 	}
+*/
 
 	// Allow folks to stop the ajax page updates with the pause/break key
 	$(document).keydown(function(event) {
