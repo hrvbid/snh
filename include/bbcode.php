@@ -1346,6 +1346,7 @@ function bbcode($Text, $options = []) {
 		$Text = preg_replace("/\[event\-finish\](.*?)\[\/event\-finish\]/ism",'',$Text);
 		$Text = preg_replace("/\[event\-id\](.*?)\[\/event\-id\]/ism",'',$Text);
 		$Text = preg_replace("/\[event\-location\](.*?)\[\/event\-location\]/ism",'',$Text);
+		$Text = preg_replace("/\[event\-timezone\](.*?)\[\/event\-timezone\]/ism",'',$Text);
 		$Text = preg_replace("/\[event\-adjust\](.*?)\[\/event\-adjust\]/ism",'',$Text);
 
 		$Text = str_replace("\0",'$',$Text);

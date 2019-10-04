@@ -276,6 +276,9 @@ function format_event_bbcode($ev) {
 	if($ev['event_hash'])
 		$o .= '[event-id]' . $ev['event_hash'] . '[/event-id]';
 
+	if($ev['timezone'])
+		$o .= '[event-timezone]' . $ev['timezone'] . '[/event-timezone]';
+
 	if($ev['adjust'])
 		$o .= '[event-adjust]' . $ev['adjust'] . '[/event-adjust]';
 
@@ -323,6 +326,9 @@ function bbtoevent($s) {
 	$match = '';
 	if(preg_match("/\[event\-id\](.*?)\[\/event\-id\]/is",$s,$match))
 		$ev['event_hash'] = $match[1];
+	$match = '';
+	if(preg_match("/\[event\-timezone\](.*?)\[\/event\-timezone\]/is",$s,$match))
+		$ev['timezone'] = $match[1];
 	$match = '';
 	if(preg_match("/\[event\-adjust\](.*?)\[\/event\-adjust\]/is",$s,$match))
 		$ev['adjust'] = $match[1];
