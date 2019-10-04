@@ -757,8 +757,12 @@ function updateConvItems(mode,data) {
 				var count = $('.' + n[1] + '-update').html();
 				count = Number(count) - 1;
 
-				if(count < 1)
+				console.log('count main: ' + count);
+
+				if(count < 1) {
 					$('.' + n[1] + '-button').fadeOut();
+					$('.' + n[1] + '-update').html(count);
+				}
 				else
 					$('.' + n[1] + '-update').html(count);
 			});

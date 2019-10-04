@@ -111,6 +111,5 @@ function js_strings() {
 		'$week' => t('week','calendar'),
 		'$day' => t('day','calendar'),
 		'$allday' => t('All day','calendar'),
-		'$local_channel' => local_channel() ? local_channel() : 'false'
 	));
 }

@@ -66,6 +66,5 @@
 		'allday' : "{{$allday}}"
 	};
 
-	var localUser = {{$local_channel}};
 </script>
 		
