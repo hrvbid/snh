@@ -1764,7 +1764,7 @@ class Libzot {
 				// if it's a sourced post, call the post_local hooks as if it were
 				// posted locally so that crosspost connectors will be triggered.
 
-				if(check_item_source($arr['uid'], $arr)) {
+				if(check_item_source($arr['uid'], $arr) || ($channel['xchan_pubforum'] == 1)) {
 					/**
 					 * @hooks post_local
 					 *   Called when an item has been posted on this machine via mod/item.php (also via API).

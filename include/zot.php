@@ -1776,17 +1776,14 @@ function process_delivery($sender, $arr, $deliveries, $relay, $public = false, $
 
 		$DR = new Zotlabs\Lib\DReport(z_root(),$sender['hash'],$d['hash'],$arr['mid']);
 
-		$r = q("select * from channel where channel_hash = '%s' limit 1",
-			dbesc($d['hash'])
-		);
+		$channel = channelx_by_hash($d['hash']);
 
-		if(! $r) {
+		if(! $channel) {
 			$DR->update('recipient not found');
 			$result[] = $DR->get();
 			continue;
 		}
 
-		$channel = $r[0];
 		$DR->set_name($channel['channel_name'] . ' <' . channel_reddress($channel) . '>');
 
 		/* blacklisted channels get a permission denied, no special message to tip them off */
@@ -2032,7 +2029,7 @@ function process_delivery($sender, $arr, $deliveries, $relay, $public = false, $
 			// if it's a sourced post, call the post_local hooks as if it were
 			// posted locally so that crosspost connectors will be triggered.
 
-			if(check_item_source($arr['uid'], $arr)) {
+			if(check_item_source($arr['uid'], $arr) || ($channel['xchan_pubforum'] == 1)) {
 				/**
 				 * @hooks post_local
 				 *   Called when an item has been posted on this machine via mod/item.php (also via API).
