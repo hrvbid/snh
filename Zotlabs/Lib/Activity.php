@@ -1693,11 +1693,12 @@ class Activity {
 		}
 
 		if($act->obj['type'] === 'Event') {
+
 			$s['obj'] = [];
 			$s['obj']['asld'] = $act->obj;
 			$s['obj']['type'] = ACTIVITY_OBJ_EVENT;
 			$s['obj']['id'] = $act->obj['id'];
-			$s['obj']['title'] = $act->obj['summary'];
+			$s['obj']['title'] = $act->obj['name'];
 
 			if(strpos($act->obj['startTime'],'Z'))
 				$s['obj']['adjust'] = true;
