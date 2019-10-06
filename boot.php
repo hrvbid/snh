@@ -1842,9 +1842,6 @@ function notice($s) {
 		del_xconfig($hash, 'sse', 'notifications');
 	}
 
-	hz_syslog($hash);
-	hz_syslog($s);
-
 	$x = get_xconfig($hash, 'sse', 'notifications');
 
 	if ($x === false)
