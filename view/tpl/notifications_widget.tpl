@@ -152,8 +152,8 @@
 	</div>
 	<div id="notifications" class="navbar-nav">
 		{{foreach $notifications as $notification}}
-		<div class="collapse {{$notification.type}}-button">
-			<a id="notification-link-{{$notification.type}}" class="list-group-item notification-link" href="#" title="{{$notification.title}}" data-target="#nav-{{$notification.type}}-sub" data-toggle="collapse" data-type="{{$notification.type}}">
+		<div class="collapse notification-type-button {{$notification.type}}-button">
+			<a id="notification-link-{{$notification.type}}" class="collapsed list-group-item notification-link" href="#" title="{{$notification.title}}" data-target="#nav-{{$notification.type}}-sub" data-toggle="collapse" data-type="{{$notification.type}}">
 				<i class="fa fa-fw fa-{{$notification.icon}}"></i> {{$notification.label}}
 				<span class="float-right badge badge-{{$notification.severity}} {{$notification.type}}-update"></span>
 			</a>
