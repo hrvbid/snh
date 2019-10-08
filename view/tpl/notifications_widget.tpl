@@ -135,7 +135,7 @@
 		{{$no_notifications}}<span class="jumping-dots"><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></span>
 	</div>
 	<div id="nav-notifications-template" rel="template">
-		<a class="list-group-item clearfix notification {6}" href="{0}" title="{3}" data-b64mid="{7}" data-notify_id="{8}" data-thread_top="{9}" data-contact_name="{2}" data-contact_addr="{3}">
+		<a class="list-group-item clearfix notification {6}" href="{0}" title="{3}" data-b64mid="{7}" data-notify_id="{8}" data-thread_top="{9}" data-contact_name="{2}" data-contact_addr="{3}" data-when="{5}">
 			<img class="menu-img-3" src="{1}">
 			<span class="contactname">{2}</span>
 			<span class="dropdown-sub-text">{4}</span><br>
