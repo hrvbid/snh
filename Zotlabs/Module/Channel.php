@@ -13,6 +13,7 @@ require_once('include/items.php');
 require_once('include/security.php');
 require_once('include/conversation.php');
 require_once('include/acl_selectors.php');
+require_once('include/opengraph.php');
 
 
 /**
@@ -111,17 +112,6 @@ class Channel extends Controller {
 		// we start loading content
 
 		profile_load($which,$profile);
-
-		App::$page['htmlhead'] .= '<meta property="og:title" content="' . htmlspecialchars($channel['channel_name']) . '">' . "\r\n";
-		App::$page['htmlhead'] .= '<meta property="og:image" content="' . $channel['xchan_photo_l'] . '">' . "\r\n";
-
-		if(App::$profile['about'] && perm_is_allowed($channel['channel_id'],get_observer_hash(),'view_profile')) {
-			App::$page['htmlhead'] .= '<meta property="og:description" content="' . htmlspecialchars(App::$profile['about']) . '">' . "\r\n";
-		}
-		else {
-			App::$page['htmlhead'] .= '<meta property="og:description" content="' . htmlspecialchars(sprintf( t('This is the home page of %s.'), $channel['channel_name'])) . '">' . "\r\n";
-		}
-
 	}
 
 	function get($update = 0, $load = false) {
@@ -362,7 +352,7 @@ class Channel extends Controller {
 
 			$parents_str = ids_to_querystr($r,'item_id');
 
-			$items = q("SELECT item.*, item.id AS item_id
+			$r = q("SELECT item.*, item.id AS item_id
 				FROM item
 				WHERE item.uid = %d $item_normal
 				AND item.parent IN ( %s )
@@ -371,8 +361,8 @@ class Channel extends Controller {
 				dbesc($parents_str)
 			);
 
-			xchan_query($items);
-			$items = fetch_post_tags($items, true);
+			xchan_query($r);
+			$items = fetch_post_tags($r, true);
 			$items = conv_sort($items,$ordering);
 
 			if($load && $mid && (! count($items))) {
@@ -384,6 +374,9 @@ class Channel extends Controller {
 		} else {
 			$items = array();
 		}
+
+		// Add Opengraph markup
+		opengraph_add_meta((isset($decoded) && (! empty($items)) ? $r[0] : array()), App::$profile);
 
 		if((! $update) && (! $load)) {
 

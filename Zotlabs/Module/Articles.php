@@ -9,6 +9,7 @@ use Zotlabs\Lib\PermissionDescription;
 require_once('include/channel.php');
 require_once('include/conversation.php');
 require_once('include/acl_selectors.php');
+require_once('include/opengraph.php');
 
 
 class Articles extends Controller {
@@ -192,7 +193,7 @@ class Articles extends Controller {
 
 			$parents_str = ids_to_querystr($r,'id');
 
-			$items = q("SELECT item.*, item.id AS item_id
+			$r = q("SELECT item.*, item.id AS item_id
 				FROM item
 				WHERE item.uid = %d $item_normal
 				AND item.parent IN ( %s )
@@ -200,14 +201,17 @@ class Articles extends Controller {
 				intval(App::$profile['profile_uid']),
 				dbesc($parents_str)
 			);
-			if($items) {
-				xchan_query($items);
-				$items = fetch_post_tags($items, true);
+			if($r) {
+				xchan_query($r);
+				$items = fetch_post_tags($r, true);
 				$items = conv_sort($items,'updated');
 			}
 			else
 				$items = [];
 		}
+
+		// Add Opengraph markup
+		opengraph_add_meta(((! empty($items)) ? $r[0] : array()), App::$profile);
 
 		$mode = 'articles';
 			
