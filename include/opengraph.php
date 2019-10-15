@@ -21,8 +21,10 @@
 			$ogtitle = $item['title'];
 
 		// find first image if exist
-		if(preg_match("/\[[zi]mg(=[0-9]+x[0-9]+)?\]([^\[]+)/is", $item['body'], $matches))
+		if(preg_match("/\[[zi]mg(=[0-9]+x[0-9]+)?\]([^\[]+)/is", $item['body'], $matches)) {
 			$ogimage = $matches[2];
+			$ogimagetype = guess_image_type($ogimage);	
+		}
 
 		// use summary as description if exist
 		$ogdesc = (empty($item['summary']) ? $item['body'] : $item['summary'] );
@@ -57,12 +59,14 @@
 		}
 	}
 	
-	if(! isset($ogimage))
+	if(! isset($ogimage)) {
 		$ogimage = $channel['xchan_photo_l'];
+		$ogimagetype = $channel['xchan_photo_mimetype'];
+	}
 
 	App::$page['htmlhead'] .= '<meta property="og:title" content="' . htmlspecialchars((isset($ogtitle) ? $ogtitle : $channel['channel_name'])) . '">' . "\r\n";
 	App::$page['htmlhead'] .= '<meta property="og:image" content="' . $ogimage . '">' . "\r\n";
-	App::$page['htmlhead'] .= '<meta property="og:image:type" content="' . guess_image_type($ogimage) . '">' . "\r\n";
+	App::$page['htmlhead'] .= '<meta property="og:image:type" content="' . $ogimagetype . '">' . "\r\n";
 	App::$page['htmlhead'] .= '<meta property="og:description" content="' . htmlspecialchars($ogdesc) . '">' . 	"\r\n";
 	App::$page['htmlhead'] .= '<meta property="og:type" content="' . (isset($ogtype) ? $ogtype : "profile") . '">' . "\r\n";
 

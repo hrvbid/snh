@@ -272,7 +272,12 @@ class Photo extends \Zotlabs\Web\Controller {
 				$maxage = $expires - time();
 			
 		 	header("Expires: " . gmdate("D, d M Y H:i:s", $expires) . " GMT");
-			header("Cache-Control: max-age=" . $maxage . $cachecontrol);
+
+			// set CDN/Infrastructure caching much lower than maxage 
+			// in the event that infrastructure caching is present.
+			$smaxage = intval($maxage/12);
+
+			header("Cache-Control: s-maxage=" . $smaxage . ", max-age=" . $maxage . $cachecontrol);
 	
 		}
 
