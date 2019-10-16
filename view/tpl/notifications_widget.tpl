@@ -85,7 +85,7 @@
 		$('#nav-{{$notification.type}}-menu [data-thread_top=false]').toggle();
 		$(this).toggleClass('active sticky-top');
 	});
-	$(document).on('click ', '#cn-{{$notification.type}}-input-clear', function(e) {
+	$(document).on('click', '#cn-{{$notification.type}}-input-clear', function(e) {
 		$('#cn-{{$notification.type}}-input').val('');
 		$('#cn-{{$notification.type}}-only').removeClass('active sticky-top');
 		$("#nav-{{$notification.type}}-menu .notification").removeClass('d-none');
