@@ -324,7 +324,7 @@ class Connections extends \Zotlabs\Web\Controller {
 						'recentlink' => z_root() . '/network/?f=&cid=' . intval($rr['abook_id']) . '&name=' . $rr['xchan_name'],
 						'oneway' => $oneway,
 						'connect' => (intval($rr['abook_not_here']) ? t('Connect') : ''),
-						'follow' => z_root() . '/follow/?f=&url=' . urlencode($rr['xchan_addr']) . '&interactive=0',
+						'follow' => z_root() . '/follow/?f=&url=' . urlencode($rr['xchan_hash']) . '&interactive=0',
 						'connect_hover' => t('Connect at this location')
 					);
 				}
