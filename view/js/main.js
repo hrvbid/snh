@@ -755,14 +755,17 @@ function updateConvItems(mode,data) {
 			$('.notification[data-b64mid=\'' + nmid + '\']').each(function() {
 				var n = this.parentElement.id.split('-');
 
-				if(n[1] == 'pubs')
+				if(n[1] === 'pubs')
 					return true;
 
-				if(n[1] == 'notify' && nmid !== bParam_mid)
+				//FIXME: sse_type is defined in sse.js (sse addon)
+				if(n[1] === 'notify' && (nmid !== bParam_mid || sse_type !== 'notify'))
 					return true;
 
-				var count = $('.' + n[1] + '-update').html();
-				count = Number(count) - 1;
+				var count = Number($('.' + n[1] + '-update').html());
+
+				if(count > 0)
+					count = count - 1;
 
 				if(count < 1) {
 					$('.' + n[1] + '-button').fadeOut();
@@ -772,6 +775,7 @@ function updateConvItems(mode,data) {
 					$('.' + n[1] + '-update').html(count);
 
 				$('#nav-' + n[1] + '-menu .notification[data-b64mid=\'' + nmid + '\']').fadeOut();
+
 			});
 		}
 
