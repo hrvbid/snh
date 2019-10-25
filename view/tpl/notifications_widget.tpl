@@ -180,7 +180,7 @@
 				{{if $notification.filter.name_label}}
 				<div class="list-group-item clearfix notifications-textinput" id="cn-{{$notification.type}}-only">
 					<div class="text-muted notifications-textinput-filter"><i class="fa fa-fw fa-filter"></i></div>
-					<input id="cn-{{$notification.type}}-input" type="text" class="form-control form-control-sm" placeholder="{{$notification.filter.name_label}}">
+					<input id="cn-{{$notification.type}}-input" type="text" class="notification-filter form-control form-control-sm" placeholder="{{$notification.filter.name_label}}">
 					<div id="cn-{{$notification.type}}-input-clear" class="text-muted notifications-textinput-clear d-none"><i class="fa fa-times"></i></div>
 				</div>
 				{{/if}}

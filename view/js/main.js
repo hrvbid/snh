@@ -754,6 +754,13 @@ function updateConvItems(mode,data) {
 		if($('.notification[data-b64mid=\'' + nmid + '\']').length) {
 			$('.notification[data-b64mid=\'' + nmid + '\']').each(function() {
 				var n = this.parentElement.id.split('-');
+
+				if(n[1] == 'pubs')
+					return true;
+
+				if(n[1] == 'notify' && nmid !== bParam_mid)
+					return true;
+
 				var count = $('.' + n[1] + '-update').html();
 				count = Number(count) - 1;
 
@@ -763,8 +770,9 @@ function updateConvItems(mode,data) {
 				}
 				else
 					$('.' + n[1] + '-update').html(count);
+
+				$('#nav-' + n[1] + '-menu .notification[data-b64mid=\'' + nmid + '\']').fadeOut();
 			});
-			$('.notification[data-b64mid=\'' + nmid + '\']').fadeOut();
 		}
 
 	});
