@@ -582,6 +582,7 @@ function handleNotificationsItems(notifyType, data) {
 	if($('#cn-' + notifyType + '-input').length) {
 		var filter = $('#cn-' + notifyType + '-input').val().toString().toLowerCase();
 		if(filter) {
+			filter = filter.indexOf('%') == 0 ? filter.substring(1) : filter;
 			$('#nav-' + notifyType + '-menu .notification').each(function(i, el){
 				var cn = $(el).data('contact_name').toString().toLowerCase();
 				var ca = $(el).data('contact_addr').toString().toLowerCase();

@@ -93,8 +93,8 @@
 	});
 	$(document).on('input', '#cn-{{$notification.type}}-input', function(e) {
 		var val = $('#cn-{{$notification.type}}-input').val().toString().toLowerCase();
-
 		if(val) {
+			val = val.indexOf('%') == 0 ? val.substring(1) : val;
 			$('#cn-{{$notification.type}}-only').addClass('active sticky-top');
 			$('#cn-{{$notification.type}}-input-clear').removeClass('d-none');
 		}
