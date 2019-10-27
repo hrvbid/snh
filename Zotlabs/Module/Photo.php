@@ -31,12 +31,7 @@ class Photo extends \Zotlabs\Web\Controller {
 				// NOTREACHED
 		}
 
-		$cache_mode = array(
-			'on' => false,
-			'age' => 86400,
-			'exp' => true,
-			'leak' => false
-		);
+		$cache_mode = [ 'on' => false, 'age' => 86400, 'exp' => true, 'leak' => false ];
 		call_hooks('cache_mode_hook', $cache_mode);
 		
 		$observer_xchan = get_observer_hash();
@@ -144,7 +139,7 @@ class Photo extends \Zotlabs\Web\Controller {
 				    $resolution = 1;
 			}
 			
-			$r = q("SELECT uid, photo_usage, display_path FROM photo WHERE resource_id = '%s' AND imgscale = %d LIMIT 1",
+			$r = q("SELECT * FROM photo WHERE resource_id = '%s' AND imgscale = %d LIMIT 1",
 				dbesc($photo),
 				intval($resolution)
 			);
@@ -163,13 +158,10 @@ class Photo extends \Zotlabs\Web\Controller {
 					if($u === PHOTO_CACHE) {
 						// Validate cache
 						if($cache_mode['on']) {
-							$cache = array(
-								'resid' => $photo,
-								'status' => false
-							);
+							$cache = [ 'status' => false, 'item' => $r[0] ];
 							call_hooks('cache_url_hook', $cache);
 							if(! $cache['status']) {
-								$url = html_entity_decode($r[0]['display_path'], ENT_QUOTES);
+								$url = html_entity_decode($cache['item']['display_path'], ENT_QUOTES);
 								// SSLify if needed
 								if(strpos(z_root(),'https:') !== false && strpos($url,'https:') === false)
 									$url = z_root() . '/sslify/' . $filename . '?f=&url=' . urlencode($url);
