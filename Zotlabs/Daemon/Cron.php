@@ -97,13 +97,14 @@ class Cron {
 		
 		// Clean expired photos from cache
 		
-		$age = get_config('system','active_expire_days', '30');
-		$r = q("SELECT DISTINCT xchan, content FROM photo WHERE photo_usage = %d AND expires < %s - INTERVAL %s",
-			intval(PHOTO_CACHE),
-			db_utcnow(), 
-			db_quoteinterval($age . ' DAY')
+		$sql_interval = db_utcnow() . ' - INTERVAL ' . db_quoteinterval(get_config('system','active_expire_days', '30') . ' DAY'); 
+		$r = q("SELECT DISTINCT xchan, content FROM photo WHERE photo_usage = %d AND expires < $sql_interval",
+			intval(PHOTO_CACHE)
 		);
 		if($r) {
+		    q("DELETE FROM photo WHERE photo_usage = %d AND expires < $sql_interval",
+		        intval(PHOTO_CACHE)
+			);
 			foreach($r as $rr) {
 				$file = dbunescbin($rr['content']);
 				if(is_file($file)) {
@@ -113,11 +114,6 @@ class Cron {
 				}
 			}
 		}
-		q("DELETE FROM photo WHERE photo_usage = %d AND expires < %s - INTERVAL %s",
-			intval(PHOTO_CACHE),
-			db_utcnow(), 
-			db_quoteinterval($age . ' DAY')
-		);		
 
 		// publish any applicable items that were set to be published in the future
 		// (time travel posts). Restrict to items that have come of age in the last
