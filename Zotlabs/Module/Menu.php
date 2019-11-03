@@ -54,9 +54,10 @@ class Menu extends \Zotlabs\Web\Controller {
 		if($_REQUEST['menu_system'])
 			$_REQUEST['menu_flags'] |= MENU_SYSTEM;
 	
-		$menu_id = ((argc() > 1) ? intval(argv(1)) : 0);
+		$menu_id = ((argc() > 2) ? intval(argv(2)) : 0);
+
 		if($menu_id) {
-			$_REQUEST['menu_id'] = intval(argv(1));
+			$_REQUEST['menu_id'] = $menu_id;
 			$r = menu_edit($_REQUEST);
 			if($r) {
 				menu_sync_packet($uid,get_observer_hash(),$menu_id);
