@@ -142,7 +142,7 @@ function new_contact($uid,$url,$channel,$interactive = false, $confirm = false) 
 		$sql_options = (($protocol) ? " and xchan_network = '" . dbesc($protocol) . "' " : '');
 		
 
-		$r = q("select * from xchan where xchan_hash = '%s' or xchan_url = '%s' $sql_options ",
+		$r = q("select * from xchan where (xchan_addr = '%s' or xchan_url = '%s') $sql_options ",
 			dbesc($url),
 			dbesc($url)
 		);
