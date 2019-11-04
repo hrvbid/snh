@@ -401,26 +401,30 @@ class Activity {
 
 		$ret = [];
 
-		if($item['tag']) {
-			foreach($item['tag'] as $t) {
-				if(! array_key_exists('type',$t))
+		if ($item['tag'] && is_array($item['tag'])) {
+			$ptr = $item['tag'];
+			if (! array_key_exists(0,$ptr)) {
+				$ptr = [ $ptr ];
+			}
+			foreach ($ptr as $t) {
+				if (! array_key_exists('type',$t))
 					$t['type'] = 'Hashtag';
 
 				switch($t['type']) {
 					case 'Hashtag':
-						$ret[] = [ 'ttype' => TERM_HASHTAG, 'url' => ((isset($t['href'])) ? $t['href'] : $t['id']), 'term' => escape_tags((substr($t['name'],0,1) === '#') ? substr($t['name'],1) : $t['name']) ];
+						$ret[] = [ 'ttype' => TERM_HASHTAG, 'url' => $t['href'], 'term' => escape_tags((substr($t['name'],0,1) === '#') ? substr($t['name'],1) : $t['name']) ];
 						break;
 
 					case 'Mention':
 						$mention_type = substr($t['name'],0,1);
-						if($mention_type === '!') {
+						if ($mention_type === '!') {
 							$ret[] = [ 'ttype' => TERM_FORUM, 'url' => $t['href'], 'term' => escape_tags(substr($t['name'],1)) ];
 						}
 						else {
 							$ret[] = [ 'ttype' => TERM_MENTION, 'url' => $t['href'], 'term' => escape_tags((substr($t['name'],0,1) === '@') ? substr($t['name'],1) : $t['name']) ];
 						}
 						break;
-	
+
 					default:
 						break;
 				}
@@ -429,6 +433,7 @@ class Activity {
 
 		return $ret;
 	}
+
 
 
 	static function encode_taxonomy($item) {
