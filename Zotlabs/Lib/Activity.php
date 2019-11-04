@@ -87,8 +87,8 @@ class Activity {
 			$headers = [
 				'Accept'           => 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
 				'Host'             => $m['host'],
-				'(request-target)' => 'get ' . get_request_string($url),
-				'Date'             => datetime_convert('UTC','UTC','now','D, d M Y H:i:s') . ' UTC'
+				'Date'             => datetime_convert('UTC','UTC', 'now', 'D, d M Y h:i:s \\G\\M\\T'),
+				'(request-target)' => 'get ' . get_request_string($url)
 			];
 			if (isset($token)) {
 				$headers['Authorization'] = 'Bearer ' . $token;
