@@ -449,6 +449,18 @@ function get_atom_elements($feed, $item) {
 
 	if (title_is_body($res['title'], $res['body']))
 		$res['title'] = "";
+	else {
+	    $res['title'] = bbcode($res['title'], [ 'tryoembed' => false ]);
+	    $res['title'] = html2plain($res['title'], 0, true);
+	    $res['title'] = html_entity_decode($res['title'], ENT_QUOTES, 'UTF-8');
+	    $res['title'] = preg_replace("/https?\:\/\/[a-zA-Z0-9\:\/\-\?\&\;\.\=\_\~\#\%\$\!\+\,\@]+/", "", $res['title']);
+	    while (strpos($res['title'], "\n") !== false)
+	        $res['title'] = str_replace("\n", " ", $res['title']);
+	    while (strpos($res['title'], "  ") !== false)
+	        $res['title'] = str_replace("  ", " ", $res['title']);
+	    $res['title'] = trim($res['title']);
+	}
+
 
 	if($res['plink'])
 		$base_url = implode('/', array_slice(explode('/',$res['plink']),0,3));

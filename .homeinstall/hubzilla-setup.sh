@@ -448,11 +448,11 @@ function check_https {
 function install_hubzilla {
     print_info "installing addons..."
     cd /var/www/html/
-    if git remote -v | grep -i "origin.*core.git"
+    if git remote -v | grep -i "origin.*hubzilla.*core"
     then
         print_info "hubzilla"
         util/add_addon_repo https://framagit.org/hubzilla/addons hzaddons
-    elif git remote -v | grep -i "origin.*zap.git"
+    elif git remote -v | grep -i "origin.*zap.*core"
     then
         print_info "zap"
         util/add_addon_repo https://framagit.org/zot/zap-addons.git zaddons

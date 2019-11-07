@@ -97,7 +97,7 @@ class Cron {
 		
 		// Clean expired photos from cache
 		
-		$sql_interval = db_utcnow() . ' - INTERVAL ' . db_quoteinterval(get_config('system','active_expire_days', '30') . ' DAY'); 
+		$sql_interval = "'" . dbesc(datetime_convert()) . "' - INTERVAL " . db_quoteinterval(get_config('system','active_expire_days', '30') . ' DAY'); 
 		$r = q("SELECT DISTINCT xchan, content FROM photo WHERE photo_usage = %d AND expires < $sql_interval",
 			intval(PHOTO_CACHE)
 		);

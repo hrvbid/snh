@@ -154,6 +154,9 @@ Hooks allow plugins/addons to "hook into" the code at many points and alter the 
 [zrl=[baseurl]/help/hook/comment_buttons]comment_buttons[/zrl]
 	Called when rendering the edit buttons for comments
 
+[zrl=[baseurl]/help/hook/comments_are_now_closed]comments_are_now_closed[/zrl]
+	Called when deciding whether or not to present a comment box for a post
+
 [zrl=[baseurl]/help/hook/connect_premium]connect_premium[/zrl]
 	Called when connecting to a premium channel
 
