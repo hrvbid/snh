@@ -43,7 +43,7 @@
 		$ogdesc = str_replace("\n", " ", $ogdesc);
 		while (strpos($ogdesc, "  ") !== false)
 			$ogdesc = str_replace("  ", " ", $ogdesc);
-		$ogdesc = rtrim(substr($ogdesc, 0, strrpos($ogdesc, " ")), "?.,:;!-") . "...";
+		$ogdesc = (strlen($ogdesc) < 298 ? $ogdesc : rtrim(substr($ogdesc, 0, strrpos($ogdesc, " ")), "?.,:;!-") . "...");
 		
 		$ogtype = "article";
 	}
