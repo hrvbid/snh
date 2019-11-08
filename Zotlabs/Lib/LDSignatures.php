@@ -30,7 +30,7 @@ class LDSignatures {
 			'type' => 'RsaSignature2017',
 			'nonce' => random_string(64),
 			'creator' => z_root() . '/channel/' . $channel['channel_address'],
-			'created' => datetime_convert('UTC','UTC', 'now', 'Y-m-d\Th:i:s\Z')
+			'created' => datetime_convert('UTC','UTC', 'now', 'Y-m-d\TH:i:s\Z')
 		];
 
 		$ohash = self::hash(self::signable_options($options));
