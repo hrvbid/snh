@@ -205,17 +205,17 @@
     },
     {
         "name": "ezyang/htmlpurifier",
-        "version": "v4.11.0",
-        "version_normalized": "4.11.0.0",
+        "version": "v4.12.0",
+        "version_normalized": "4.12.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/ezyang/htmlpurifier.git",
-            "reference": "83ab08bc1af7d808a9e0fbf024f1c24bfd73c0a7"
+            "reference": "a617e55bc62a87eec73bd456d146d134ad716f03"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/83ab08bc1af7d808a9e0fbf024f1c24bfd73c0a7",
-            "reference": "83ab08bc1af7d808a9e0fbf024f1c24bfd73c0a7",
+            "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/a617e55bc62a87eec73bd456d146d134ad716f03",
+            "reference": "a617e55bc62a87eec73bd456d146d134ad716f03",
             "shasum": ""
         },
         "require": {
@@ -224,7 +224,7 @@
         "require-dev": {
             "simpletest/simpletest": "dev-master#72de02a7b80c6bb8864ef9bf66d41d2f58f826bd"
         },
-        "time": "2019-07-14T18:58:38+00:00",
+        "time": "2019-10-28T03:44:26+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -254,17 +254,17 @@
     },
     {
         "name": "league/html-to-markdown",
-        "version": "4.8.2",
-        "version_normalized": "4.8.2.0",
+        "version": "4.9.0",
+        "version_normalized": "4.9.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/thephpleague/html-to-markdown.git",
-            "reference": "e747489191f8e9144a7270eb61f8b9516e99e413"
+            "reference": "71319108e3db506250b8987721b13568fd9fa446"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/html-to-markdown/zipball/e747489191f8e9144a7270eb61f8b9516e99e413",
-            "reference": "e747489191f8e9144a7270eb61f8b9516e99e413",
+            "url": "https://api.github.com/repos/thephpleague/html-to-markdown/zipball/71319108e3db506250b8987721b13568fd9fa446",
+            "reference": "71319108e3db506250b8987721b13568fd9fa446",
             "shasum": ""
         },
         "require": {
@@ -274,17 +274,17 @@
         },
         "require-dev": {
             "mikehaertl/php-shellcommand": "~1.1.0",
-            "phpunit/phpunit": "4.*",
+            "phpunit/phpunit": "^4.8|^5.7",
             "scrutinizer/ocular": "~1.1"
         },
-        "time": "2019-08-02T11:57:39+00:00",
+        "time": "2019-11-02T14:54:14+00:00",
         "bin": [
             "bin/html-to-markdown"
         ],
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "4.9-dev"
+                "dev-master": "4.10-dev"
             }
         },
         "installation-source": "dist",
@@ -498,27 +498,27 @@
     },
     {
         "name": "psr/log",
-        "version": "1.1.0",
-        "version_normalized": "1.1.0.0",
+        "version": "1.1.2",
+        "version_normalized": "1.1.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/php-fig/log.git",
-            "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
+            "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
-            "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+            "url": "https://api.github.com/repos/php-fig/log/zipball/446d54b4cb6bf489fc9d75f55843658e6f25d801",
+            "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.0"
         },
-        "time": "2018-11-20T15:27:04+00:00",
+        "time": "2019-11-01T11:05:21+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.0.x-dev"
+                "dev-master": "1.1.x-dev"
             }
         },
         "installation-source": "dist",
