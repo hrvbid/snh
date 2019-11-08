@@ -4,6 +4,8 @@
  * @brief BBCode related functions for parsing, etc.
  */
 
+use Zotlabs\Lib\SvgSanitizer;
+
 require_once('include/oembed.php');
 require_once('include/event.php');
 require_once('include/zot.php');
@@ -266,6 +268,22 @@ function bb_parse_app($match) {
 	if ($app)
 		return Zotlabs\Lib\Apps::app_render($app);
 }
+
+function bb_svg($match) {
+
+	$params = str_replace(['<br>', '&quot;'], [ '', '"'],$match[1]);
+	$Text = str_replace([ '[',']' ], [ '<','>' ], $match[2]);
+	
+	$output =  '<svg' . (($params) ? $params : ' width="100%" height="480" ') . '>' . str_replace(['<br>', '&quot;', '&nbsp;'], [ '', '"', ' '],$Text) . '</svg>';
+
+	$purify = new SvgSanitizer();
+	$purify->loadXML($output);
+	$purify->sanitize();
+	$output = $purify->saveSVG();
+	$output = preg_replace("/\<\?xml(.*?)\?\>/",'',$output);
+	return $output;
+}
+
 
 function bb_parse_element($match) {
 	$j = json_decode(base64url_decode($match[1]),true);
@@ -1288,6 +1306,9 @@ function bbcode($Text, $options = []) {
 	if (strpos($Text,'[/zaudio]') !== false) {
 		$Text = preg_replace_callback("/\[zaudio\](.*?\.(ogg|ogv|oga|ogm|webm|mp4|mp3|opus|m4a))\[\/zaudio\]/ism", 'tryzrlaudio', $Text);
 	}
+
+	// SVG stuff
+	$Text = preg_replace_callback("/\[svg(.*?)\](.*?)\[\/svg\]/ism", 'bb_svg', $Text);
 
 	// Try to Oembed
 	if ($tryoembed) {

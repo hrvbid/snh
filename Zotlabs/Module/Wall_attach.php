@@ -113,7 +113,22 @@ class Wall_attach extends \Zotlabs\Web\Controller {
 				$url = z_root() . '/cloud/' . $channel['channel_address'] . '/' . $r['data']['display_path'];
 				$s = "\n\n" . '[zaudio]' . $url . '[/zaudio]' . "\n\n";
 			}
-			
+			if ($r['data']['filetype'] === 'image/svg+xml') {
+				$x = @file_get_contents('store/' . $channel['channel_address'] . '/' . $r['data']['os_path']);
+				if ($x) {
+					$bb = svg2bb($x);
+					if ($bb) {
+						$s .= "\n\n" . $bb;
+					}
+					else {
+						logger('empty return from svgbb');
+					}
+				}
+				else {
+					logger('unable to read svg data file: ' . 'store/' . $channel['channel_address'] . '/' . $r['data']['os_path']);
+				}
+			}
+						
 			$s .=  "\n\n" . '[attachment]' . $r['data']['hash'] . ',' . $r['data']['revision'] . '[/attachment]' . "\n";
 		}
 
