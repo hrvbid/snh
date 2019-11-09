@@ -246,6 +246,9 @@ function bb_to_markdown($Text, $options = []) {
 	call_hooks('bb_to_markdown_bb', $x);
 
 	$Text = $x['bbcode'];
+	
+	// Replace spoiler tag before BBcode conversion
+	$Text = preg_replace("/\[\/?spoiler\]/is", "\n--- " .t('spoiler') . " ---\n", $Text);
 
 	// Convert it to HTML - don't try oembed
 	$Text = bbcode($Text, [ 'tryoembed' => false ]);
@@ -265,8 +268,8 @@ function bb_to_markdown($Text, $options = []) {
 	// Remove empty zrl links
 	$Text = preg_replace("/\[zrl\=\].*?\[\/zrl\]/is", "", $Text);
 	
-	// Remove unprocessed spoiler HTML tags
-	$Text = preg_replace("/<div.+>([^<]+)<.+>(>.+)$/im", "$1\n$2", $Text);
+	// Replace unprocessed <br> in code
+	$Text = str_replace("<br></br>", "\n", $Text);
 
 	$Text = trim($Text);
 
