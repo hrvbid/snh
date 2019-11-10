@@ -910,8 +910,6 @@ class Cdav extends Controller {
 
 		require_once 'vendor/autoload.php';
 
-		head_add_css('cdav.css');
-
 		if(!cdav_principal($principalUri)) {
 			$this->activate($pdo, $channel);
 			if(!cdav_principal($principalUri)) {
