@@ -139,7 +139,7 @@ class LanguageTest extends UnitTestCase {
 						'en-gb',
 						'British English',
 						[
-								'de' => 'Britisches Englisch',
+								'de' => 'Englisch (Vereinigtes Königreich)',
 								'nb' => 'engelsk (Storbritannia)'
 						]
 				],
@@ -147,7 +147,7 @@ class LanguageTest extends UnitTestCase {
 						'en-au',
 						'Australian English',
 						[
-								'de' => 'Australisches Englisch',
+								'de' => 'Englisch (Australien)',
 								'nb' => 'engelsk (Australia)'
 						]
 				],
