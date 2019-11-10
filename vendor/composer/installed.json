@@ -1,20 +1,20 @@
 [
     {
         "name": "blueimp/jquery-file-upload",
-        "version": "v9.34.0",
-        "version_normalized": "9.34.0.0",
+        "version": "v10.3.0",
+        "version_normalized": "10.3.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/vkhramtsov/jQuery-File-Upload.git",
-            "reference": "6d86a591f9a35bb811befb750dcd2c7da9ac05a2"
+            "reference": "63cb566b29a5407cfbfbda8a5154e10b6e098678"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/vkhramtsov/jQuery-File-Upload/zipball/6d86a591f9a35bb811befb750dcd2c7da9ac05a2",
-            "reference": "6d86a591f9a35bb811befb750dcd2c7da9ac05a2",
+            "url": "https://api.github.com/repos/vkhramtsov/jQuery-File-Upload/zipball/63cb566b29a5407cfbfbda8a5154e10b6e098678",
+            "reference": "63cb566b29a5407cfbfbda8a5154e10b6e098678",
             "shasum": ""
         },
-        "time": "2019-07-22T13:10:51+00:00",
+        "time": "2019-11-04T09:18:09+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -118,31 +118,31 @@
     },
     {
         "name": "commerceguys/intl",
-        "version": "v0.7.5",
-        "version_normalized": "0.7.5.0",
+        "version": "v1.0.5",
+        "version_normalized": "1.0.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/commerceguys/intl.git",
-            "reference": "de1435502068393fae4061818e194e4ea61b98d6"
+            "reference": "6a8c7a8da189d51856b642a61aeb8ae5114fec6c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/commerceguys/intl/zipball/de1435502068393fae4061818e194e4ea61b98d6",
-            "reference": "de1435502068393fae4061818e194e4ea61b98d6",
+            "url": "https://api.github.com/repos/commerceguys/intl/zipball/6a8c7a8da189d51856b642a61aeb8ae5114fec6c",
+            "reference": "6a8c7a8da189d51856b642a61aeb8ae5114fec6c",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.4.0"
+            "php": ">=5.5.0"
         },
         "require-dev": {
             "mikey179/vfsstream": "1.*",
             "phpunit/phpunit": "~4.0"
         },
-        "time": "2017-12-29T00:13:05+00:00",
+        "time": "2019-10-22T10:40:46+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "0.x-dev"
+                "dev-master": "1.x-dev"
             }
         },
         "installation-source": "dist",
@@ -320,23 +320,23 @@
     },
     {
         "name": "lukasreschke/id3parser",
-        "version": "v0.0.1",
-        "version_normalized": "0.0.1.0",
+        "version": "v0.0.3",
+        "version_normalized": "0.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/LukasReschke/ID3Parser.git",
-            "reference": "cd3ba6e8918cc30883f01a3c24281cfe23b8877a"
+            "reference": "62f4de76d4eaa9ea13c66dacc1f22977dace6638"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/LukasReschke/ID3Parser/zipball/cd3ba6e8918cc30883f01a3c24281cfe23b8877a",
-            "reference": "cd3ba6e8918cc30883f01a3c24281cfe23b8877a",
+            "url": "https://api.github.com/repos/LukasReschke/ID3Parser/zipball/62f4de76d4eaa9ea13c66dacc1f22977dace6638",
+            "reference": "62f4de76d4eaa9ea13c66dacc1f22977dace6638",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4.0"
         },
-        "time": "2016-04-04T09:34:50+00:00",
+        "time": "2016-09-22T15:10:54+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -631,17 +631,17 @@
     },
     {
         "name": "sabre/dav",
-        "version": "3.2.3",
-        "version_normalized": "3.2.3.0",
+        "version": "4.0.2",
+        "version_normalized": "4.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/sabre-io/dav.git",
-            "reference": "a9780ce4f35560ecbd0af524ad32d9d2c8954b80"
+            "reference": "fd0234d46c045fc9b35ec06bd2e7b490240e6ade"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/sabre-io/dav/zipball/a9780ce4f35560ecbd0af524ad32d9d2c8954b80",
-            "reference": "a9780ce4f35560ecbd0af524ad32d9d2c8954b80",
+            "url": "https://api.github.com/repos/sabre-io/dav/zipball/fd0234d46c045fc9b35ec06bd2e7b490240e6ade",
+            "reference": "fd0234d46c045fc9b35ec06bd2e7b490240e6ade",
             "shasum": ""
         },
         "require": {
@@ -649,40 +649,36 @@
             "ext-date": "*",
             "ext-dom": "*",
             "ext-iconv": "*",
+            "ext-json": "*",
             "ext-mbstring": "*",
             "ext-pcre": "*",
             "ext-simplexml": "*",
             "ext-spl": "*",
             "lib-libxml": ">=2.7.0",
-            "php": ">=5.5.0",
+            "php": ">=7.0.0",
             "psr/log": "^1.0",
-            "sabre/event": ">=2.0.0, <4.0.0",
-            "sabre/http": "^4.2.1",
-            "sabre/uri": "^1.0.1",
-            "sabre/vobject": "^4.1.0",
-            "sabre/xml": "^1.4.0"
+            "sabre/event": "^5.0",
+            "sabre/http": "^5.0",
+            "sabre/uri": "^2.0",
+            "sabre/vobject": "^4.2.0-alpha1",
+            "sabre/xml": "^2.0.1"
         },
         "require-dev": {
             "evert/phpdoc-md": "~0.1.0",
             "monolog/monolog": "^1.18",
-            "phpunit/phpunit": "> 4.8, <6.0.0",
-            "sabre/cs": "^1.0.0"
+            "phpunit/phpunit": "^6"
         },
         "suggest": {
             "ext-curl": "*",
+            "ext-imap": "*",
             "ext-pdo": "*"
         },
-        "time": "2018-10-19T09:58:27+00:00",
+        "time": "2019-10-19T07:17:49+00:00",
         "bin": [
             "bin/sabredav",
             "bin/naturalselection"
         ],
         "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "3.1.0-dev"
-            }
-        },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
@@ -716,27 +712,27 @@
     },
     {
         "name": "sabre/event",
-        "version": "3.0.0",
-        "version_normalized": "3.0.0.0",
+        "version": "5.0.3",
+        "version_normalized": "5.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/sabre-io/event.git",
-            "reference": "831d586f5a442dceacdcf5e9c4c36a4db99a3534"
+            "reference": "f5cf802d240df1257866d8813282b98aee3bc548"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/sabre-io/event/zipball/831d586f5a442dceacdcf5e9c4c36a4db99a3534",
-            "reference": "831d586f5a442dceacdcf5e9c4c36a4db99a3534",
+            "url": "https://api.github.com/repos/sabre-io/event/zipball/f5cf802d240df1257866d8813282b98aee3bc548",
+            "reference": "f5cf802d240df1257866d8813282b98aee3bc548",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.5"
+            "php": ">=7.0"
         },
         "require-dev": {
-            "phpunit/phpunit": "*",
-            "sabre/cs": "~0.0.4"
+            "phpunit/phpunit": ">=6",
+            "sabre/cs": "~1.0.0"
         },
-        "time": "2015-11-05T20:14:39+00:00",
+        "time": "2018-03-05T13:55:47+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -766,43 +762,46 @@
         "keywords": [
             "EventEmitter",
             "async",
+            "coroutine",
+            "eventloop",
             "events",
             "hooks",
             "plugin",
             "promise",
+            "reactor",
             "signal"
         ]
     },
     {
         "name": "sabre/http",
-        "version": "v4.2.4",
-        "version_normalized": "4.2.4.0",
+        "version": "5.0.4",
+        "version_normalized": "5.0.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/sabre-io/http.git",
-            "reference": "acccec4ba863959b2d10c1fa0fb902736c5c8956"
+            "reference": "73e2fa1ef894eddff145b698b6b0e2e2c5bf1d72"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/sabre-io/http/zipball/acccec4ba863959b2d10c1fa0fb902736c5c8956",
-            "reference": "acccec4ba863959b2d10c1fa0fb902736c5c8956",
+            "url": "https://api.github.com/repos/sabre-io/http/zipball/73e2fa1ef894eddff145b698b6b0e2e2c5bf1d72",
+            "reference": "73e2fa1ef894eddff145b698b6b0e2e2c5bf1d72",
             "shasum": ""
         },
         "require": {
             "ext-ctype": "*",
+            "ext-curl": "*",
             "ext-mbstring": "*",
-            "php": ">=5.4",
-            "sabre/event": ">=1.0.0,<4.0.0",
-            "sabre/uri": "~1.0"
+            "php": "^7.0",
+            "sabre/event": ">=4.0 <6.0",
+            "sabre/uri": "^2.0"
         },
         "require-dev": {
-            "phpunit/phpunit": "~4.3",
-            "sabre/cs": "~0.0.1"
+            "phpunit/phpunit": "^6.0 || ^7.0"
         },
         "suggest": {
             "ext-curl": " to make http requests with the Client class"
         },
-        "time": "2018-02-23T11:10:29+00:00",
+        "time": "2019-10-09T20:27:43+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -833,27 +832,26 @@
     },
     {
         "name": "sabre/uri",
-        "version": "1.2.1",
-        "version_normalized": "1.2.1.0",
+        "version": "2.1.3",
+        "version_normalized": "2.1.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/sabre-io/uri.git",
-            "reference": "ada354d83579565949d80b2e15593c2371225e61"
+            "reference": "18f454324f371cbcabdad3d0d3755b4b0182095d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/sabre-io/uri/zipball/ada354d83579565949d80b2e15593c2371225e61",
-            "reference": "ada354d83579565949d80b2e15593c2371225e61",
+            "url": "https://api.github.com/repos/sabre-io/uri/zipball/18f454324f371cbcabdad3d0d3755b4b0182095d",
+            "reference": "18f454324f371cbcabdad3d0d3755b4b0182095d",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.4.7"
+            "php": ">=7"
         },
         "require-dev": {
-            "phpunit/phpunit": ">=4.0,<6.0",
-            "sabre/cs": "~1.0.0"
+            "phpunit/phpunit": "^6"
         },
-        "time": "2017-02-20T19:59:28+00:00",
+        "time": "2019-09-09T23:00:25+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -984,17 +982,17 @@
     },
     {
         "name": "sabre/xml",
-        "version": "1.5.1",
-        "version_normalized": "1.5.1.0",
+        "version": "2.1.3",
+        "version_normalized": "2.1.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/sabre-io/xml.git",
-            "reference": "a367665f1df614c3b8fefc30a54de7cd295e444e"
+            "reference": "f08a58f57e2b0d7df769a432756aa371417ab9eb"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/sabre-io/xml/zipball/a367665f1df614c3b8fefc30a54de7cd295e444e",
-            "reference": "a367665f1df614c3b8fefc30a54de7cd295e444e",
+            "url": "https://api.github.com/repos/sabre-io/xml/zipball/f08a58f57e2b0d7df769a432756aa371417ab9eb",
+            "reference": "f08a58f57e2b0d7df769a432756aa371417ab9eb",
             "shasum": ""
         },
         "require": {
@@ -1002,14 +1000,13 @@
             "ext-xmlreader": "*",
             "ext-xmlwriter": "*",
             "lib-libxml": ">=2.6.20",
-            "php": ">=5.5.5",
+            "php": ">=7.0",
             "sabre/uri": ">=1.0,<3.0.0"
         },
         "require-dev": {
-            "phpunit/phpunit": "~4.8|~5.7",
-            "sabre/cs": "~1.0.0"
+            "phpunit/phpunit": "^6"
         },
-        "time": "2019-01-09T13:51:57+00:00",
+        "time": "2019-08-14T15:41:34+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -1126,23 +1123,26 @@
     },
     {
         "name": "smarty/smarty",
-        "version": "v3.1.33",
-        "version_normalized": "3.1.33.0",
+        "version": "v3.1.34",
+        "version_normalized": "3.1.34.0",
         "source": {
             "type": "git",
             "url": "https://github.com/smarty-php/smarty.git",
-            "reference": "dd55b23121e55a3b4f1af90a707a6c4e5969530f"
+            "reference": "c9f0de05f41b9e52798b268ab1e625fac3b8578c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/smarty-php/smarty/zipball/dd55b23121e55a3b4f1af90a707a6c4e5969530f",
-            "reference": "dd55b23121e55a3b4f1af90a707a6c4e5969530f",
+            "url": "https://api.github.com/repos/smarty-php/smarty/zipball/c9f0de05f41b9e52798b268ab1e625fac3b8578c",
+            "reference": "c9f0de05f41b9e52798b268ab1e625fac3b8578c",
             "shasum": ""
         },
         "require": {
             "php": ">=5.2"
         },
-        "time": "2018-09-12T20:54:16+00:00",
+        "require-dev": {
+            "phpunit/phpunit": "6.4.1"
+        },
+        "time": "2019-02-28T06:42:20+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1151,8 +1151,8 @@
         },
         "installation-source": "dist",
         "autoload": {
-            "files": [
-                "libs/bootstrap.php"
+            "classmap": [
+                "libs/"
             ]
         },
         "notification-url": "https://packagist.org/downloads/",

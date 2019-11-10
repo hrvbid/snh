@@ -94,7 +94,7 @@
 	"AED": {
 		"name": "Dirham Ujedinjenih Arapskih Emirata"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dobra Sao Toma i Principa"
 	},
 	"DOP": {
@@ -300,7 +300,7 @@
 	"MUR": {
 		"name": "Mauricijska rupija"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Mauritanijska ugvija"
 	},
 	"MXN": {
@@ -453,6 +453,9 @@
 	"UAH": {
 		"name": "Ukrajinska hrivnja"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Urugvajski pezos"
 	},
@@ -462,7 +465,7 @@
 	"VUV": {
 		"name": "Vanuatski vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venecuelanski bolivar"
 	},
 	"VND": {

@@ -288,7 +288,7 @@
 	"MAD": {
 		"name": "marokkoski dirham"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "mauretański ouguiya"
 	},
 	"MUR": {
@@ -393,7 +393,7 @@
 	"WST": {
 		"name": "samoaska tala"
 	},
-	"STD": {
+	"STN": {
 		"name": "são-tomeska dobra"
 	},
 	"SAR": {
@@ -469,6 +469,9 @@
 	"UAH": {
 		"name": "ukrainska griwna"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "uruguayski peso"
 	},
@@ -478,7 +481,7 @@
 	"VUV": {
 		"name": "vanuatski vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "venezuelski bolívar"
 	},
 	"VND": {

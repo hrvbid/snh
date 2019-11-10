@@ -217,7 +217,7 @@
 	"MUR": {
 		"name": "heleri sa Morisi"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "heleri sa Moritania"
 	},
 	"MAD": {
@@ -235,7 +235,7 @@
 	"SHP": {
 		"name": "heleri sa Santahelena"
 	},
-	"STD": {
+	"STN": {
 		"name": "heleri sa Sao Tome na Principe"
 	},
 	"SAR": {
@@ -465,6 +465,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -474,7 +477,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

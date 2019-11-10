@@ -12,6 +12,9 @@
 	"TMT": {
 		"name": "Turkmenistani Manat"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"ZWL": {
 		"name": "Zimbabwean Dollar (2009)"
 	},
@@ -366,7 +369,7 @@
 	"MNT": {
 		"name": "मौंगोलीयाई तुग्रीक"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "मौरिटानी ऊगुया"
 	},
 	"MMK": {
@@ -420,7 +423,7 @@
 		"name": "वीयतनामी डॉंग",
 		"symbol": "₫"
 	},
-	"VEF": {
+	"VES": {
 		"name": "वेनेज़ुएलाई बोलिवार"
 	},
 	"WST": {
@@ -438,7 +441,7 @@
 	"SAR": {
 		"name": "साउदी रियाल"
 	},
-	"STD": {
+	"STN": {
 		"name": "साँव तोमे एवं प्रीन्सीपे का डोब्रा"
 	},
 	"SGD": {

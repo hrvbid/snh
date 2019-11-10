@@ -2,56 +2,28 @@
 
 namespace CommerceGuys\Intl\NumberFormat;
 
-class NumberFormat implements NumberFormatEntityInterface
+/**
+ * Provides metadata for number formatting.
+ */
+final class NumberFormat
 {
+    // Arabic-Indic digits.
+    const NUMBERING_SYSTEM_ARABIC = 'arab';
+    // Extended Arabic-Indic digits.
+    const NUMBERING_SYSTEM_ARABIC_EXTENDED = 'arabext';
+    // Bengali digits.
+    const NUMBERING_SYSTEM_BENGALI = 'beng';
+    // Devanagari digits.
+    const NUMBERING_SYSTEM_DEVANAGARI = 'deva';
+    // Latin digits
+    const NUMBERING_SYSTEM_LATIN = 'latn';
+
     /**
      * The locale (i.e. "en_US").
      *
      * @var string
      */
     protected $locale;
-
-    /**
-     * The numbering system.
-     *
-     * @var string
-     */
-    protected $numberingSystem = [];
-
-    /**
-     * The decimal separator.
-     *
-     * @var string
-     */
-    protected $decimalSeparator = [];
-
-    /**
-     * The grouping separator.
-     *
-     * @var string
-     */
-    protected $groupingSeparator = [];
-
-    /**
-     * The plus sign.
-     *
-     * @var string
-     */
-    protected $plusSign = [];
-
-    /**
-     * The number symbols.
-     *
-     * @var string
-     */
-    protected $minusSign = [];
-
-    /**
-     * The percent sign.
-     *
-     * @var string
-     */
-    protected $percentSign = [];
 
     /**
      * The number pattern used to format decimal numbers.
@@ -82,7 +54,100 @@ class NumberFormat implements NumberFormatEntityInterface
     protected $accountingCurrencyPattern;
 
     /**
-     * {@inheritdoc}
+     * The numbering system.
+     *
+     * @var string
+     */
+    protected $numberingSystem = self::NUMBERING_SYSTEM_LATIN;
+
+    /**
+     * The decimal separator.
+     *
+     * @var string
+     */
+    protected $decimalSeparator = '.';
+
+    /**
+     * The grouping separator.
+     *
+     * @var string
+     */
+    protected $groupingSeparator = ',';
+
+    /**
+     * The plus sign.
+     *
+     * @var string
+     */
+    protected $plusSign = '+';
+
+    /**
+     * The number symbols.
+     *
+     * @var string
+     */
+    protected $minusSign = '-';
+
+    /**
+     * The percent sign.
+     *
+     * @var string
+     */
+    protected $percentSign = '%';
+
+    /**
+     * Creates a new NumberFormat instance.
+     *
+     * @param array $definition The definition array.
+     */
+    public function __construct(array $definition)
+    {
+        // Validate the presence of required properties.
+        $requiredProperties = [
+            'locale', 'decimal_pattern', 'percent_pattern',
+            'currency_pattern', 'accounting_currency_pattern',
+        ];
+        foreach ($requiredProperties as $requiredProperty) {
+            if (empty($definition[$requiredProperty])) {
+                throw new \InvalidArgumentException(sprintf('Missing required property "%s".', $requiredProperty));
+            }
+        }
+        // Validate the numbering system.
+        if (isset($definition['numbering_system'])) {
+            if (!in_array($definition['numbering_system'], ['arab', 'arabext', 'beng', 'deva', 'latn'])) {
+                throw new \InvalidArgumentException(sprintf('Invalid numbering system "%s".', $definition['numbering_system']));
+            }
+        }
+
+        $this->locale = $definition['locale'];
+        $this->decimalPattern = $definition['decimal_pattern'];
+        $this->percentPattern = $definition['percent_pattern'];
+        $this->currencyPattern = $definition['currency_pattern'];
+        $this->accountingCurrencyPattern = $definition['accounting_currency_pattern'];
+        if (isset($definition['numbering_system'])) {
+            $this->numberingSystem = $definition['numbering_system'];
+        }
+        if (isset($definition['decimal_separator'])) {
+            $this->decimalSeparator = $definition['decimal_separator'];
+        }
+        if (isset($definition['grouping_separator'])) {
+            $this->groupingSeparator = $definition['grouping_separator'];
+        }
+        if (isset($definition['plus_sign'])) {
+            $this->plusSign = $definition['plus_sign'];
+        }
+        if (isset($definition['minus_sign'])) {
+            $this->minusSign = $definition['minus_sign'];
+        }
+        if (isset($definition['percent_sign'])) {
+            $this->percentSign = $definition['percent_sign'];
+        }
+    }
+
+    /**
+     * Gets the locale.
+     *
+     * @return string
      */
     public function getLocale()
     {
@@ -90,113 +155,11 @@ class NumberFormat implements NumberFormatEntityInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setLocale($locale)
-    {
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getNumberingSystem()
-    {
-        return $this->numberingSystem;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setNumberingSystem($numberingSystem)
-    {
-        $this->numberingSystem = $numberingSystem;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDecimalSeparator()
-    {
-        return $this->decimalSeparator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setDecimalSeparator($decimalSeparator)
-    {
-        $this->decimalSeparator = $decimalSeparator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getGroupingSeparator()
-    {
-        return $this->groupingSeparator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setGroupingSeparator($groupingSeparator)
-    {
-        $this->groupingSeparator = $groupingSeparator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPlusSign()
-    {
-        return $this->plusSign;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setPlusSign($plusSign)
-    {
-        $this->plusSign = $plusSign;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMinusSign()
-    {
-        return $this->minusSign;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMinusSign($minusSign)
-    {
-        $this->minusSign = $minusSign;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPercentSign()
-    {
-        return $this->percentSign;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setPercentSign($percentSign)
-    {
-        $this->percentSign = $percentSign;
-    }
-
-    /**
-     * {@inheritdoc}
+     * Gets the number pattern used to format decimal numbers.
+     *
+     * @return string
+     *
+     * @see http://cldr.unicode.org/translation/number-patterns
      */
     public function getDecimalPattern()
     {
@@ -204,17 +167,11 @@ class NumberFormat implements NumberFormatEntityInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setDecimalPattern($decimalPattern)
-    {
-        $this->decimalPattern = $decimalPattern;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
+     * Gets the number pattern used to format percentages.
+     *
+     * @return string
+     *
+     * @see http://cldr.unicode.org/translation/number-patterns
      */
     public function getPercentPattern()
     {
@@ -222,17 +179,11 @@ class NumberFormat implements NumberFormatEntityInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setPercentPattern($percentPattern)
-    {
-        $this->percentPattern = $percentPattern;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
+     * Gets the number pattern used to format currency amounts.
+     *
+     * @return string
+     *
+     * @see http://cldr.unicode.org/translation/number-patterns
      */
     public function getCurrencyPattern()
     {
@@ -240,17 +191,13 @@ class NumberFormat implements NumberFormatEntityInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function setCurrencyPattern($currencyPattern)
-    {
-        $this->currencyPattern = $currencyPattern;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
+     * Gets the number pattern used to format accounting currency amounts.
+     *
+     * Most commonly used when formatting amounts on invoices.
+     *
+     * @return string
+     *
+     * @see http://cldr.unicode.org/translation/number-patterns
      */
     public function getAccountingCurrencyPattern()
     {
@@ -258,12 +205,64 @@ class NumberFormat implements NumberFormatEntityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Gets the numbering system.
+     *
+     * The value is one of the NUMBERING_SYSTEM_ constants.
+     *
+     * @return string
      */
-    public function setAccountingCurrencyPattern($accountingCurrencyPattern)
+    public function getNumberingSystem()
     {
-        $this->accountingCurrencyPattern = $accountingCurrencyPattern;
+        return $this->numberingSystem;
+    }
 
-        return $this;
+    /**
+     * Gets the decimal separator.
+     *
+     * @return string
+     */
+    public function getDecimalSeparator()
+    {
+        return $this->decimalSeparator;
+    }
+
+    /**
+     * Gets the grouping separator.
+     *
+     * @return string
+     */
+    public function getGroupingSeparator()
+    {
+        return $this->groupingSeparator;
+    }
+
+    /**
+     * Gets the plus sign.
+     *
+     * @return string
+     */
+    public function getPlusSign()
+    {
+        return $this->plusSign;
+    }
+
+    /**
+     * Gets the minus sign.
+     *
+     * @return string
+     */
+    public function getMinusSign()
+    {
+        return $this->minusSign;
+    }
+
+    /**
+     * Gets the percent sign.
+     *
+     * @return string
+     */
+    public function getPercentSign()
+    {
+        return $this->percentSign;
     }
 }

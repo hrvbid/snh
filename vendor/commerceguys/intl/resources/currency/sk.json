@@ -284,7 +284,7 @@
 	"MUR": {
 		"name": "maurícijská rupia"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "mauritánska ukija"
 	},
 	"MXN": {
@@ -403,7 +403,7 @@
 	"SHP": {
 		"name": "svätohelenská libra"
 	},
-	"STD": {
+	"STN": {
 		"name": "svätotomášska dobra"
 	},
 	"SYP": {
@@ -451,13 +451,16 @@
 	"UYU": {
 		"name": "uruguajské peso"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UZS": {
 		"name": "uzbecký sum"
 	},
 	"VUV": {
 		"name": "vanuatské vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "venezuelský bolívar"
 	},
 	"VND": {

@@ -139,7 +139,7 @@
 	"DOP": {
 		"name": "Dominican Peso"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dɔbàlà è Sàwu Tɔ̀me à Pèlènsipè"
 	},
 	"CAD": {
@@ -454,11 +454,14 @@
 	"TMT": {
 		"name": "Turkmenistani Manat"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Ùgueya è Mùlètenyìa"
 	},
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"UYU": {
 		"name": "Uruguayan Peso"
@@ -469,7 +472,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

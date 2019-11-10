@@ -276,7 +276,7 @@
 	"MUR": {
 		"name": "Mauricijaus rupija"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Mauritanijos ugija"
 	},
 	"MXN": {
@@ -363,7 +363,7 @@
 	"WST": {
 		"name": "Samoa tala"
 	},
-	"STD": {
+	"STN": {
 		"name": "San Tomės ir Principės dobra"
 	},
 	"SAR": {
@@ -444,6 +444,9 @@
 	"UAH": {
 		"name": "Ukrainos grivina"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Urugvajaus pesas"
 	},
@@ -453,7 +456,7 @@
 	"VUV": {
 		"name": "Vanuatu vatas"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venesuelos bolivaras"
 	},
 	"HUF": {

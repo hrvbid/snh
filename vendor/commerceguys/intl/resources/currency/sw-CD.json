@@ -15,7 +15,7 @@
 	"ETB": {
 		"name": "Bir ya Uhabeshi"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Bolivar ya Venezuela"
 	},
 	"BOB": {
@@ -43,7 +43,7 @@
 		"name": "Denar ya Macedonia"
 	},
 	"DZD": {
-		"name": "Dinar ya Algeria"
+		"name": "Dinar ya Aljeria"
 	},
 	"BHD": {
 		"name": "Dinar ya Bahrain"
@@ -72,7 +72,7 @@
 	"MAD": {
 		"name": "Dirham ya Morocco"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dobra ya Sao Tome na Principe"
 	},
 	"AUD": {
@@ -467,8 +467,11 @@
 	"MNT": {
 		"name": "Tugrik ya Mongolia"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Ugwiya ya Moritania"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"VUV": {
 		"name": "Vatu ya Vanuatu"

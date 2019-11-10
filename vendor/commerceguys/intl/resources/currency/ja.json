@@ -3,6 +3,9 @@
 		"name": "CFP フラン",
 		"symbol": "CFPF"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"ISK": {
 		"name": "アイスランド クローナ"
 	},
@@ -157,7 +160,7 @@
 	"WST": {
 		"name": "サモア タラ"
 	},
-	"STD": {
+	"STN": {
 		"name": "サントメ・プリンシペ ドブラ"
 	},
 	"ZMW": {
@@ -337,7 +340,7 @@
 		"name": "ベトナム ドン",
 		"symbol": "₫"
 	},
-	"VEF": {
+	"VES": {
 		"name": "ベネズエラ ボリバル"
 	},
 	"BYN": {
@@ -389,7 +392,7 @@
 	"MUR": {
 		"name": "モーリシャス ルピー"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "モーリタニア ウギア"
 	},
 	"MZN": {

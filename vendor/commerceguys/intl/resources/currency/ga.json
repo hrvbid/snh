@@ -15,7 +15,7 @@
 	"ETB": {
 		"name": "Birr na hAetóipe"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Bolívar Veiniséala"
 	},
 	"BOB": {
@@ -78,7 +78,7 @@
 	"MAD": {
 		"name": "Dirham Mharacó"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dobra São Tomé agus Príncipe"
 	},
 	"BBD": {
@@ -297,7 +297,7 @@
 	"BTN": {
 		"name": "Ngultrum na Bútáine"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Ouguiya na Máratáine"
 	},
 	"TOP": {
@@ -466,6 +466,9 @@
 	},
 	"MNT": {
 		"name": "Tugrik na Mongóile"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"VUV": {
 		"name": "Vatu Vanuatú"

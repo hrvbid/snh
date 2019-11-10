@@ -163,7 +163,7 @@
 	"MAD": {
 		"name": "Idiramu ryo muri Maroke"
 	},
-	"STD": {
+	"STN": {
 		"name": "Idobura ryo muri Sawotome na Perensipe"
 	},
 	"USD": {
@@ -459,11 +459,14 @@
 	"TMT": {
 		"name": "Turkmenistani Manat"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Ugwiya ryo muri Moritaniya"
 	},
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"UYU": {
 		"name": "Uruguayan Peso"
@@ -474,7 +477,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

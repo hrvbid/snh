@@ -2,420 +2,162 @@
 
 namespace CommerceGuys\Intl\Formatter;
 
-use CommerceGuys\Intl\Currency\CurrencyInterface;
+use CommerceGuys\Intl\Calculator;
 use CommerceGuys\Intl\Exception\InvalidArgumentException;
-use CommerceGuys\Intl\NumberFormat\NumberFormatInterface;
+use CommerceGuys\Intl\NumberFormat\NumberFormat;
+use CommerceGuys\Intl\NumberFormat\NumberFormatRepositoryInterface;
 
 /**
  * Formats numbers using locale-specific patterns.
  */
 class NumberFormatter implements NumberFormatterInterface
 {
-    /**
-     * The number format.
-     *
-     * @var NumberFormatInterface
-     */
-    protected $numberFormat;
+    use FormatterTrait;
 
     /**
-     * The number pattern used to format positive numbers.
+     * The number format repository.
      *
-     * @var string
+     * @var NumberFormatRepositoryInterface
      */
-    protected $positivePattern;
+    protected $numberFormatRepository;
 
     /**
-     * The number pattern used to format negative numbers.
-     *
-     * @var string
-     */
-    protected $negativePattern;
-
-    /**
-     * Whether grouping is used.
-     *
-     * @var bool
-     */
-    protected $groupingUsed;
-
-    /**
-     * The size of the group of digits closest to the decimal point.
-     *
-     * @var int
-     */
-    protected $primaryGroupSize;
-
-    /**
-     * The size of every group of digits after the primary group.
-     *
-     * @var int
-     */
-    protected $secondaryGroupSize;
-
-    /**
-     * The minimum number of fraction digits to show.
-     *
-     * @var int
-     */
-    protected $minimumFractionDigits;
-
-    /**
-     * The maximum number of fraction digits to show.
-     *
-     * @var int
-     */
-    protected $maximumFractionDigits;
-
-    /**
-     * The currency display style.
-     *
-     * @var int
-     */
-    protected $currencyDisplay;
-
-    /**
-     * Localized digits.
+     * The default options.
      *
      * @var array
      */
-    protected $digits = [
-        NumberFormatInterface::NUMBERING_SYSTEM_ARABIC => [
-            0 => '٠', 1 => '١', 2 => '٢', 3 => '٣', 4 => '٤',
-            5 => '٥', 6 => '٦', 7 => '٧', 8 => '٨', 9 => '٩',
-        ],
-        NumberFormatInterface::NUMBERING_SYSTEM_ARABIC_EXTENDED => [
-            0 => '۰', 1 => '۱', 2 => '۲', 3 => '۳', 4 => '۴',
-            5 => '۵', 6 => '۶', 7 => '۷', 8 => '۸', 9 => '۹',
-        ],
-        NumberFormatInterface::NUMBERING_SYSTEM_BENGALI => [
-            0 => '০', 1 => '১', 2 => '২', 3 => '৩', 4 => '৪',
-            5 => '৫', 6 => '৬', 7 => '৭', 8 => '৮', 9 => '৯',
-        ],
-        NumberFormatInterface::NUMBERING_SYSTEM_DEVANAGARI => [
-            0 => '०', 1 => '१', 2 => '२', 3 => '३', 4 => '४',
-            5 => '५', 6 => '६', 7 => '७', 8 => '८', 9 => '९',
-        ],
+    protected $defaultOptions = [
+        'locale' => 'en',
+        'use_grouping' => true,
+        'minimum_fraction_digits' => 0,
+        'maximum_fraction_digits' => 3,
+        'rounding_mode' => PHP_ROUND_HALF_UP,
+        'style' => 'decimal',
     ];
+
+    /**
+     * The loaded number formats.
+     *
+     * @var NumberFormat[]
+     */
+    protected $numberFormats = [];
 
     /**
      * Creates a NumberFormatter instance.
      *
-     * @param NumberFormatInterface $numberFormat The number format.
-     * @param int                   $style        The formatting style.
+     * @param NumberFormatRepositoryInterface $numberFormatRepository The number format repository.
+     * @param array                           $defaultOptions         The default options.
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function __construct(NumberFormatInterface $numberFormat, $style = self::DECIMAL)
+    public function __construct(NumberFormatRepositoryInterface $numberFormatRepository, array $defaultOptions = [])
     {
         if (!extension_loaded('bcmath')) {
             throw new \RuntimeException('The bcmath extension is required by NumberFormatter.');
         }
-        $availablePatterns = [
-            self::DECIMAL => $numberFormat->getDecimalPattern(),
-            self::PERCENT => $numberFormat->getPercentPattern(),
-            self::CURRENCY => $numberFormat->getCurrencyPattern(),
-            self::CURRENCY_ACCOUNTING => $numberFormat->getAccountingCurrencyPattern(),
-        ];
-        if (!array_key_exists($style, $availablePatterns)) {
-            // Unknown type.
-            throw new InvalidArgumentException('Unknown format style provided to NumberFormatter::__construct().');
-        }
+        $this->validateOptions($defaultOptions);
 
-        // Split the selected pattern into positive and negative patterns.
-        $patterns = explode(';', $availablePatterns[$style]);
-        if (!isset($patterns[1])) {
-            // No explicit negative pattern was provided, construct it.
-            $patterns[1] = '-' . $patterns[0];
-        }
-
-        $this->numberFormat = $numberFormat;
-        $this->positivePattern = $patterns[0];
-        $this->negativePattern = $patterns[1];
-        $this->groupingUsed = (strpos($this->positivePattern, ',') !== false);
-        // This pattern has number groups, parse them.
-        if ($this->groupingUsed) {
-            preg_match('/#+0/', $this->positivePattern, $primaryGroupMatches);
-            $this->primaryGroupSize = $this->secondaryGroupSize = strlen($primaryGroupMatches[0]);
-            $numberGroups = explode(',', $this->positivePattern);
-            if (count($numberGroups) > 2) {
-                // This pattern has a distinct secondary group size.
-                $this->secondaryGroupSize = strlen($numberGroups[1]);
-            }
-        }
-
-        // Initialize the fraction digit settings for decimal and percent
-        // styles only. The currency ones will default to the currency values.
-        if (in_array($style, [self::DECIMAL, self::PERCENT])) {
-            $this->minimumFractionDigits = 0;
-            $this->maximumFractionDigits = 3;
-        }
-        $this->currencyDisplay = self::CURRENCY_DISPLAY_SYMBOL;
+        $this->numberFormatRepository = $numberFormatRepository;
+        $this->defaultOptions = array_replace($this->defaultOptions, $defaultOptions);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function format($value)
+    public function format($number, array $options = [])
     {
-        if (!is_numeric($value)) {
-            $message = sprintf('The provided value "%s" must be a valid number or numeric string.', $value);
+        if (!is_numeric($number)) {
+            $message = sprintf('The provided value "%s" is not a valid number or numeric string.', $number);
             throw new InvalidArgumentException($message);
         }
+        $this->validateOptions($options);
+        $options = array_replace($this->defaultOptions, $options);
 
-        // Ensure that the value is positive and has the right number of digits.
-        $negative = (bccomp('0', $value, 12) == 1);
-        $signMultiplier = $negative ? '-1' : '1';
-        $value = bcdiv($value, $signMultiplier, $this->maximumFractionDigits);
-        // Split the number into major and minor digits.
-        $valueParts = explode('.', $value);
-        $majorDigits = $valueParts[0];
-        // Account for maximumFractionDigits = 0, where the number won't
-        // have a decimal point, and $valueParts[1] won't be set.
-        $minorDigits = isset($valueParts[1]) ? $valueParts[1] : '';
-
-        if ($this->groupingUsed) {
-            // Reverse the major digits, since they are grouped from the right.
-            $majorDigits = array_reverse(str_split($majorDigits));
-            // Group the major digits.
-            $groups = [];
-            $groups[] = array_splice($majorDigits, 0, $this->primaryGroupSize);
-            while (!empty($majorDigits)) {
-                $groups[] = array_splice($majorDigits, 0, $this->secondaryGroupSize);
-            }
-            // Reverse the groups and the digits inside of them.
-            $groups = array_reverse($groups);
-            foreach ($groups as &$group) {
-                $group = implode(array_reverse($group));
-            }
-            // Reconstruct the major digits.
-            $majorDigits = implode(',', $groups);
+        $number = (string) $number;
+        // Percentages are passed as decimals (e.g. 0.2 for 20%).
+        if ($options['style'] == 'percent') {
+            $number = Calculator::multiply($number, '100');
         }
+        $numberFormat = $this->getNumberFormat($options['locale']);
+        $number = $this->formatNumber($number, $numberFormat, $options);
 
-        if ($this->minimumFractionDigits < $this->maximumFractionDigits) {
-            // Strip any trailing zeroes.
-            $minorDigits = rtrim($minorDigits, '0');
-            if (strlen($minorDigits) < $this->minimumFractionDigits) {
-                // Now there are too few digits, re-add trailing zeroes
-                // until the desired length is reached.
-                $neededZeroes = $this->minimumFractionDigits - strlen($minorDigits);
-                $minorDigits .= str_repeat('0', $neededZeroes);
-            }
-        }
-
-        // Assemble the final number and insert it into the pattern.
-        $value = strlen($minorDigits) ? $majorDigits . '.' . $minorDigits : $majorDigits;
-        $pattern = $negative ? $this->negativePattern : $this->positivePattern;
-        $value = preg_replace('/#(?:[\.,]#+)*0(?:[,\.][0#]+)*/', $value, $pattern);
-
-        // Localize the number.
-        $value = $this->replaceDigits($value);
-        $value = $this->replaceSymbols($value);
-
-        return $value;
+        return $number;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function formatCurrency($value, CurrencyInterface $currency)
+    public function parse($number, array $options = [])
     {
-        // Use the currency defaults if the values weren't set by the caller.
-        $resetMinimumFractionDigits = $resetMaximumFractionDigits = false;
-        if (!isset($this->minimumFractionDigits)) {
-            $this->minimumFractionDigits = $currency->getFractionDigits();
-            $resetMinimumFractionDigits = true;
-        }
-        if (!isset($this->maximumFractionDigits)) {
-            $this->maximumFractionDigits = $currency->getFractionDigits();
-            $resetMaximumFractionDigits = true;
+        $this->validateOptions($options);
+        $options = array_replace($this->defaultOptions, $options);
+        $numberFormat = $this->getNumberFormat($options['locale']);
+        $number = $this->parseNumber($number, $numberFormat);
+
+        return $number;
+    }
+
+    /**
+     * Gets the number format for the provided locale.
+     *
+     * @param string $locale The locale.
+     *
+     * @return NumberFormat
+     */
+    protected function getNumberFormat($locale)
+    {
+        if (!isset($this->numberFormats[$locale])) {
+            $this->numberFormats[$locale] = $this->numberFormatRepository->get($locale);
         }
 
-        // Format the decimal part of the value first.
-        $value = $this->format($value);
-
-        // Reset the fraction digit settings, so that they don't affect
-        // future formattings with different currencies.
-        if ($resetMinimumFractionDigits) {
-            $this->minimumFractionDigits = null;
-        }
-        if ($resetMaximumFractionDigits) {
-            $this->maximumFractionDigits = null;
-        }
-
-        // Determine whether to show the currency symbol or the currency code.
-        if ($this->currencyDisplay == self::CURRENCY_DISPLAY_SYMBOL) {
-            $symbol = $currency->getSymbol();
-        } else {
-            $symbol = $currency->getCurrencyCode();
-        }
-
-        return str_replace('¤', $symbol, $value);
+        return $this->numberFormats[$locale];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function parse($value)
+    protected function getAvailablePatterns(NumberFormat $numberFormat)
     {
-        $replacements = [
-            $this->numberFormat->getGroupingSeparator() => '',
-            // Convert the localized symbols back to their original form.
-            $this->numberFormat->getDecimalSeparator() => '.',
-            $this->numberFormat->getPlusSign() => '+',
-            $this->numberFormat->getMinusSign() => '-',
-
-            // Strip whitespace (spaces and non-breaking spaces).
-            ' ' => '',
-            chr(0xC2) . chr(0xA0) => '',
+        return [
+            'decimal' => $numberFormat->getDecimalPattern(),
+            'percent' => $numberFormat->getPercentPattern(),
         ];
-        $numberingSystem = $this->numberFormat->getNumberingSystem();
-        if (isset($this->digits[$numberingSystem])) {
-            // Convert the localized digits back to latin.
-            $replacements += array_flip($this->digits[$numberingSystem]);
-        }
-
-        $value = strtr($value, $replacements);
-        if (substr($value, 0, 1) == '(' && substr($value, -1, 1) == ')') {
-            // This is an accounting formatted negative number.
-            $value = '-' . str_replace(['(', ')'], '', $value);
-        }
-
-        return is_numeric($value) ? $value : false;
     }
 
     /**
-     * {@inheritdoc}
+     * Validates the provided options.
+     *
+     * Ensures the absence of unknown keys, correct data types and values.
+     *
+     * @param array $options The options.
+     *
+     * @throws \InvalidArgumentException
      */
-    public function parseCurrency($value, CurrencyInterface $currency)
+    protected function validateOptions(array $options)
     {
-        $replacements = [
-            // Strip the currency code or symbol.
-            $currency->getCurrencyCode() => '',
-            $currency->getSymbol() => '',
+        foreach ($options as $option => $value) {
+            if (!array_key_exists($option, $this->defaultOptions)) {
+                throw new InvalidArgumentException(sprintf('Unrecognized option "%s".', $option));
+            }
+        }
+        if (isset($options['use_grouping']) && !is_bool($options['use_grouping'])) {
+            throw new InvalidArgumentException('The option "use_grouping" must be a boolean.');
+        }
+        foreach (['minimum_fraction_digits', 'maximum_fraction_digits'] as $option) {
+            if (array_key_exists($option, $options) && !is_numeric($options[$option])) {
+                throw new InvalidArgumentException(sprintf('The option "%s" must be numeric.', $option));
+            }
+        }
+        $roundingModes = [
+            PHP_ROUND_HALF_UP, PHP_ROUND_HALF_DOWN,
+            PHP_ROUND_HALF_EVEN, PHP_ROUND_HALF_ODD, 'none',
         ];
-        $value = strtr($value, $replacements);
-
-        return $this->parse($value);
-    }
-
-    /**
-     * Replaces digits with their localized equivalents.
-     *
-     * @param string $value The value being formatted.
-     *
-     * @return string
-     */
-    protected function replaceDigits($value)
-    {
-        $numberingSystem = $this->numberFormat->getNumberingSystem();
-        if (isset($this->digits[$numberingSystem])) {
-            $value = strtr($value, $this->digits[$numberingSystem]);
+        if (!empty($options['rounding_mode']) && !in_array($options['rounding_mode'], $roundingModes)) {
+            throw new InvalidArgumentException(sprintf('Unrecognized rounding mode "%s".', $options['rounding_mode']));
         }
-
-        return $value;
-    }
-
-    /**
-     * Replaces number symbols with their localized equivalents.
-     *
-     * @param string $value The value being formatted.
-     *
-     * @return string
-     *
-     * @see http://cldr.unicode.org/translation/number-symbols
-     */
-    protected function replaceSymbols($value)
-    {
-        $replacements = [
-            '.' => $this->numberFormat->getDecimalSeparator(),
-            ',' => $this->numberFormat->getGroupingSeparator(),
-            '+' => $this->numberFormat->getPlusSign(),
-            '-' => $this->numberFormat->getMinusSign(),
-            '%' => $this->numberFormat->getPercentSign(),
-        ];
-
-        return strtr($value, $replacements);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getNumberFormat()
-    {
-        return $this->numberFormat;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMinimumFractionDigits()
-    {
-        return $this->minimumFractionDigits;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMinimumFractionDigits($minimumFractionDigits)
-    {
-        $this->minimumFractionDigits = $minimumFractionDigits;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMaximumFractionDigits()
-    {
-        return $this->maximumFractionDigits;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMaximumFractionDigits($maximumFractionDigits)
-    {
-        $this->maximumFractionDigits = $maximumFractionDigits;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isGroupingUsed()
-    {
-        return $this->groupingUsed;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setGroupingUsed($groupingUsed)
-    {
-        $this->groupingUsed = $groupingUsed;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurrencyDisplay()
-    {
-        return $this->currencyDisplay;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setCurrencyDisplay($currencyDisplay)
-    {
-        $this->currencyDisplay = $currencyDisplay;
-
-        return $this;
+        if (!empty($options['style']) && !in_array($options['style'], ['decimal', 'percent'])) {
+            throw new InvalidArgumentException(sprintf('Unrecognized style "%s".', $options['style']));
+        }
     }
 }

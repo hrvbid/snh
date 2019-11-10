@@ -10,7 +10,7 @@
 	},
 	"USD": {
 		"name": "amerikansk dollar",
-		"symbol": "$"
+		"symbol": "US$"
 	},
 	"AOA": {
 		"name": "angolansk kwanza"
@@ -131,7 +131,7 @@
 	"DJF": {
 		"name": "djiboutisk franc"
 	},
-	"STD": {
+	"STN": {
 		"name": "dobra fra Sao Tome og Principe"
 	},
 	"TTD": {
@@ -187,7 +187,7 @@
 		"name": "honduransk lempira"
 	},
 	"HKD": {
-		"name": "Hongkong dollar",
+		"name": "hongkongsk dollar",
 		"symbol": "HK$"
 	},
 	"BYN": {
@@ -277,7 +277,7 @@
 	"MAD": {
 		"name": "marokkansk dirham"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "mauritansk ouguiya"
 	},
 	"MUR": {
@@ -348,7 +348,7 @@
 		"name": "paraguaysk guarani"
 	},
 	"PEN": {
-		"name": "peruviansk sol"
+		"name": "peruansk sol"
 	},
 	"PLN": {
 		"name": "polsk zloty"
@@ -463,6 +463,9 @@
 	"HUF": {
 		"name": "ungarsk forint"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "uruguayansk peso"
 	},
@@ -472,7 +475,7 @@
 	"VUV": {
 		"name": "vanuaisk vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "venezuelansk bolivar"
 	},
 	"VND": {

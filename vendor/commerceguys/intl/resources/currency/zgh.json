@@ -302,6 +302,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -311,7 +314,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {
@@ -339,7 +342,7 @@
 	"TND": {
 		"name": "ⴰⴷⵉⵏⴰⵔ ⵏ ⵜⵓⵏⵙ"
 	},
-	"STD": {
+	"STN": {
 		"name": "ⴰⴷⵓⴱⵔⴰ ⵏ ⵙⴰⵏⵟⵓⵎⵉ"
 	},
 	"CAD": {
@@ -480,7 +483,7 @@
 	"NGN": {
 		"name": "ⵏⴰⵢⵔⴰ ⵏ ⵏⵉⵊⵉⵔⵢⴰ"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "ⵓⵇⵉⵢⵢⴰ ⵏ ⵎⵓⵕⵉⵟⴰⵏⵢⴰ"
 	},
 	"EUR": {

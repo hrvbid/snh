@@ -161,7 +161,7 @@
 	"NGN": {
 		"name": "奈及利亞奈拉"
 	},
-	"VEF": {
+	"VES": {
 		"name": "委內瑞拉玻利瓦"
 	},
 	"BDT": {
@@ -265,7 +265,7 @@
 		"name": "英鎊",
 		"symbol": "£"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "茅利塔尼亞烏吉亞"
 	},
 	"GHS": {
@@ -411,7 +411,7 @@
 	"VUV": {
 		"name": "萬那杜瓦圖"
 	},
-	"STD": {
+	"STN": {
 		"name": "聖多美島和普林西比島多布拉"
 	},
 	"SHP": {
@@ -489,5 +489,8 @@
 	},
 	"SRD": {
 		"name": "蘇利南元"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	}
 }

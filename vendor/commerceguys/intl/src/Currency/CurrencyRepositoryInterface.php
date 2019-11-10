@@ -8,34 +8,30 @@ namespace CommerceGuys\Intl\Currency;
 interface CurrencyRepositoryInterface
 {
     /**
-     * Returns a currency instance matching the provided currency code.
+     * Gets a currency matching the provided currency code.
      *
-     * @param string $currencyCode   The currency code.
-     * @param string $locale         The locale (i.e. fr-FR).
-     * @param string $fallbackLocale A fallback locale (i.e "en").
+     * @param string $currencyCode The currency code.
+     * @param string $locale       The locale (i.e. fr-FR).
      *
-     * @return CurrencyInterface
+     * @return Currency
      */
-    public function get($currencyCode, $locale = null, $fallbackLocale = null);
+    public function get($currencyCode, $locale = null);
 
     /**
-     * Returns all currency instances.
+     * Gets all currencies.
      *
-     * @param string $locale         The locale (i.e. fr-FR).
-     * @param string $fallbackLocale A fallback locale (i.e "en").
+     * @param string $locale The locale (i.e. fr-FR).
      *
-     * @return array An array of currencies implementing the CurrencyInterface,
-     *               keyed by currency code.
+     * @return Currency[] An array of currencies, keyed by currency code.
      */
-    public function getAll($locale = null, $fallbackLocale = null);
+    public function getAll($locale = null);
 
     /**
-     * Returns a list of currencies.
+     * Gets a list of currencies.
      *
-     * @param string $locale         The locale (i.e. fr-FR).
-     * @param string $fallbackLocale A fallback locale (i.e "en").
+     * @param string $locale The locale (i.e. fr-FR).
      *
-     * @return array An array of currency names, keyed by currency code.
+     * @return string[] An array of currency names, keyed by currency code.
      */
-    public function getList($locale = null, $fallbackLocale = null);
+    public function getList($locale = null);
 }

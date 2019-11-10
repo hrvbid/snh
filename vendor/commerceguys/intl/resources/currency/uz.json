@@ -253,7 +253,7 @@
 	"MUR": {
 		"name": "Mavritaniya rupiyasi"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Mavritaniya uqiyasi"
 	},
 	"MXN": {
@@ -341,7 +341,7 @@
 	"WST": {
 		"name": "Samoa talasi"
 	},
-	"STD": {
+	"STN": {
 		"name": "San-Tome va Prinsipi dobrasi"
 	},
 	"SAR": {
@@ -410,13 +410,16 @@
 	"OMR": {
 		"name": "Ummon riyoli"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Urugvay pesosi"
 	},
 	"VUV": {
 		"name": "Vanuatu vatusi"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venesuela bolivari"
 	},
 	"HUF": {

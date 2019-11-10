@@ -32,6 +32,9 @@
 	"TOP": {
 		"name": "Tongan Paʻanga"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
@@ -235,7 +238,7 @@
 	"ZMW": {
 		"name": "زامبیای ِکواچا"
 	},
-	"STD": {
+	"STN": {
 		"name": "سائوتومه و پرینسیپ ِدوبرا"
 	},
 	"LKR": {
@@ -425,7 +428,7 @@
 		"name": "مکزیک ِپزو",
 		"symbol": "MX$"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "موریتانی ِاوگوئیا"
 	},
 	"MUR": {
@@ -476,7 +479,7 @@
 		"name": "هونگ کونگ ِدولار",
 		"symbol": "HK$"
 	},
-	"VEF": {
+	"VES": {
 		"name": "ونزوئلایِ بولیوار"
 	},
 	"VND": {

@@ -115,7 +115,7 @@
 	"AED": {
 		"name": "Dirham Emiraati Araab Dentuɗi"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dobra Sawo Tome e Prensipe"
 	},
 	"USD": {
@@ -454,11 +454,14 @@
 	"TMT": {
 		"name": "Turkmenistani Manat"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Ugiyya Muritani"
 	},
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"UYU": {
 		"name": "Uruguayan Peso"
@@ -469,7 +472,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

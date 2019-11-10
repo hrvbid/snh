@@ -14,7 +14,7 @@
 	"ETB": {
 		"name": "birr etiopian"
 	},
-	"VEF": {
+	"VES": {
 		"name": "bolivar venezuelean"
 	},
 	"BOB": {
@@ -83,7 +83,7 @@
 	"MAD": {
 		"name": "dirham marocan"
 	},
-	"STD": {
+	"STN": {
 		"name": "dobra Sao Tome și Principe"
 	},
 	"USD": {
@@ -317,7 +317,7 @@
 	"BTN": {
 		"name": "ngultrum din Bhutan"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "ouguiya mauritană"
 	},
 	"TOP": {
@@ -454,6 +454,9 @@
 	},
 	"MNT": {
 		"name": "tugrik mongol"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"VUV": {
 		"name": "vatu din Vanuatu"

@@ -3,15 +3,14 @@ intl
 
 [![Build Status](https://travis-ci.org/commerceguys/intl.svg?branch=master)](https://travis-ci.org/commerceguys/intl)
 
-A PHP 5.4+ internationalization library, powered by CLDR data.
+A PHP 5.5+ internationalization library, powered by CLDR data.
 
 Features:
-- NumberFormatter, inspired by [intl](http://php.net/manual/en/class.numberformatter.php).
+- NumberFormatter and CurrencyFormatter, inspired by [intl](http://php.net/manual/en/class.numberformatter.php).
 - Currencies
-- Countries
 - Languages
 
-Coming soon: date formatting.
+Looking for a list of countries and subdivisions? Check out [commerceguys/addressing](https://github.com/commerceguys/addressing).
 
 Why not use the intl extension?
 -------------------------------
@@ -31,47 +30,36 @@ More backstory can be found in [this blog post](https://drupalcommerce.org/blog/
 
 Formatting numbers
 ------------------
-Formats numbers (decimals, percents, currency amounts) using locale-specific rules.
+Allows formatting numbers (decimals, percents, currency amounts) using locale-specific rules.
 
-This ensures that the decimal and grouping separators, the position of the currency
-symbol, as well as the actual symbol used match what the user is expecting.
-
-The amounts passed for formatting should already be rounded, because the
-formatter doesn't do any rounding of its own.
+Two formatters are provided for this purpose: [NumberFormatter](https://github.com/commerceguys/intl/blob/master/src/Formatter/NumberFormatterInterface.php) and [CurrencyFormatter](https://github.com/commerceguys/intl/blob/master/src/Formatter/CurrencyFormatterInterface.php).
 
 ```php
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use CommerceGuys\Intl\Formatter\NumberFormatter;
+use CommerceGuys\Intl\Formatter\CurrencyFormatter;
+
+$numberFormatRepository = new NumberFormatRepository;
+// Options can be provided to the constructor or the
+// individual methods, the locale defaults to 'en' when missing.
+$numberFormatter = new NumberFormatter($numberFormatRepository);
+echo $numberFormatter->format('1234.99'); // 123,456.99
+echo $numberFormatter->format('0.75', ['style' => 'percent']); // 75%
 
 $currencyRepository = new CurrencyRepository;
-$numberFormatRepository = new NumberFormatRepository;
-
-$currency = $currencyRepository->get('USD');
-$numberFormat = $numberFormatRepository->get('en');
-
-$decimalFormatter = new NumberFormatter($numberFormat);
-echo $decimalFormatter->format('1234.99'); // 123,456.99
-
-$percentFormatter = new NumberFormatter($numberFormat, NumberFormatter::PERCENT);
-echo $percentFormatter->format('0.75'); // 75%
-
-$currencyFormatter = new NumberFormatter($numberFormat, NumberFormatter::CURRENCY);
-echo $currencyFormatter->formatCurrency('2.99', $currency); // $2.99
-
-// The accounting pattern shows negative numbers differently and is used
+$currencyFormatter = new CurrencyFormatter($numberFormatRepository, $currencyRepository);
+echo $currencyFormatter->format('2.99', 'USD'); // $2.99
+// The accounting style shows negative numbers differently and is used
 // primarily for amounts shown on invoices.
-$invoiceCurrencyFormatter = new NumberFormatter($numberFormat, NumberFormatter::CURRENCY_ACCOUNTING);
-echo $invoiceCurrencyFormatter->formatCurrency('-2.99', $currency); // (2.99$)
+echo $currencyFormatter->format('-2.99', 'USD', ['style' => 'accounting']); // (2.99$)
 
 // Arabic, Arabic extended, Bengali, Devanagari digits are supported as expected.
-$currency = $currencyRepository->get('USD', 'ar');
-$numberFormat = $numberFormatRepository->get('ar');
-$currencyFormatter = new NumberFormatter($numberFormat, NumberFormatter::CURRENCY);
-echo $currencyFormatter->formatCurrency('1230.99', $currency); // US$ ١٬٢٣٠٫٩٩
+$currencyFormatter = new CurrencyFormatter($numberFormatRepository, $currencyRepository, ['locale' => 'ar']);
+echo $currencyFormatter->format('1230.99', 'USD'); // US$ ١٬٢٣٠٫٩٩
 
 // Parse formatted values into numeric values.
-echo $currencyFormatter->parseCurrency('US$ ١٬٢٣٠٫٩٩', $currency); // 1230.99
+echo $currencyFormatter->parse('US$ ١٬٢٣٠٫٩٩', 'USD'); // 1230.99
 ```
 
 Currencies
@@ -100,27 +88,6 @@ echo $currency->getLocale(); // fr-FR
 $allCurrencies = $currencyRepository->getAll();
 ```
 
-Countries
----------
-```php
-use CommerceGuys\Intl\Country\CountryRepository;
-
-// Reads the country definitions from resources/country.
-$countryRepository = new CountryRepository;
-
-// Get the US country using the default locale (en).
-$country = $countryRepository->get('US');
-echo $country->getCountryCode(); // US
-echo $country->getName(); // United States
-echo $country->getCurrencyCode(); // USD
-
-// Get the US country using the fr-FR locale.
-$country = $countryRepository->get('US', 'fr-FR');
-echo $country->getName(); // États-Unis
-
-$allCountries = $countryRepository->getAll();
-```
-
 Languages
 ---------
 ```php
@@ -141,23 +108,6 @@ echo $language->getName(); // allemand
 $allLanguages = $languageRepository->getAll();
 ```
 
-Implementing the library
-------------------------
-The base interfaces don't impose setters.
-Extended interfaces (with setters) are provided for (Doctrine, Drupal) entities.
-
-While the library can be used as-is, many applications will want to store parts of the dataset in a database.
-This allows for better performance while giving users the ability to modify and expand the data.
-Taking currencies as an example, a merchant frequently wants to be able to:
-
-- Define custom currencies.
-- Enable/disable existing currencies
-- Modify an existing currency (changing the default number of fraction digits, for example).
-
-This would be accomplished by using the CurrencyRepository to get all default currencies and
-insert them into the database. The doctrine entity (or any similar data object) would then implement
-the CurrencyEntityInterface so that the NumberFormatter can continue to work.
-
 Related projects
 ----------------
-[commerceguys/pricing](http://github.com/commerceguys/pricing) provides a Price object.
+[Laravel integration](https://github.com/Propaganistas/Laravel-Intl/)

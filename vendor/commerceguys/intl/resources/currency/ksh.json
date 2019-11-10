@@ -87,7 +87,7 @@
 	"AED": {
 		"name": "de vereineschte arraabesche Emiraate ier Dirham"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dobra vun São Tomé un Príncipe"
 	},
 	"TTD": {
@@ -257,7 +257,7 @@
 	"MAD": {
 		"name": "marrokaanesche Dirhamm"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "mauretanesche Ouguiya"
 	},
 	"MUR": {
@@ -471,13 +471,16 @@
 	"UYU": {
 		"name": "urrujuwaische Peeso"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UZS": {
 		"name": "ußbeekesche Som"
 	},
 	"VUV": {
 		"name": "vanuatesche Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "venezuelaanesche Bolívar"
 	},
 	"VND": {

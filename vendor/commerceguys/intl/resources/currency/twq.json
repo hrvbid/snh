@@ -298,7 +298,7 @@
 	"MUR": {
 		"name": "Mooris Rupii"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Mooritaani Ugiya"
 	},
 	"MZN": {
@@ -382,7 +382,7 @@
 	"WST": {
 		"name": "Samoan Tala"
 	},
-	"STD": {
+	"STN": {
 		"name": "Sao Tome nda Prinsipe Dobra"
 	},
 	"SAR": {
@@ -465,6 +465,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -474,7 +477,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

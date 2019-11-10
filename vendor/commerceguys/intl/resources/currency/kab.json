@@ -83,7 +83,7 @@
 		"name": "Afrank BCEAO CFA",
 		"symbol": "CFA"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Agiya Amuriṭani"
 	},
 	"CVE": {
@@ -160,7 +160,7 @@
 	"MGA": {
 		"name": "Aryari Amalgac"
 	},
-	"STD": {
+	"STN": {
 		"name": "Asw Ṭum d Udubra Amenzay"
 	},
 	"JPY": {
@@ -469,6 +469,9 @@
 		"name": "Uru",
 		"symbol": "€"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -478,7 +481,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

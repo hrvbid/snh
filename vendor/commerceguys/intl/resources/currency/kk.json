@@ -93,7 +93,7 @@
 	"HUF": {
 		"name": "Венгрия форинті"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Венесуэла боливары"
 	},
 	"VND": {
@@ -259,7 +259,7 @@
 	"MUR": {
 		"name": "Маврикий рупиясы"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Мавритания угиясы"
 	},
 	"MOP": {
@@ -367,7 +367,7 @@
 	"WST": {
 		"name": "Самоа таласы"
 	},
-	"STD": {
+	"STN": {
 		"name": "Сант-Томе мен Принсипи добрасы"
 	},
 	"SAR": {
@@ -489,6 +489,9 @@
 	},
 	"SVC": {
 		"name": "Salvadoran Colón"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"ZWL": {
 		"name": "Zimbabwean Dollar (2009)"

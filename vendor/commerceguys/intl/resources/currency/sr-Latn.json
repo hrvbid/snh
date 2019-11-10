@@ -103,7 +103,7 @@
 		"name": "Dominikanski pezos"
 	},
 	"DJF": {
-		"name": "Džibutanski franak"
+		"name": "Džibutski franak"
 	},
 	"EGP": {
 		"name": "Egipatska funta"
@@ -302,8 +302,8 @@
 	"MUR": {
 		"name": "Mauricijska rupija"
 	},
-	"MRO": {
-		"name": "Mauritanijska ogija"
+	"MRU": {
+		"name": "Mauritanska ogija"
 	},
 	"MXN": {
 		"name": "Meksički pezos",
@@ -368,7 +368,7 @@
 		"name": "Ruandski franak"
 	},
 	"RON": {
-		"name": "Rumunski lej (1952–2006)"
+		"name": "Rumunski lej"
 	},
 	"RUB": {
 		"name": "Ruska rublja"
@@ -379,7 +379,7 @@
 	"WST": {
 		"name": "Samoanska tala"
 	},
-	"STD": {
+	"STN": {
 		"name": "Saotomska dobra"
 	},
 	"SAR": {
@@ -415,11 +415,11 @@
 	"SRD": {
 		"name": "Surinamski dolar"
 	},
-	"SHP": {
-		"name": "Sv. jelenska funta"
-	},
 	"SZL": {
 		"name": "Svazilendski lilangeni"
+	},
+	"SHP": {
+		"name": "Svete Jelene funta"
 	},
 	"LKR": {
 		"name": "Šrilankanska rupija"
@@ -463,6 +463,9 @@
 	"UAH": {
 		"name": "Ukrajinska hrivnja"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Urugvajski pezos"
 	},
@@ -472,7 +475,7 @@
 	"VUV": {
 		"name": "Vanuatski vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venecuelanski bolivar"
 	},
 	"VND": {

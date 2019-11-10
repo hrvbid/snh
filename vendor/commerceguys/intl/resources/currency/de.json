@@ -269,7 +269,7 @@
 	"MAD": {
 		"name": "Marokkanischer Dirham"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Mauretanischer Ouguiya"
 	},
 	"MUR": {
@@ -370,7 +370,7 @@
 	"WST": {
 		"name": "Samoanischer Tala"
 	},
-	"STD": {
+	"STN": {
 		"name": "São-toméischer Dobra"
 	},
 	"SAR": {
@@ -465,6 +465,9 @@
 	"HUF": {
 		"name": "Ungarischer Forint"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayischer Peso"
 	},
@@ -481,7 +484,7 @@
 	"VUV": {
 		"name": "Vanuatu-Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezolanischer Bolívar"
 	},
 	"VND": {

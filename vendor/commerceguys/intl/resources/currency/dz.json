@@ -151,7 +151,7 @@
 	"MWK": {
 		"name": "Malawian Kwacha"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Mauritanian Ouguiya"
 	},
 	"MUR": {
@@ -193,7 +193,7 @@
 	"WST": {
 		"name": "Samoan Tala"
 	},
-	"STD": {
+	"STN": {
 		"name": "São Tomé & Príncipe Dobra"
 	},
 	"RSD": {
@@ -237,6 +237,9 @@
 	},
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"VUV": {
 		"name": "Vanuatu Vatu"
@@ -358,7 +361,7 @@
 	"BDT": {
 		"name": "བྷང་ལ་དེཤ་གི་དངུལ་ ཏ་ཀ"
 	},
-	"VEF": {
+	"VES": {
 		"name": "བེ་ནི་ཛུ་ཝེ་ལ་གི་དངུལ་ བོ་ལི་བར"
 	},
 	"VND": {

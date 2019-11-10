@@ -115,7 +115,7 @@
 	"MAD": {
 		"name": "dirham marokin"
 	},
-	"STD": {
+	"STN": {
 		"name": "dobra santomeen"
 	},
 	"USD": {
@@ -341,7 +341,7 @@
 	"OMR": {
 		"name": "Omani Rial"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "ouguiya moritanien"
 	},
 	"PKR": {
@@ -461,6 +461,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -470,7 +473,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

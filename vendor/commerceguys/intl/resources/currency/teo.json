@@ -83,7 +83,7 @@
 	"MUR": {
 		"name": "Ango’otol lok’ Morisi"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Ango’otol lok’ Moritania"
 	},
 	"MAD": {
@@ -101,7 +101,7 @@
 	"SHP": {
 		"name": "Ango’otol lok’ Santahelena"
 	},
-	"STD": {
+	"STN": {
 		"name": "Ango’otol lok’ Sao Tome na Principe"
 	},
 	"SAR": {
@@ -465,6 +465,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -474,7 +477,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

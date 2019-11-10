@@ -115,7 +115,7 @@
 	"AED": {
 		"name": "Diraamu eya Emireeti"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dobura ey’eSantome ne Purincipe"
 	},
 	"DOP": {
@@ -454,6 +454,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -463,14 +466,14 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {
 		"name": "Vietnamese Dong",
 		"symbol": "₫"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Wugwiya ey’eMawritenya"
 	},
 	"YER": {

@@ -226,7 +226,7 @@
 	"MUR": {
 		"name": "Ihela ya Molisi"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Ihela ya Molitaniya"
 	},
 	"MAD": {
@@ -244,7 +244,7 @@
 	"SHP": {
 		"name": "Ihela ya Santahelena"
 	},
-	"STD": {
+	"STN": {
 		"name": "Ihela ya Sao Tome ni Pilinsipe"
 	},
 	"SAR": {
@@ -469,6 +469,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -478,7 +481,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

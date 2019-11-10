@@ -316,7 +316,7 @@
 	"MUR": {
 		"name": "Njilingi eel Morisi"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Njilingi eel Moritania"
 	},
 	"MAD": {
@@ -331,7 +331,7 @@
 	"RWF": {
 		"name": "Njilingi eel Rwanda"
 	},
-	"STD": {
+	"STN": {
 		"name": "Njilingi eel Sao Tome na Principe"
 	},
 	"SAR": {
@@ -465,6 +465,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -474,7 +477,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

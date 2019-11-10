@@ -317,14 +317,14 @@
 	"MUR": {
 		"name": "Mɔn Moriss"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Mɔn Moritania"
 	},
 	"GBP": {
 		"name": "Mɔn Ngɛ̄lɛ̄n",
 		"symbol": "£"
 	},
-	"STD": {
+	"STN": {
 		"name": "Mɔn Sao tomé na prinship"
 	},
 	"SAR": {
@@ -468,6 +468,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -477,7 +480,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

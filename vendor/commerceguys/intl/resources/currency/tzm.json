@@ -130,7 +130,7 @@
 	"DOP": {
 		"name": "Dominican Peso"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dubra Usawṭumi"
 	},
 	"CAD": {
@@ -453,12 +453,15 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Uqiyya Umuritani"
 	},
 	"EUR": {
 		"name": "Uṛu",
 		"symbol": "€"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"UYU": {
 		"name": "Uruguayan Peso"
@@ -469,7 +472,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

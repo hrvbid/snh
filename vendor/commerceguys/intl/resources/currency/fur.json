@@ -271,7 +271,7 @@
 	"MVR": {
 		"name": "Maldivian Rufiyaa"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Mauritanian Ouguiya"
 	},
 	"MUR": {
@@ -376,7 +376,7 @@
 	"WST": {
 		"name": "Samoan Tala"
 	},
-	"STD": {
+	"STN": {
 		"name": "São Tomé & Príncipe Dobra"
 	},
 	"SCR": {
@@ -446,6 +446,9 @@
 	"AED": {
 		"name": "United Arab Emirates Dirham"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -455,7 +458,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

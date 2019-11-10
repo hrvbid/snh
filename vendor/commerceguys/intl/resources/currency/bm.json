@@ -283,7 +283,7 @@
 	"MZN": {
 		"name": "Mozambican Metical"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "mɔritani Uguwiya"
 	},
 	"MMK": {
@@ -364,7 +364,7 @@
 	"WST": {
 		"name": "Samoan Tala"
 	},
-	"STD": {
+	"STN": {
 		"name": "sawotome Dobra"
 	},
 	"SAR": {
@@ -461,6 +461,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -470,7 +473,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

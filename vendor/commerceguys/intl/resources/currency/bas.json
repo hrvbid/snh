@@ -115,7 +115,7 @@
 	"MAD": {
 		"name": "Dìrham màrôk"
 	},
-	"STD": {
+	"STN": {
 		"name": "Dobrà sàotòme"
 	},
 	"DOP": {
@@ -454,11 +454,14 @@
 	"TMT": {
 		"name": "Turkmenistani Manat"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Ùgwiya mòrìtanìa"
 	},
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"UYU": {
 		"name": "Uruguayan Peso"
@@ -469,7 +472,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

@@ -58,7 +58,7 @@
 		"name": "日圓",
 		"symbol": "¥"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "毛里塔尼亞烏吉亞"
 	},
 	"MUR": {
@@ -190,9 +190,6 @@
 	},
 	"TZS": {
 		"name": "坦桑尼亞先令"
-	},
-	"VEF": {
-		"name": "委內瑞拉玻利瓦"
 	},
 	"BDT": {
 		"name": "孟加拉塔卡"
@@ -426,7 +423,7 @@
 	"SEK": {
 		"name": "瑞典克朗"
 	},
-	"STD": {
+	"STN": {
 		"name": "聖多美和普林西比多布拉"
 	},
 	"SHP": {
@@ -489,5 +486,11 @@
 	},
 	"SRD": {
 		"name": "蘇里南元"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
+	"VES": {
+		"name": "Venezuelan Bolívar"
 	}
 }

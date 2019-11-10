@@ -105,7 +105,7 @@
 	"MUR": {
 		"name": "모리셔스 루피"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "모리타니 우기야"
 	},
 	"MZN": {
@@ -145,7 +145,7 @@
 	"BMD": {
 		"name": "버뮤다 달러"
 	},
-	"VEF": {
+	"VES": {
 		"name": "베네수엘라 볼리바르"
 	},
 	"VND": {
@@ -186,7 +186,7 @@
 	"SAR": {
 		"name": "사우디아라비아 리얄"
 	},
-	"STD": {
+	"STN": {
 		"name": "상투메 프린시페 도브라"
 	},
 	"WST": {
@@ -489,5 +489,8 @@
 	"XPF": {
 		"name": "CFP 프랑",
 		"symbol": "CFPF"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	}
 }

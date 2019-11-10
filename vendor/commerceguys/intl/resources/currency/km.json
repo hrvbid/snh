@@ -160,7 +160,7 @@
 	"IQD": {
 		"name": "ឌីណា​អ៊ីរ៉ាក់"
 	},
-	"STD": {
+	"STN": {
 		"name": "ឌូប្រា​សៅតូម៉េ និងប្រាំងស៊ីប"
 	},
 	"MAD": {
@@ -203,7 +203,7 @@
 	"TOP": {
 		"name": "ប៉ាអង់កា​តុងហ្គា"
 	},
-	"VEF": {
+	"VES": {
 		"name": "ប៊ូលីវ៉ា​វ៉េណេស៊ុយអេឡា"
 	},
 	"BOB": {
@@ -480,7 +480,7 @@
 		"name": "អឺរ៉ូ",
 		"symbol": "€"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "អ៊ូហ្គីយ៉ា​ម៉ូរីតានី"
 	},
 	"LSL": {
@@ -488,6 +488,9 @@
 	},
 	"SVC": {
 		"name": "Salvadoran Colón"
+	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
 	},
 	"ZWL": {
 		"name": "Zimbabwean Dollar (2009)"

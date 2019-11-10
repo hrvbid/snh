@@ -8,12 +8,11 @@ namespace CommerceGuys\Intl\NumberFormat;
 interface NumberFormatRepositoryInterface
 {
     /**
-     * Returns a number format instance for the provided locale.
+     * Gets a number format for the provided locale.
      *
-     * @param string $locale         The locale (i.e. fr-FR).
-     * @param string $fallbackLocale A fallback locale (i.e "en").
+     * @param string $locale The locale (i.e. fr-FR).
      *
-     * @return NumberFormatInterface
+     * @return NumberFormat
      */
-    public function get($locale, $fallbackLocale = null);
+    public function get($locale);
 }

@@ -261,7 +261,7 @@
 	"MUR": {
 		"name": "Lupila lwa Humolisi"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "Lupila lwa Humolitania"
 	},
 	"MAD": {
@@ -279,7 +279,7 @@
 	"SHP": {
 		"name": "Lupila lwa Husantahelena"
 	},
-	"STD": {
+	"STN": {
 		"name": "Lupila lwa Husaotome na Huprinisipe"
 	},
 	"SAR": {
@@ -469,6 +469,9 @@
 	"UAH": {
 		"name": "Ukrainian Hryvnia"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "Uruguayan Peso"
 	},
@@ -478,7 +481,7 @@
 	"VUV": {
 		"name": "Vanuatu Vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "Venezuelan Bolívar"
 	},
 	"VND": {

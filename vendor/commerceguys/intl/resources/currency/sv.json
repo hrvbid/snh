@@ -272,7 +272,7 @@
 	"MAD": {
 		"name": "marockansk dirham"
 	},
-	"MRO": {
+	"MRU": {
 		"name": "mauretansk ouguiya"
 	},
 	"MUR": {
@@ -361,7 +361,7 @@
 	"SVC": {
 		"name": "salvadoransk colón"
 	},
-	"STD": {
+	"STN": {
 		"name": "saotomeansk dobra"
 	},
 	"SAR": {
@@ -452,6 +452,9 @@
 	"HUF": {
 		"name": "ungersk forint"
 	},
+	"UYW": {
+		"name": "Uruguayan Nominal Wage Index Unit"
+	},
 	"UYU": {
 		"name": "uruguayansk peso"
 	},
@@ -465,7 +468,7 @@
 	"VUV": {
 		"name": "vanuatisk vatu"
 	},
-	"VEF": {
+	"VES": {
 		"name": "venezuelansk bolívar"
 	},
 	"VND": {
