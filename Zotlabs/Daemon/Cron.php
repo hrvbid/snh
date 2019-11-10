@@ -97,13 +97,16 @@ class Cron {
 		
 		// Clean expired photos from cache
 		
-		$sql_interval = "'" . dbesc(datetime_convert()) . "' - INTERVAL " . db_quoteinterval(get_config('system','active_expire_days', '30') . ' DAY'); 
-		$r = q("SELECT DISTINCT xchan, content FROM photo WHERE photo_usage = %d AND expires < $sql_interval",
-			intval(PHOTO_CACHE)
+		$r = q("SELECT DISTINCT xchan, content FROM photo WHERE photo_usage = %d AND expires < %s - INTERVAL %s",
+			intval(PHOTO_CACHE),
+			db_utcnow(),
+			db_quoteinterval(get_config('system','active_expire_days', '30') . ' DAY')
 		);
 		if($r) {
-		    q("DELETE FROM photo WHERE photo_usage = %d AND expires < $sql_interval",
-		        intval(PHOTO_CACHE)
+			q("DELETE FROM photo WHERE photo_usage = %d AND expires < %s - INTERVAL %s",
+				intval(PHOTO_CACHE),
+				db_utcnow(),
+				db_quoteinterval(get_config('system','active_expire_days', '30') . ' DAY')
 			);
 			foreach($r as $rr) {
 				$file = dbunescbin($rr['content']);
