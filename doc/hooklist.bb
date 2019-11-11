@@ -259,6 +259,9 @@ Hooks allow plugins/addons to "hook into" the code at many points and alter the 
 [zrl=[baseurl]/help/hook/enotify_store]enotify_store[/zrl]
 	called when storing a notification record
 
+[zrl=[baseurl]/help/hook/enotify_store_end]enotify_store_end[/zrl]
+	called after a notification record has been stored
+
 [zrl=[baseurl]/help/hook/event_created]event_created[/zrl]
 	called when an event record is created
 

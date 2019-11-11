@@ -24,7 +24,31 @@ var contentHeightDiff = 0;
 var liveRecurse = 0;
 var savedTitle = '';
 var initialLoad = true;
+var window_needs_alert = true;
 
+var sse_bs_active = false;
+var sse_offset = 0;
+var sse_type;
+var sse_partial_result = false;
+
+// take care of tab/window reloads on channel change
+if(localStorage.getItem('uid') !== localUser.toString()) {
+	localStorage.setItem('uid', localUser.toString());
+}
+window.onstorage = function(e) {
+	if(e.key === 'uid' && parseInt(e.newValue) !== localUser) {
+		if(window_needs_alert) {
+			window_needs_alert = false; 
+			localStorage.clear();
+			sessionStorage.clear();
+			alert("Your identity has changed. Page reload required!");
+			window.location.reload();
+			return;
+		}
+	}
+}
+
+/*
 // Clear the session and local storage if we switch channel or log out
 var cache_uid = '';
 if(sessionStorage.getItem('uid') !== null) {
@@ -35,6 +59,7 @@ if(cache_uid !== localUser.toString()) {
 	localStorage.clear();
 	sessionStorage.setItem('uid', localUser.toString());
 }
+*/
 
 $.ajaxSetup({cache: false});
 
@@ -55,28 +80,114 @@ $(document).ready(function() {
 		}
 	});
 
-    var tf = new Function('n', 's', 'var k = s.split("/")['+aStr['plural_func']+']; return (k ? k : s);');
+	var tf = new Function('n', 's', 'var k = s.split("/")['+aStr['plural_func']+']; return (k ? k : s);');
 
-    jQuery.timeago.settings.strings = {
-        prefixAgo     : aStr['t01'],
-        prefixFromNow : aStr['t02'],
-        suffixAgo     : aStr['t03'],
-        suffixFromNow : aStr['t04'],
-        seconds       : aStr['t05'],
-        minute        : aStr['t06'],
-        minutes       : function(value){return tf(value, aStr['t07']);},
-        hour          : aStr['t08'],
-        hours         : function(value){return tf(value, aStr['t09']);},
-        day           : aStr['t10'],
-        days          : function(value){return tf(value, aStr['t11']);},
-        month         : aStr['t12'],
-        months        : function(value){return tf(value, aStr['t13']);},
-        year          : aStr['t14'],
-        years         : function(value){return tf(value, aStr['t15']);},
-        wordSeparator : aStr['t16'],
-        numbers       : aStr['t17'],
-    };
+	jQuery.timeago.settings.strings = {
+		prefixAgo     : aStr['t01'],
+		prefixFromNow : aStr['t02'],
+		suffixAgo     : aStr['t03'],
+		suffixFromNow : aStr['t04'],
+		seconds       : aStr['t05'],
+		minute        : aStr['t06'],
+		minutes       : function(value){return tf(value, aStr['t07']);},
+		hour          : aStr['t08'],
+		hours         : function(value){return tf(value, aStr['t09']);},
+		day           : aStr['t10'],
+		days          : function(value){return tf(value, aStr['t11']);},
+		month         : aStr['t12'],
+		months        : function(value){return tf(value, aStr['t13']);},
+		year          : aStr['t14'],
+		years         : function(value){return tf(value, aStr['t15']);},
+		wordSeparator : aStr['t16'],
+		numbers       : aStr['t17'],
+	};
 
+
+	if(typeof(window.SharedWorker) === 'undefined') {
+		// notifications with multiple tabs open will not work very well in this scenario 
+		var evtSource = new EventSource('/sse');
+
+		evtSource.addEventListener('notifications', function(e) {
+			var obj = JSON.parse(e.data);
+			sse_handleNotifications(obj, false, false);
+		}, false);
+
+		document.addEventListener('visibilitychange', function() {
+			if (!document.hidden) {
+				sse_offset = 0;
+				sse_bs_init();
+			}
+		}, false);
+
+	}
+	else {
+		var myWorker = new SharedWorker('/view/js/sse_worker.js', localUser);
+
+		myWorker.port.onmessage = function(e) {
+			obj = e.data;
+			console.log(obj);
+			sse_handleNotifications(obj, false, false);
+		}
+
+		myWorker.onerror = function(e) {
+			myWorker.port.close();
+		}
+
+		myWorker.port.start();
+	}
+
+	sse_bs_init();
+
+	$('.notification-link').on('click', { replace: true, followup: false }, sse_bs_notifications);
+
+	$('.notification-filter').on('keypress', function(e) {
+		if(e.which == 13) { // enter
+			this.blur();
+			sse_offset = 0;
+			$("#nav-" + sse_type + "-menu").html('');
+			$("#nav-" + sse_type + "-loading").show();
+
+			var cn_val = $('#cn-' + sse_type + '-input').length ? $('#cn-' + sse_type + '-input').val().toString().toLowerCase() : '';
+
+			$.get('/sse_bs/' + sse_type + '/' + sse_offset + '?nquery=' + encodeURIComponent(cn_val), function(obj) {
+				console.log('sse: bootstraping ' + sse_type);
+				console.log(obj);
+				sse_handleNotifications(obj, true, false);
+				sse_bs_active = false;
+				sse_partial_result = true;
+				sse_offset = obj[sse_type].offset;
+				if(sse_offset < 0)
+					$("#nav-" + sse_type + "-loading").hide();
+
+			});
+		}
+	});
+
+	$('.notifications-textinput-clear').on('click', function(e) {
+		if(! sse_partial_result)
+			return;
+
+		$("#nav-" + sse_type + "-menu").html('');
+		$("#nav-" + sse_type + "-loading").show();
+		$.get('/sse_bs/' + sse_type, function(obj) {
+			console.log('sse: bootstraping ' + sse_type);
+			console.log(obj);
+			sse_handleNotifications(obj, true, false);
+			sse_bs_active = false;
+			sse_partial_result = false;
+			sse_offset = obj[sse_type].offset;
+			if(sse_offset < 0)
+				$("#nav-" + sse_type + "-loading").hide();
+
+		});
+	});
+
+	$('.notification-content').on('scroll', function() {
+		if(this.scrollTop > this.scrollHeight - this.clientHeight - (this.scrollHeight/7)) {
+			if(!sse_bs_active)
+				sse_bs_notifications(sse_type, false, true);
+		}
+	});
 
 	//mod_mail only
 	$(".mail-conv-detail .autotime").timeago();
@@ -85,6 +196,7 @@ $(document).ready(function() {
 
 	updateInit();
 
+/*
 	$('a.notification-link').click(function(e){
 		var notifyType = $(this).data('type');
 
@@ -102,6 +214,7 @@ $(document).ready(function() {
 		$('#nav-' + notifyType + '-sub').addClass('show');
 		loadNotificationItems(notifyType);
 	}
+*/
 
 	// Allow folks to stop the ajax page updates with the pause/break key
 	$(document).keydown(function(event) {
@@ -462,6 +575,7 @@ function markItemRead(itemId) {
 	$('.unseen-wall-indicator-'+itemId).hide();
 }
 
+/*
 function notificationsUpdate(cached_data) {
 	var pingCmd = 'ping' + ((localUser != 0) ? '?f=&uid=' + localUser : '');
 
@@ -545,7 +659,7 @@ function handleNotifications(data) {
 
 	$.each(data, function(index, item) {
 		//do not process those
-		var arr = ['notice', 'info', 'invalid'];
+		var arr = ['notice', 'info', 'invalid', 'network', 'home', 'notify', 'intros'];
 		if(arr.indexOf(index) !== -1)
 			return;
 
@@ -565,10 +679,11 @@ function handleNotificationsItems(notifyType, data) {
 
 	notify_menu.html('');
 
-	$(data).each(function() {
+	$(data.reverse()).each(function() {
 		html = notifications_tpl.format(this.notify_link,this.photo,this.name,this.addr,this.message,this.when,this.hclass,this.b64mid,this.notify_id,this.thread_top,this.unseen,this.private_forum);
-		notify_menu.append(html);
+		notify_menu.prepend(html);
 	});
+	$(".notifications-autotime").timeago();
 
 	datasrc2src('#notifications .notification img[data-src]');
 
@@ -578,6 +693,7 @@ function handleNotificationsItems(notifyType, data) {
 	if($('#cn-' + notifyType + '-input').length) {
 		var filter = $('#cn-' + notifyType + '-input').val().toString().toLowerCase();
 		if(filter) {
+			filter = filter.indexOf('%') == 0 ? filter.substring(1) : filter;
 			$('#nav-' + notifyType + '-menu .notification').each(function(i, el){
 				var cn = $(el).data('contact_name').toString().toLowerCase();
 				var ca = $(el).data('contact_addr').toString().toLowerCase();
@@ -589,6 +705,7 @@ function handleNotificationsItems(notifyType, data) {
 		}
 	}
 }
+*/
 
 function contextualHelp() {
 	var container = $("#contextual-help-content");
@@ -718,13 +835,10 @@ function updateConvItems(mode,data) {
 			}
 		}
 
-
-
 		// trigger the autotime function on all newly created content
-
 		$("> .wall-item-outside-wrapper .autotime, > .thread-wrapper .autotime",this).timeago();
 		$("> .shared_header .autotime",this).timeago();
-		
+
 		if((mode === 'append' || mode === 'replace') && (loadingPage)) {
 			loadingPage = false;
 		}
@@ -743,6 +857,42 @@ function updateConvItems(mode,data) {
 			}
 		}
 	});
+
+
+	// take care of the notifications count updates
+	$('.thread-wrapper', data).each(function() {
+
+		var nmid = $(this).data('b64mid');
+
+		if($('.notification[data-b64mid=\'' + nmid + '\']').length) {
+			$('.notification[data-b64mid=\'' + nmid + '\']').each(function() {
+				var n = this.parentElement.id.split('-');
+
+				if(n[1] === 'pubs')
+					return true;
+
+				if(n[1] === 'notify' && (nmid !== bParam_mid || sse_type !== 'notify'))
+					return true;
+
+				var count = Number($('.' + n[1] + '-update').html());
+
+				if(count > 0)
+					count = count - 1;
+
+				if(count < 1) {
+					$('.' + n[1] + '-button').fadeOut();
+					$('.' + n[1] + '-update').html(count);
+				}
+				else
+					$('.' + n[1] + '-update').html(count);
+
+				$('#nav-' + n[1] + '-menu .notification[data-b64mid=\'' + nmid + '\']').fadeOut();
+
+			});
+		}
+
+	});
+
 
 	// reset rotators and cursors we may have set before reaching this place
 
@@ -802,18 +952,15 @@ function updateConvItems(mode,data) {
 
 function scrollToItem() {
 	// auto-scroll to a particular comment in a thread (designated by mid) when in single-thread mode
-	// use the same method to generate the submid as we use in ThreadItem, 
-	// base64_encode + replace(['+','='],['','']);
 
 	if(justifiedGalleryActive)
 		return;
 
 	var submid = ((bParam_mid.length) ? bParam_mid : 'abcdefg');
 	var encoded = ((submid.substr(0,4) == 'b64.') ? true : false);
-	var submid_encoded = ((encoded) ? submid.substr(4) : window.btoa(submid));
+	var submid_encoded = ((encoded) ? submid : window.btoa(submid));
 
-	submid_encoded = submid_encoded.replace(/[\+\=]/g,'');
-	if($('.item_' + submid_encoded).length && !$('.item_' + submid_encoded).hasClass('toplevel_item')) {
+	if($('.thread-wrapper[data-b64mid=\'' + submid_encoded + '\']').length && !$('.thread-wrapper[data-b64mid=\'' + submid_encoded + '\']').hasClass('toplevel_item')) {
 		if($('.collapsed-comments').length) {
 			var scrolltoid = $('.collapsed-comments').attr('id').substring(19);
 			$('#collapsed-comments-' + scrolltoid + ' .autotime').timeago();
@@ -821,8 +968,8 @@ function scrollToItem() {
 			$('#hide-comments-' + scrolltoid).html(aStr.showfewer);
 			$('#hide-comments-total-' + scrolltoid).hide();
 		}
-		$('html, body').animate({ scrollTop: $('.item_' + submid_encoded).offset().top - $('nav').outerHeight(true) }, 'slow');
-		$('.item_' + submid_encoded).addClass('item-highlight');
+		$('html, body').animate({ scrollTop: $('.thread-wrapper[data-b64mid=\'' + submid_encoded + '\']').offset().top - $('nav').outerHeight(true) }, 'slow');
+		$('.thread-wrapper[data-b64mid=\'' + submid_encoded + '\']').addClass('item-highlight');
 	}
 }
 
@@ -885,6 +1032,7 @@ function updateInit() {
 	// if($('#live-cards').length)      { src = 'cards'; }
 	// if($('#live-articles').length)   { src = 'articles'; }
 
+/*
 	if (initialLoad && (sessionStorage.getItem('notifications_cache') !== null)) {
 		var cached_data = JSON.parse(sessionStorage.getItem('notifications_cache'));
 		notificationsUpdate(cached_data);
@@ -898,9 +1046,10 @@ function updateInit() {
 		}
 
 	}
+*/
 
 	if(! src) {
-		notificationsUpdate();
+		// notificationsUpdate();
 	}
 	else {
 		liveUpdate();
@@ -1039,7 +1188,7 @@ function liveUpdate(notify_id) {
 
 	})
 	.done(function() {
-		notificationsUpdate();
+	//	notificationsUpdate();
 	});
 }
 
@@ -1088,7 +1237,9 @@ function justifyPhotosAjax(id) {
 	$('#' + id).justifiedGallery('norewind').on('jg.complete', function(e){ justifiedGalleryActive = false; });
 }
 
+/*
 function loadNotificationItems(notifyType) {
+
 	var pingExCmd = 'ping/' + notifyType + ((localUser != 0) ? '?f=&uid=' + localUser : '');
 
 	var clicked = $('[data-type=\'' + notifyType + '\']').data('clicked');
@@ -1119,6 +1270,7 @@ function loadNotificationItems(notifyType) {
 		}
 	});
 }
+*/
 
 // Since our ajax calls are asynchronous, we will give a few
 // seconds for the first ajax call (setting like/dislike), then
@@ -1169,7 +1321,7 @@ function doscroll(parent, hidden) {
 		}
 	}
 	back.remove();
-	var id = $('[data-mid="' + parent + '"]');
+	var id = $('[data-b64mid="' + parent + '"]');
 	$('html, body').animate({scrollTop:(id.offset().top) - 50}, 'slow');
 	$('<a href="javascript:doscrollback(' + pos + ');" id="back-to-reply" class="float-right" title="' + aStr['to_reply'] + '"><i class="fa fa-angle-double-down">&nbsp;&nbsp;&nbsp;</i></a>').insertBefore('#wall-item-info-' + id.attr('id').replace(/\D/g,''));
 }
@@ -1653,3 +1805,306 @@ function zid(s) {
 
 	return s;
 }
+
+function sse_bs_init() {
+	if(sessionStorage.getItem('notification_open') !== null || typeof sse_type !== 'undefined' ) {
+		if(typeof sse_type === 'undefined')
+			sse_type = sessionStorage.getItem('notification_open');
+
+		$("#nav-" + sse_type + "-sub").addClass('show');
+		sse_bs_notifications(sse_type, true, false);
+	}
+	else {
+		$.get('/sse_bs',function(obj) {
+			console.log(obj);
+			sse_handleNotifications(obj, true, false);
+		});
+	}
+}
+
+function sse_bs_notifications(e, replace, followup) {
+
+	sse_bs_active = true;
+	var manual = false;
+
+	if(typeof replace === 'undefined')
+		replace = e.data.replace;
+
+	if(typeof followup === 'undefined')
+		followup = e.data.followup;
+
+	if(typeof e === 'string') {
+		sse_type = e;
+	}
+	else {
+		manual = true;
+		sse_offset = 0;
+		sse_type = e.target.dataset.sse_type;
+	}
+
+	if(typeof sse_type === 'undefined')
+		return;
+
+	if(followup || !manual || !($('#nav-' + sse_type + '-sub').hasClass('collapse') && $('#nav-' + sse_type + '-sub').hasClass('show'))) {
+
+		if(sse_offset >= 0) {
+			$("#nav-" + sse_type + "-loading").show();
+		}
+
+		sessionStorage.setItem('notification_open', sse_type);
+		if(sse_offset !== -1 || replace) {
+
+			var cn_val = (($('#cn-' + sse_type + '-input').length && sse_partial_result) ? $('#cn-' + sse_type + '-input').val().toString().toLowerCase() : '');
+
+			$.get('/sse_bs/' + sse_type + '/' + sse_offset + '?nquery=' + encodeURIComponent(cn_val), function(obj) {
+				console.log('sse: bootstraping ' + sse_type);
+				console.log(obj);
+				sse_handleNotifications(obj, replace, followup);
+				sse_bs_active = false;
+				sse_offset = obj[sse_type].offset;
+				if(sse_offset < 0)
+					$("#nav-" + sse_type + "-loading").hide();
+
+			});
+		}
+		else
+			$("#nav-" + sse_type + "-loading").hide();
+
+	}
+	else {
+		sessionStorage.removeItem('notification_open');
+	}
+}
+
+
+
+function sse_handleNotifications(obj, replace, followup) {
+
+	if(
+		(obj.network && obj.network.count) ||
+		(obj.home && obj.home.count) ||
+		(obj.intros && obj.intros.count) ||
+		(obj.register && obj.register.count) ||
+		(obj.mail && obj.mail.count) ||
+		(obj.all_events && obj.all_events.count) ||
+		(obj.notify && obj.notify.count) ||
+		(obj.files && obj.files.count) ||
+		(obj.pubs && obj.pubs.count) ||
+		(obj.forums && obj.forums.count)
+	) {
+		$('.notifications-btn').css('opacity', 1);
+		$('#no_notifications').hide();
+	}
+	else {
+		$('.notifications-btn').css('opacity', 0.5);
+		$('#navbar-collapse-1').removeClass('show');
+		$('#no_notifications').show();
+	}
+
+	if(
+		(obj.home && obj.home.count) ||
+		(obj.intros && obj.intros.count) ||
+		(obj.register && obj.register.count) ||
+		(obj.mail && obj.mail.count) ||
+		(obj.notify && obj.notify.count) ||
+		(obj.files && obj.files.count)
+	) {
+		$('.notifications-btn-icon').removeClass('fa-exclamation-circle');
+		$('.notifications-btn-icon').addClass('fa-exclamation-triangle');
+	}
+	if(
+		!(obj.home && obj.home.count) &&
+		!(obj.intros && obj.intros.count) &&
+		!(obj.register && obj.register.count) &&
+		!(obj.mail && obj.mail.count) &&
+		!(obj.notify && obj.notify.count) &&
+		!(obj.files && obj.files.count)
+	) {
+		$('.notifications-btn-icon').removeClass('fa-exclamation-triangle');
+		$('.notifications-btn-icon').addClass('fa-exclamation-circle');
+	}
+	if(obj.all_events_today && obj.all_events_today.count) {
+		$('.all_events-update').removeClass('badge-secondary');
+		$('.all_events-update').addClass('badge-danger');
+	}
+	else {
+		$('.all_events-update').removeClass('badge-danger');
+		$('.all_events-update').addClass('badge-secondary');
+	}
+
+	// network
+	if(obj.network && obj.network.count) {
+		$('.network-button').fadeIn();
+		if(replace || followup)
+			$('.network-update').html(Number(obj.network.count));
+		else
+			$('.network-update').html(Number(obj.network.count) + Number($('.network-update').html()));
+	}
+	if(obj.network && obj.network.notifications.length)
+		sse_handleNotificationsItems('network', obj.network.notifications, replace, followup);
+
+	// home
+	if(obj.home && obj.home.count) {
+		$('.home-button').fadeIn();
+		if(replace || followup)
+			$('.home-update').html(Number(obj.home.count));
+		else
+			$('.home-update').html(Number(obj.home.count) + Number($('.home-update').html()));
+	}
+	if(obj.home && obj.home.notifications.length)
+		sse_handleNotificationsItems('home', obj.home.notifications, replace, followup);
+
+	// notify
+	if(obj.notify && obj.notify.count) {
+		$('.notify-button').fadeIn();
+		if(replace || followup)
+			$('.notify-update').html(Number(obj.notify.count));
+		else
+			$('.notify-update').html(Number(obj.notify.count) + Number($('.notify-update').html()));
+
+	}
+	if(obj.notify && obj.notify.notifications.length)
+		sse_handleNotificationsItems('notify', obj.notify.notifications, replace, false);
+
+	// intros
+	if(obj.intros && obj.intros.count) {
+		$('.intros-button').fadeIn();
+		if(replace || followup)
+			$('.intros-update').html(Number(obj.intros.count));
+		else
+			$('.intros-update').html(Number(obj.intros.count) + Number($('.intros-update').html()));
+	}
+	if(obj.intros && obj.intros.notifications.length)
+		sse_handleNotificationsItems('intros', obj.intros.notifications, replace, false);
+
+	// forums
+	if(obj.forums && obj.forums.count) {
+		$('.forums-button').fadeIn();
+		if(replace || followup)
+			$('.forums-update').html(Number(obj.forums.count));
+		else
+			$('.forums-update').html(Number(obj.forums.count) + Number($('.forums-update').html()));
+	}
+	if(obj.forums && obj.forums.notifications.length)
+		sse_handleNotificationsItems('forums', obj.forums.notifications, replace, false);
+
+	// pubs
+	if(obj.pubs && obj.pubs.count) {
+		$('.pubs-button').fadeIn();
+		if(replace || followup)
+			$('.pubs-update').html(Number(obj.pubs.count));
+		else
+			$('.pubs-update').html(Number(obj.pubs.count) + Number($('.pubs-update').html()));
+	}
+	if(obj.pubs && obj.pubs.notifications.length)
+		sse_handleNotificationsItems('pubs', obj.pubs.notifications, replace, followup);
+
+	// files
+	if(obj.files && obj.files.count) {
+		$('.files-button').fadeIn();
+		if(replace || followup)
+			$('.files-update').html(Number(obj.files.count));
+		else
+			$('.files-update').html(Number(obj.files.count) + Number($('.files-update').html()));
+	}
+	if(obj.files && obj.files.notifications.length)
+		sse_handleNotificationsItems('files', obj.files.notifications, replace, false);
+
+	// mail
+	if(obj.mail && obj.mail.count) {
+		$('.mail-button').fadeIn();
+		if(replace || followup)
+			$('.mail-update').html(Number(obj.mail.count));
+		else
+			$('.mail-update').html(Number(obj.mail.count) + Number($('.mail-update').html()));
+	}
+	if(obj.mail && obj.mail.notifications.length)
+		sse_handleNotificationsItems('mail', obj.mail.notifications, replace, false);
+
+	// all_events
+	if(obj.all_events && obj.all_events.count) {
+		$('.all_events-button').fadeIn();
+		if(replace || followup)
+			$('.all_events-update').html(Number(obj.all_events.count));
+		else
+			$('.all_events-update').html(Number(obj.all_events.count) + Number($('.all_events-update').html()));
+	}
+	if(obj.all_events && obj.all_events.notifications.length)
+		sse_handleNotificationsItems('all_events', obj.all_events.notifications, replace, false);
+
+	// register
+	if(obj.register && obj.register.count) {
+		$('.register-button').fadeIn();
+		if(replace || followup)
+			$('.register-update').html(Number(obj.register.count));
+		else
+			$('.register-update').html(Number(obj.register.count) + Number($('.register-update').html()));
+	}
+	if(obj.register && obj.register.notifications.length)
+		sse_handleNotificationsItems('register', obj.register.notifications, replace, false);
+
+	// notice and info
+	$.jGrowl.defaults.closerTemplate = '<div>[ ' + aStr.closeAll + ']</div>';
+	if(obj.notice) {
+		$(obj.notice.notifications).each(function() {
+			$.jGrowl(this, { sticky: true, theme: 'notice' });
+		});
+	}
+	if(obj.info) {
+		$(obj.info.notifications).each(function(){
+			$.jGrowl(this, { sticky: false, theme: 'info', life: 10000 });
+		});
+	}
+
+}
+
+function sse_handleNotificationsItems(notifyType, data, replace, followup) {
+	console.log('replace: ' + replace);
+	console.log('followup: ' + followup);
+	var notifications_tpl = ((notifyType == 'forums') ? unescape($("#nav-notifications-forums-template[rel=template]").html()) : unescape($("#nav-notifications-template[rel=template]").html()));
+	var notify_menu = $("#nav-" + notifyType + "-menu");
+	var notify_loading = $("#nav-" + notifyType + "-loading");
+	var notify_count = $("." + notifyType + "-update");
+
+	if(replace && !followup) {
+		notify_menu.html('');
+		notify_loading.hide();
+	}
+
+	$(data).each(function() {
+		html = notifications_tpl.format(this.notify_link,this.photo,this.name,this.addr,this.message,this.when,this.hclass,this.b64mid,this.notify_id,this.thread_top,this.unseen,this.private_forum);
+		notify_menu.append(html);
+	});
+
+	if(!replace && !followup) {
+		console.log('sorting');
+		$("#nav-" + notifyType + "-menu .notification").sort(function(a,b) {
+			a = new Date(a.dataset.when);
+			b = new Date(b.dataset.when);
+			return a > b ? -1 : a < b ? 1 : 0;
+		}).appendTo('#nav-' + notifyType + '-menu');
+	}
+
+	$(document.body).trigger("sticky_kit:recalc");
+	$("#nav-" + notifyType + "-menu .notifications-autotime").timeago();
+
+	if($('#tt-' + notifyType + '-only').hasClass('active'))
+		$('#nav-' + notifyType + '-menu [data-thread_top=false]').addClass('d-none');
+
+	if($('#cn-' + notifyType + '-input').length) {
+		var filter = $('#cn-' + notifyType + '-input').val().toString().toLowerCase();
+		if(filter) {
+			filter = filter.indexOf('%') == 0 ? filter.substring(1) : filter;
+
+			$('#nav-' + notifyType + '-menu .notification').each(function(i, el) {
+				var cn = $(el).data('contact_name').toString().toLowerCase();
+				var ca = $(el).data('contact_addr').toString().toLowerCase();
+				if(cn.indexOf(filter) === -1 && ca.indexOf(filter) === -1)
+					$(el).addClass('d-none');
+				else
+					$(el).removeClass('d-none');
+			});
+		}
+	}
+}
+

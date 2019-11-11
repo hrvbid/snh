@@ -85,7 +85,7 @@
 		$('#nav-{{$notification.type}}-menu [data-thread_top=false]').toggle();
 		$(this).toggleClass('active sticky-top');
 	});
-	$(document).on('click ', '#cn-{{$notification.type}}-input-clear', function(e) {
+	$(document).on('click', '#cn-{{$notification.type}}-input-clear', function(e) {
 		$('#cn-{{$notification.type}}-input').val('');
 		$('#cn-{{$notification.type}}-only').removeClass('active sticky-top');
 		$("#nav-{{$notification.type}}-menu .notification").removeClass('d-none');
@@ -93,8 +93,8 @@
 	});
 	$(document).on('input', '#cn-{{$notification.type}}-input', function(e) {
 		var val = $('#cn-{{$notification.type}}-input').val().toString().toLowerCase();
-
 		if(val) {
+			val = val.indexOf('%') == 0 ? val.substring(1) : val;
 			$('#cn-{{$notification.type}}-only').addClass('active sticky-top');
 			$('#cn-{{$notification.type}}-input-clear').removeClass('d-none');
 		}
@@ -135,16 +135,17 @@
 		{{$no_notifications}}<span class="jumping-dots"><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></span>
 	</div>
 	<div id="nav-notifications-template" rel="template">
-		<a class="list-group-item clearfix notification {6}" href="{0}" title="{3}" data-b64mid="{7}" data-notify_id="{8}" data-thread_top="{9}" data-contact_name="{2}" data-contact_addr="{3}">
-			<img class="menu-img-3" data-src="{1}">
+		<a class="list-group-item clearfix notification {6}" href="{0}" title="{3}" data-b64mid="{7}" data-notify_id="{8}" data-thread_top="{9}" data-contact_name="{2}" data-contact_addr="{3}" data-when="{5}">
+			<img class="menu-img-3" src="{1}">
 			<span class="contactname">{2}</span>
-			<span class="dropdown-sub-text">{4}<br>{5}</span>
+			<span class="dropdown-sub-text">{4}</span><br>
+			<span class="dropdown-sub-text notifications-autotime" title="{5}">{5}</span>
 		</a>
 	</div>
 	<div id="nav-notifications-forums-template" rel="template">
 		<a class="list-group-item clearfix notification notification-forum" href="{0}" title="{4} - {3}" data-b64mid="{7}" data-notify_id="{8}" data-thread_top="{9}" data-contact_name="{2}" data-contact_addr="{3}">
-			<span class="float-right badge badge-{{$notification.severity}}">{10}</span>
-			<img class="menu-img-1" data-src="{1}">
+			<span class="float-right badge badge-secondary">{10}</span>
+			<img class="menu-img-1" src="{1}">
 			<span class="">{2}</span>
 			<i class="fa fa-{11} text-muted"></i> 
 		</a>
@@ -152,11 +153,14 @@
 	<div id="notifications" class="navbar-nav">
 		{{foreach $notifications as $notification}}
 		<div class="collapse {{$notification.type}}-button">
-			<a class="list-group-item notification-link" href="#" title="{{$notification.title}}" data-target="#nav-{{$notification.type}}-sub" data-toggle="collapse" data-type="{{$notification.type}}">
+			<a id="notification-link-{{$notification.type}}" class="collapsed list-group-item notification-link" href="#" title="{{$notification.title}}" data-target="#nav-{{$notification.type}}-sub" data-toggle="collapse" data-sse_type="{{$notification.type}}">
 				<i class="fa fa-fw fa-{{$notification.icon}}"></i> {{$notification.label}}
 				<span class="float-right badge badge-{{$notification.severity}} {{$notification.type}}-update"></span>
+				<div id="notifications-spinner-{{$notification.type}}" class="float-right spinner-wrapper">
+					<div class="spinner s"></div>
+				</div>
 			</a>
-			<div id="nav-{{$notification.type}}-sub" class="collapse notification-content" data-parent="#notifications" data-type="{{$notification.type}}">
+			<div id="nav-{{$notification.type}}-sub" class="collapse notification-content" data-parent="#notifications" data-sse_type="{{$notification.type}}">
 				{{if $notification.viewall}}
 				<a class="list-group-item text-dark" id="nav-{{$notification.type}}-see-all" href="{{$notification.viewall.url}}">
 					<i class="fa fa-fw fa-external-link"></i> {{$notification.viewall.label}}
@@ -176,14 +180,16 @@
 				{{if $notification.filter.name_label}}
 				<div class="list-group-item clearfix notifications-textinput" id="cn-{{$notification.type}}-only">
 					<div class="text-muted notifications-textinput-filter"><i class="fa fa-fw fa-filter"></i></div>
-					<input id="cn-{{$notification.type}}-input" type="text" class="form-control form-control-sm" placeholder="{{$notification.filter.name_label}}">
+					<input id="cn-{{$notification.type}}-input" type="text" class="notification-filter form-control form-control-sm" placeholder="{{$notification.filter.name_label}}">
 					<div id="cn-{{$notification.type}}-input-clear" class="text-muted notifications-textinput-clear d-none"><i class="fa fa-times"></i></div>
 				</div>
 				{{/if}}
 				{{/if}}
-				<div id="nav-{{$notification.type}}-menu" class="">
+				<div id="nav-{{$notification.type}}-menu"></div>
+				<div id="nav-{{$notification.type}}-loading" style="display: none;">
 					{{$loading}}<span class="jumping-dots"><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></span>
 				</div>
+
 			</div>
 		</div>
 		{{/foreach}}

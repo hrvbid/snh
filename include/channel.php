@@ -2953,3 +2953,8 @@ function pchan_to_chan($pchan) {
 function channel_url($channel) {
 	return (($channel) ? z_root() . '/channel/' . $channel['channel_address'] : z_root());
 }
+
+function get_channel_hashes() {
+	$r = q("SELECT channel_hash FROM channel WHERE channel_removed = 0");
+	return flatten_array_recursive($r);
+}

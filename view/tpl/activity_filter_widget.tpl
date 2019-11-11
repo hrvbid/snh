@@ -9,7 +9,7 @@
 	</h3>
 	{{$content}}
 	{{if $name}}
-	<div class="notifications-textinput">
+	<div id="cid-filter-wrapper" class="notifications-textinput">
 		<form method="get" action="{{$name.url}}" role="search">
 			<div class="text-muted notifications-textinput-filter"><i class="fa fa-fw fa-filter"></i></div>
 			<input id="cid" type="hidden" value="" name="cid" />

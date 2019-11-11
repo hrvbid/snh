@@ -35,7 +35,7 @@
 		'name_ok2'    : "{{$name_ok2}}",
 		'to_reply'	  : "{{$to_reply}}",
 
-        'plural_func' : "{{$plural_func}}",
+		'plural_func' : "{{$plural_func}}",
 
 		't01' : "{{$t01}}",
 		't02' : "{{$t02}}",

@@ -369,7 +369,7 @@ class ThreadItem {
 			'folders' => $body['folders'],
 			'text' => strip_tags($body['html']),
 			'id' => $this->get_id(),
-			'mid' => $item['mid'],
+			'mid' => 'b64.' . base64url_encode($item['mid']),
 			'parent' => $item['parent'],
 			'author_id' => (($item['author']['xchan_addr']) ? $item['author']['xchan_addr'] : $item['author']['xchan_url']),
 			'isevent' => $isevent,
@@ -467,10 +467,9 @@ class ThreadItem {
 			'previewing' => ($conv->is_preview() ? true : false ),
 			'preview_lbl' => t('This is an unsaved preview'),
 			'wait' => t('Please wait'),
-			'submid' => str_replace(['+','='], ['',''], base64_encode($item['mid'])),
 			'thread_level' => $thread_level,
 			'settings' => $settings,
-			'thr_parent' => (($item['parent_mid'] != $item['thr_parent']) ? $item['thr_parent'] : '')
+			'thr_parent' => (($item['parent_mid'] != $item['thr_parent']) ? 'b64.' . base64url_encode($item['thr_parent']) : '')
 		);
 
 		$arr = array('item' => $item, 'output' => $tmp_item);

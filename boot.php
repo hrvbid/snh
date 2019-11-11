@@ -1811,6 +1811,8 @@ function can_view_public_stream() {
  * @param string $s Text to display
  */
 function notice($s) {
+
+/*
 	if(! session_id())
 		return;
 
@@ -1826,6 +1828,34 @@ function notice($s) {
 	if(App::$interactive) {
 		$_SESSION['sysmsg'][] = $s;
 	}
+*/
+
+	$hash = get_observer_hash();
+
+	if (! $hash)
+		return;
+
+
+	$t = get_xconfig($hash, 'sse', 'timestamp');
+
+	if(datetime_convert('UTC', 'UTC', $t) < datetime_convert('UTC', 'UTC', '- 30 seconds')) {
+		del_xconfig($hash, 'sse', 'notifications');
+	}
+
+	$x = get_xconfig($hash, 'sse', 'notifications');
+
+	if ($x === false)
+		$x = [];
+
+	if (isset($x['notice']) && in_array($s, $x['notice']['notifications']))
+		return;
+
+	if (App::$interactive) {
+		$x['notice']['notifications'][] = $s;
+		set_xconfig($hash, 'sse', 'timestamp', datetime_convert());
+		set_xconfig($hash, 'sse', 'notifications', $x);
+	}
+
 }
 
 /**
@@ -1839,8 +1869,11 @@ function notice($s) {
  * @param string $s Text to display
  */
 function info($s) {
+
+/*
 	if(! session_id())
 		return;
+
 	if(! x($_SESSION, 'sysmsg_info'))
 		$_SESSION['sysmsg_info'] = array();
 
@@ -1849,6 +1882,33 @@ function info($s) {
 
 	if(App::$interactive)
 		$_SESSION['sysmsg_info'][] = $s;
+*/
+
+	$hash = get_observer_hash();
+
+	if (! $hash)
+		return;
+
+	$t = get_xconfig($hash, 'sse', 'timestamp');
+
+	if(datetime_convert('UTC', 'UTC', $t) < datetime_convert('UTC', 'UTC', '- 30 seconds')) {
+		del_xconfig($hash, 'sse', 'notifications');
+	}
+
+	$x = get_xconfig($hash, 'sse', 'notifications');
+
+	if($x === false)
+		$x = [];
+
+	if(isset($x['info']) && in_array($s, $x['info']['notifications']))
+		return;
+
+	if(App::$interactive) {
+		$x['info']['notifications'][] = $s;
+		set_xconfig($hash, 'sse', 'timestamp', datetime_convert());
+		set_xconfig($hash, 'sse', 'notifications', $x);
+	}
+
 }
 
 /**

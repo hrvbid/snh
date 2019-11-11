@@ -553,8 +553,18 @@ function event_store_event($arr) {
 		dbesc($hash),
 		intval($arr['uid'])
 	);
-	if($r)
+	if($r) {
+
+		/**
+		 * @hooks event_store_event_end
+		 *   Called after an event record was stored.
+		 *   * \e array \b event
+		 */
+		call_hooks('event_store_event_end', $r[0]);
+
 		return $r[0];
+
+	}
 
 	return false;
 }
