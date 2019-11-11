@@ -25,24 +25,24 @@ class Ping extends \Zotlabs\Web\Controller {
 		$result = array();
 		$notifs = array();
 
-		$result['notify'] = 0; //done
-		$result['home'] = 0; //done
-		$result['network'] = 0; //done
-		$result['intros'] = 0; //done
-		$result['mail'] = 0; //done bootstrap - no realtime updates yet (mod mail will be deprecated soon - is it worth the effort?)
+		$result['notify'] = 0;
+		$result['home'] = 0;
+		$result['network'] = 0;
+		$result['intros'] = 0;
+		$result['mail'] = 0;
 		$result['register'] = 0;
-		$result['events'] = 0; //not used
-		$result['events_today'] = 0; //not used
-		$result['birthdays'] = 0; //not used
-		$result['birthdays_today'] = 0; //not used
-		$result['all_events'] = 0; //done
-		$result['all_events_today'] = 0; //not used
-		$result['notice'] = []; //done
-		$result['info'] = []; //done 
-		$result['pubs'] = 0; //done
-		$result['files'] = 0; //done
-		$result['forums'] = 0; //done bootstrap - no realtime updates yet
-		$result['forums_sub'] = []; //deprecated
+		$result['events'] = 0;
+		$result['events_today'] = 0;
+		$result['birthdays'] = 0;
+		$result['birthdays_today'] = 0;
+		$result['all_events'] = 0;
+		$result['all_events_today'] = 0;
+		$result['notice'] = [];
+		$result['info'] = [];
+		$result['pubs'] = 0;
+		$result['files'] = 0;
+		$result['forums'] = 0;
+		$result['forums_sub'] = [];
 
 		if(! $_SESSION['static_loadtime'])
 			$_SESSION['static_loadtime'] = datetime_convert();
@@ -108,10 +108,9 @@ class Ping extends \Zotlabs\Web\Controller {
 		}
 
 		/**
-		 * Update chat presence indication (if applicable) 
+		 * Update chat presence indication (if applicable)
 		 */
 
-		// done
 		if(get_observer_hash() && (! $result['invalid'])) {
 			$r = q("select cp_id, cp_room from chatpresence where cp_xchan = '%s' and cp_client = '%s' and cp_room = 0 limit 1",
 				dbesc(get_observer_hash()),
@@ -345,7 +344,6 @@ class Ping extends \Zotlabs\Web\Controller {
 		}
 
 		if(argc() > 1 && (argv(1) === 'network' || argv(1) === 'home')) {
-
 			$result = array();
 
 			if(argv(1) === 'home') {
@@ -530,6 +528,7 @@ class Ping extends \Zotlabs\Web\Controller {
 		$t3 = dba_timer();
 
 		if($vnotify & (VNOTIFY_NETWORK|VNOTIFY_CHANNEL)) {
+
 			$r = q("SELECT id, item_wall FROM item 
 				WHERE uid = %d and item_unseen = 1 
 				$item_normal

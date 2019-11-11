@@ -110,6 +110,6 @@ function js_strings() {
 		'$month' => t('month','calendar'),
 		'$week' => t('week','calendar'),
 		'$day' => t('day','calendar'),
-		'$allday' => t('All day','calendar'),
+		'$allday' => t('All day','calendar')
 	));
 }
