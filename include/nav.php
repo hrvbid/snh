@@ -59,6 +59,8 @@ function nav($template = 'default') {
 
 	if($banner === false) 
 		$banner = get_config('system','sitename');
+		
+	call_hooks('get_banner',$banner);
 
 	App::$page['header'] .= replace_macros(get_markup_template('hdr.tpl'), array(
 		//we could additionally use this to display important system notifications e.g. for updates

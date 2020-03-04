@@ -82,14 +82,6 @@ class WebServer {
 		if((x($_SESSION, 'authenticated')) || (x($_POST, 'auth-params')) || (\App::$module === 'login'))
 			require('include/auth.php');
 
-		if(! x($_SESSION, 'sysmsg'))
-			$_SESSION['sysmsg'] = array();
-
-		if(! x($_SESSION, 'sysmsg_info'))
-			$_SESSION['sysmsg_info'] = array();
-
-
-
 		if(\App::$install) {
 			/* Allow an exception for the view module so that pcss will be interpreted during installation */
 			if(\App::$module != 'view')

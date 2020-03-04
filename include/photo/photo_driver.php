@@ -135,6 +135,8 @@ function guess_image_type($filename, $headers = '') {
 				$type = 'image/gif';
 			elseif(strpos(strtolower($filename),'png') !== false)
 				$type = 'image/png';
+                        elseif(strpos(strtolower($filename),'webp') !== false)
+                                $type = 'image/webp';
 		}
 
 	}

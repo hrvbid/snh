@@ -1220,8 +1220,8 @@ class Libzot {
 					$arr['owner_xchan'] = $env['sender'];
 				}
 
-				if($private) {
-					$arr['item_private'] = true;
+				if ($private && (! intval($arr['item_private']))) {
+					$arr['item_private'] = 1;
 				}
 
 				if ($arr['mid'] === $arr['parent_mid']) {
@@ -1277,7 +1277,12 @@ class Libzot {
 				logger('Channel sync received: ' . print_r($arr,true), LOGGER_DATA, LOG_DEBUG);
 				logger('Channel sync recipients: ' . print_r($deliveries,true), LOGGER_DATA, LOG_DEBUG);
 
-				$result = Libsync::process_channel_sync_delivery($env['sender'],$arr,$deliveries);
+				if ($env['encoding'] === 'hz') {
+					$result = Libsync::process_channel_sync_delivery($env['sender'],$arr,$deliveries);
+				}
+				else {
+					logger('sync packet type not supported.');
+				}
 			}
 		}
 		if ($result) {
@@ -1608,10 +1613,11 @@ class Libzot {
 				// As a side effect we will also do a preliminary check that we have the top-level-post, otherwise
 				// processing it is pointless.
 
-				$r = q("select route, id, owner_xchan, item_private from item where mid = '%s' and uid = %d limit 1",
+				$r = q("select route, id, parent_mid, mid, owner_xchan, item_private, obj_type from item where mid = '%s' and uid = %d limit 1",
 					dbesc($arr['parent_mid']),
 					intval($channel['channel_id'])
 				);
+
 				if(! $r) {
 					$DR->update('comment parent not found');
 					$result[] = $DR->get();
@@ -1633,6 +1639,16 @@ class Libzot {
 					}
 					continue;
 				}
+
+				if ($r[0]['obj_type'] === 'Question') {
+					// route checking doesn't work correctly here because we've changed the privacy
+					$r[0]['route'] = EMPTY_STR;
+					// If this is a poll response, convert the obj_type to our (internal-only) "Answer" type
+					if ($arr['obj_type'] === ACTIVITY_OBJ_COMMENT && $arr['title'] && (! $arr['body'])) {
+						$arr['obj_type'] = 'Answer';
+					}
+				}
+
 
 				if($relay || $friendofriend || (intval($r[0]['item_private']) === 0 && intval($arr['item_private']) === 0)) {
 					// reset the route in case it travelled a great distance upstream

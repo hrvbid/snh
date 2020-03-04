@@ -29,7 +29,10 @@ class Apschema extends \Zotlabs\Web\Controller {
 				'emojiReaction'    => 'zot:emojiReaction',
 				'expires'          => 'zot:expires',
 				'directMessage'    => 'zot:directMessage',
-				 
+				'schema'           => 'http://schema.org#',
+				'PropertyValue'    => 'schema:PropertyValue',
+				'value'            => 'schema:value',
+
 				'magicEnv' => [
 					'@id'   => 'zot:magicEnv',
 					'@type' => '@id'

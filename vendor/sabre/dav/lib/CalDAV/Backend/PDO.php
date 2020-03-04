@@ -874,6 +874,8 @@ WHERE
     calendar_instances.principaluri = ?
     AND
     calendarobjects.uid = ?
+    AND
+    calendar_instances.access = 1
 SQL;
 
         $stmt = $this->pdo->prepare($query);
@@ -1286,13 +1288,18 @@ SQL;
     /**
      * Creates a new scheduling object. This should land in a users' inbox.
      *
-     * @param string $principalUri
-     * @param string $objectUri
-     * @param string $objectData
+     * @param string          $principalUri
+     * @param string          $objectUri
+     * @param string|resource $objectData
      */
     public function createSchedulingObject($principalUri, $objectUri, $objectData)
     {
         $stmt = $this->pdo->prepare('INSERT INTO '.$this->schedulingObjectTableName.' (principaluri, calendardata, uri, lastmodified, etag, size) VALUES (?, ?, ?, ?, ?, ?)');
+
+        if (is_resource($objectData)) {
+            $objectData = stream_get_contents($objectData);
+        }
+
         $stmt->execute([$principalUri, $objectData, $objectUri, time(), md5($objectData), strlen($objectData)]);
     }
 

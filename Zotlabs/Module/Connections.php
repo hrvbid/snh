@@ -283,6 +283,28 @@ class Connections extends \Zotlabs\Web\Controller {
 					if(! intval(get_abconfig(local_channel(),$rr['xchan_hash'],'their_perms','post_comments'))) {
 						$oneway = true;
 					}
+
+					$perminfo['connpermcount']=0;
+					$perminfo['connperms']=t('Accepts').': ';
+					if(intval(get_abconfig(local_channel(),$rr['xchan_hash'],'their_perms','post_comments'))) {
+						$perminfo['connpermcount']++;
+						$perminfo['connperms'] .= t('Comments');
+					}
+					if(intval(get_abconfig(local_channel(),$rr['xchan_hash'],'their_perms','send_stream'))) {
+						$perminfo['connpermcount']++;
+						$perminfo['connperms'] = ($perminfo['connperms']) ? $perminfo['connperms'] . ', ' : $perminfo['connperms'] ;
+						$perminfo['connperms'] .= t('Stream items');
+					}
+					if(intval(get_abconfig(local_channel(),$rr['xchan_hash'],'their_perms','post_wall'))) {
+						$perminfo['connpermcount']++;
+						$perminfo['connperms'] = ($perminfo['connperms']) ? $perminfo['connperms'] . ', ' : $perminfo['connperms'] ;
+						$perminfo['connperms'] .= t('Wall posts');
+					}
+
+					if ($perminfo['connpermcount'] == 0) {
+						$perminfo['connperms'] .= t('Nothing');
+					}
+
 	
 					foreach($status as $str) {
 						if(!$str)
@@ -323,6 +345,7 @@ class Connections extends \Zotlabs\Web\Controller {
 						'recent_label' => t('Recent activity'),
 						'recentlink' => z_root() . '/network/?f=&cid=' . intval($rr['abook_id']) . '&name=' . $rr['xchan_name'],
 						'oneway' => $oneway,
+						'perminfo' => $perminfo,
 						'connect' => (intval($rr['abook_not_here']) ? t('Connect') : ''),
 						'follow' => z_root() . '/follow/?f=&url=' . urlencode($rr['xchan_hash']) . '&interactive=0',
 						'connect_hover' => t('Connect at this location')

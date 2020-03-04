@@ -40,6 +40,15 @@ class Cron {
 
 		require_once('include/sharedwithme.php');
 		apply_updates();
+
+		/**
+		 * Chatpresence: if somebody hasn't pinged recently, they've most likely left the page
+		 * and shouldn't count as online anymore. We allow an expection for bots.
+		 */
+		q("delete from chatpresence where cp_last < %s - INTERVAL %s and cp_client != 'auto' ",
+			db_utcnow(),
+			db_quoteinterval('3 MINUTE')
+		);
 	
 		// expire any expired mail
 

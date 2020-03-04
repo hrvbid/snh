@@ -1,10 +1,7 @@
+import { DATA_PREVIEW } from './constants';
 import {
-  DATA_PREVIEW,
-} from './constants';
-import {
-  each,
-  empty,
-  extend,
+  assign,
+  forEach,
   getData,
   getTransforms,
   removeData,
@@ -14,9 +11,10 @@ import {
 
 export default {
   initPreview() {
-    const { crossOrigin } = this;
+    const { element, crossOrigin } = this;
     const { preview } = this.options;
     const url = crossOrigin ? this.crossOriginUrl : this.url;
+    const alt = element.alt || 'The image to preview';
     const image = document.createElement('img');
 
     if (crossOrigin) {
@@ -24,25 +22,32 @@ export default {
     }
 
     image.src = url;
+    image.alt = alt;
     this.viewBox.appendChild(image);
-    this.image2 = image;
+    this.viewBoxImage = image;
 
     if (!preview) {
       return;
     }
 
-    const previews = preview.querySelector ? [preview] : document.querySelectorAll(preview);
+    let previews = preview;
+
+    if (typeof preview === 'string') {
+      previews = element.ownerDocument.querySelectorAll(preview);
+    } else if (preview.querySelector) {
+      previews = [preview];
+    }
 
     this.previews = previews;
 
-    each(previews, (element) => {
+    forEach(previews, (el) => {
       const img = document.createElement('img');
 
       // Save the original size for recover
-      setData(element, DATA_PREVIEW, {
-        width: element.offsetWidth,
-        height: element.offsetHeight,
-        html: element.innerHTML,
+      setData(el, DATA_PREVIEW, {
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        html: el.innerHTML,
       });
 
       if (crossOrigin) {
@@ -50,6 +55,7 @@ export default {
       }
 
       img.src = url;
+      img.alt = alt;
 
       /**
        * Override img element styles
@@ -58,23 +64,23 @@ export default {
        * (Occur only when margin-top <= -height)
        */
       img.style.cssText = (
-        'display:block;' +
-        'width:100%;' +
-        'height:auto;' +
-        'min-width:0!important;' +
-        'min-height:0!important;' +
-        'max-width:none!important;' +
-        'max-height:none!important;' +
-        'image-orientation:0deg!important;"'
+        'display:block;'
+        + 'width:100%;'
+        + 'height:auto;'
+        + 'min-width:0!important;'
+        + 'min-height:0!important;'
+        + 'max-width:none!important;'
+        + 'max-height:none!important;'
+        + 'image-orientation:0deg!important;"'
       );
 
-      empty(element);
-      element.appendChild(img);
+      el.innerHTML = '';
+      el.appendChild(img);
     });
   },
 
   resetPreview() {
-    each(this.previews, (element) => {
+    forEach(this.previews, (element) => {
       const data = getData(element, DATA_PREVIEW);
 
       setStyle(element, {
@@ -98,15 +104,15 @@ export default {
       return;
     }
 
-    setStyle(this.image2, extend({
+    setStyle(this.viewBoxImage, assign({
       width,
       height,
-    }, getTransforms(extend({
+    }, getTransforms(assign({
       translateX: -left,
       translateY: -top,
     }, imageData))));
 
-    each(this.previews, (element) => {
+    forEach(this.previews, (element) => {
       const data = getData(element, DATA_PREVIEW);
       const originalWidth = data.width;
       const originalHeight = data.height;
@@ -130,10 +136,10 @@ export default {
         height: newHeight,
       });
 
-      setStyle(element.getElementsByTagName('img')[0], extend({
+      setStyle(element.getElementsByTagName('img')[0], assign({
         width: width * ratio,
         height: height * ratio,
-      }, getTransforms(extend({
+      }, getTransforms(assign({
         translateX: -left * ratio,
         translateY: -top * ratio,
       }, imageData))));

@@ -66,7 +66,10 @@ class Help extends \Zotlabs\Web\Controller {
 				case IMAGETYPE_PNG:
 					header("Content-Type: image/png");
 					break;
-			   default:
+				case IMAGETYPE_WEBP:
+					header("Content-Type: image/webp");
+					break;
+				default:
 					break;
 			}
 			header("Content-Length: " . filesize($realpath));

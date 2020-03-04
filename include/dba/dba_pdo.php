@@ -139,6 +139,15 @@ class dba_pdo extends dba_driver {
 		}
 	}
 
+	function str_to_date($str) {
+		if($this->driver_dbtype === 'pgsql') {
+			return "TO_TIMESTAMP($str, 'YYYY-MM-DD HH24:MI:SS')";
+		}
+		else {
+			return "STR_TO_DATE($str, '%Y-%m-%d %H:%i:%s')";
+		}
+	}
+
 	function quote_interval($txt) {
 		if($this->driver_dbtype === 'pgsql') {
 			return "'$txt'";

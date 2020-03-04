@@ -65,11 +65,6 @@ class Well_known extends \Zotlabs\Web\Controller {
 					killme();
 					
 				case 'caldav':
-				    if ($_SERVER['REQUEST_METHOD'] == 'PROPFIND') {
-				        http_status('301', 'moved permanently');
-				        goaway(z_root() . '/cdav');
-				    };
-				    
 				case 'carddav':
 				    if ($_SERVER['REQUEST_METHOD'] == 'PROPFIND') {
 				        http_status('301', 'moved permanently');

@@ -42,7 +42,7 @@ class Acl extends \Zotlabs\Web\Controller {
 
 
 		// $type =
-		//  'm'  =>  autocomplete private mail recipient (checks post_mail permission)
+		//  'm'  =>  autocomplete private mail recipient (checks post_mail permission and displays only zot, diaspora, friendica-over-diaspora xchan_network xchan's)
 		//  'a'  =>  autocomplete connections (mod_connections, mod_poke, mod_sources, mod_photos)
 		//  'x'  =>  nav search bar autocomplete (match any xchan)
 		// $_REQUEST['query'] contains autocomplete search text.
@@ -286,6 +286,7 @@ class Acl extends \Zotlabs\Web\Controller {
 				FROM abook left join xchan on abook_xchan = xchan_hash
 				WHERE abook_channel = %d 
 				and xchan_deleted = 0
+				and xchan_network IN ('zot', 'diaspora', 'friendica-over-diaspora')
 				$sql_extra3
 				ORDER BY xchan_name ASC ",
 				intval(local_channel())

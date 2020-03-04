@@ -505,7 +505,7 @@ function z_dns_check($h,$check_mx = 0) {
 
 	// Otherwise we will assume dns_get_record() works as documented
 
-	$opts = DNS_A + DNS_CNAME + DNS_PTR;
+	$opts = DNS_A + DNS_AAAA;
 	if($check_mx)
 		$opts += DNS_MX;
 

@@ -172,9 +172,9 @@ function localize_item(&$item){
 				$shortbodyverb = t('doesn\'t like %1$s\'s %2$s');
 			}
 
-			$item['shortlocalize'] = sprintf($shortbodyverb, $objauthor, $plink);
+			$item['shortlocalize'] = sprintf($shortbodyverb, '[bdi]' . $author_name . '[/bdi]', $post_type);
 
-			$item['body'] = $item['localize'] = sprintf($bodyverb, $author, $objauthor, $plink);
+			$item['body'] = $item['localize'] = sprintf($bodyverb, '[bdi]' . $author . '[/bdi]', '[bdi]' . $objauthor . '[/bdi]', $plink);
 			if($Bphoto != "") 
 				$item['body'] .= "\n\n\n" . '[zrl=' . chanlink_url($author_link) . '][zmg=80x80]' . $Bphoto . '[/zmg][/zrl]';
 
@@ -205,9 +205,11 @@ function localize_item(&$item){
 		$Bname = $obj['title'];
 
 
-		$A = '[zrl=' . chanlink_url($Alink) . ']' . $Aname . '[/zrl]';
-		$B = '[zrl=' . chanlink_url($Blink) . ']' . $Bname . '[/zrl]';
+		$A = '[zrl=' . chanlink_url($Alink) . '][bdi]' . $Aname . '[/bdi][/zrl]';
+		$B = '[zrl=' . chanlink_url($Blink) . '][bdi]' . $Bname . '[/bdi][/zrl]';
 		if ($Bphoto!="") $Bphoto = '[zrl=' . chanlink_url($Blink) . '][zmg=80x80]' . $Bphoto . '[/zmg][/zrl]';
+
+		$item['shortlocalize'] = sprintf( t('%1$s is now connected with %2$s'), '[bdi]' . $Aname . '[/bdi]', '[bdi]' . $Bname . '[/bdi]');
 
 		$item['body'] = $item['localize'] = sprintf( t('%1$s is now connected with %2$s'), $A, $B);
 		$item['body'] .= "\n\n\n" . $Bphoto;
@@ -237,8 +239,8 @@ function localize_item(&$item){
 		}
 		$Bname = $obj['title'];
 
-		$A = '[zrl=' . chanlink_url($Alink) . ']' . $Aname . '[/zrl]';
-		$B = '[zrl=' . chanlink_url($Blink) . ']' . $Bname . '[/zrl]';
+		$A = '[zrl=' . chanlink_url($Alink) . '][bdi]' . $Aname . '[/bdi][/zrl]';
+		$B = '[zrl=' . chanlink_url($Blink) . '][bdi]' . $Bname . '[/bdi][/zrl]';
 		if ($Bphoto!="") $Bphoto = '[zrl=' . chanlink_url($Blink) . '][zmg=80x80]' . $Bphoto . '[/zmg][/zrl]';
 
 		// we can't have a translation string with three positions but no distinguishable text
@@ -252,6 +254,8 @@ function localize_item(&$item){
 
 		// then do the sprintf on the translation string
 
+		$item['shortlocalize'] = sprintf($txt, '[bdi]' . $Aname . '[/bdi]', '[bdi]' . $Bname . '[/bdi]');
+
 		$item['body'] = $item['localize'] = sprintf($txt, $A, $B);
 		$item['body'] .= "\n\n\n" . $Bphoto;
 	}
@@ -263,7 +267,7 @@ function localize_item(&$item){
 		$Aname = $item['author']['xchan_name'];
 		$Alink = $item['author']['xchan_url'];
 
-		$A = '[zrl=' . chanlink_url($Alink) . ']' . $Aname . '[/zrl]';
+		$A = '[zrl=' . chanlink_url($Alink) . '][bdi]' . $Aname . '[/bdi][/zrl]';
 		
 		$txt = t('%1$s is %2$s','mood');
 
@@ -409,11 +413,17 @@ function visible_activity($item) {
 	if(intval($item['item_notshown']))
 		return false;
 
+	if ($item['obj_type'] === 'Answer') {
+		return false;
+	}
+
 	foreach($hidden_activities as $act) {
 		if((activity_match($item['verb'], $act)) && ($item['mid'] != $item['parent_mid'])) {
 			return false;
 		}
 	}
+
+
 
 	if(is_edit_activity($item))
 		return false;
@@ -615,11 +625,17 @@ function conversation($items, $mode, $update, $page_mode = 'traditional', $prepa
 
 	$items = $cb['items'];
 
-	$conv_responses = array(
-		'like' => array('title' => t('Likes','title')),'dislike' => array('title' => t('Dislikes','title')),
-		'agree' => array('title' => t('Agree','title')),'disagree' => array('title' => t('Disagree','title')), 'abstain' => array('title' => t('Abstain','title')), 
-		'attendyes' => array('title' => t('Attending','title')), 'attendno' => array('title' => t('Not attending','title')), 'attendmaybe' => array('title' => t('Might attend','title'))
-	);
+	$conv_responses = [
+		'like' => ['title' => t('Likes','title')],
+		'dislike' => ['title' => t('Dislikes','title')],
+		'agree' => ['title' => t('Agree','title')],
+		'disagree' => ['title' => t('Disagree','title')],
+		'abstain' => ['title' => t('Abstain','title')],
+		'attendyes' => ['title' => t('Attending','title')],
+		'attendno' => ['title' => t('Not attending','title')],
+		'attendmaybe' => ['title' => t('Might attend','title')],
+		'answer' => []
+	];
 
 
 	// array with html for each thread (parent+comments)
@@ -736,6 +752,7 @@ function conversation($items, $mode, $update, $page_mode = 'traditional', $prepa
 					'delete' => t('Delete'),
 					'preview_lbl' => $preview_lbl,
 					'id' => (($preview) ? 'P0' : $item['item_id']),
+					'mids' => json_encode(['b64.' . base64url_encode($item['mid'])]),
 					'linktitle' => sprintf( t('View %s\'s profile @ %s'), $profile_name, $profile_url),
 					'profile_url' => $profile_link,
 					'thread_action_menu' => thread_action_menu($item,$mode),
@@ -1009,11 +1026,11 @@ function thread_author_menu($item, $mode = '') {
 			$contact = App::$contacts[$item['author_xchan']];
 		}
 		else {
-			if($local_channel && $item['author']['xchan_addr'] && (! in_array($item['author']['xchan_network'],[ 'rss', 'anon','unknown' ]))) {
-				$follow_url = z_root() . '/follow/?f=&url=' . urlencode($item['author']['xchan_addr']) . '&interactive=0';
+			$url = (($item['author']['xchan_addr']) ? $item['author']['xchan_addr'] : $item['author']['xchan_url']);
+			if($local_channel && $url && (! in_array($item['author']['xchan_network'],[ 'rss', 'anon','unknown' ]))) {
+				$follow_url = z_root() . '/follow/?f=&url=' . urlencode($url) . '&interactive=0';
 			}
 		}
-	
 		if($item['uid'] > 0 && author_is_pmable($item['author'],$contact)) {
 			$pm_url = z_root() . '/mail/new/?f=&hash=' . urlencode($item['author_xchan']);
 		}
@@ -1125,7 +1142,7 @@ function builtin_activity_puller($item, &$conv_responses) {
 
 	// if this item is a post or comment there's nothing for us to do here, just return.
 
-	if(activity_match($item['verb'],ACTIVITY_POST))
+	if(activity_match($item['verb'],ACTIVITY_POST) && $item['obj_type'] !== 'Answer')
 		return;
 
 	foreach($conv_responses as $mode => $v) {
@@ -1157,6 +1174,9 @@ function builtin_activity_puller($item, &$conv_responses) {
 			case 'attendmaybe':
 				$verb = ACTIVITY_ATTENDMAYBE;
 				break;
+			case 'answer':
+				$verb = ACTIVITY_POST;
+				break;
 			default:
 				return;
 				break;
@@ -1171,6 +1191,11 @@ function builtin_activity_puller($item, &$conv_responses) {
 
 			if(! $item['thr_parent'])
 				$item['thr_parent'] = $item['parent_mid'];
+
+			$conv_responses[$mode]['mids'][$item['thr_parent']][] = 'b64.' . base64url_encode($item['mid']);
+
+			if($item['obj_type'] === 'Answer')
+				continue;
 
 			if(! ((isset($conv_responses[$mode][$item['thr_parent'] . '-l'])) 
 				&& (is_array($conv_responses[$mode][$item['thr_parent'] . '-l']))))
@@ -1268,7 +1293,7 @@ function hz_status_editor($a, $x, $popup = false) {
 	$feature_voting = feature_enabled($x['profile_uid'], 'consensus_tools');
 	if(x($x, 'hide_voting'))
 		$feature_voting = false;
-	
+
 	$feature_nocomment = feature_enabled($x['profile_uid'], 'disable_comments');
 	if(x($x, 'disable_comments'))
 		$feature_nocomment = false;
@@ -1416,6 +1441,11 @@ function hz_status_editor($a, $x, $popup = false) {
 		'$embedPhotosModalOK' => t('OK'),
 		'$setloc' => $setloc,
 		'$voting' => t('Toggle voting'),
+		'$poll' => t('Toggle poll'),
+		'$poll_option_label' => t('Option'),
+		'$poll_add_option_label' => t('Add option'),
+		'$poll_expire_unit_label' => [t('Minutes'), t('Hours'), t('Days')],
+		'$multiple_answers' => ['poll_multiple_answers', t("Allow multiple answers"), '', '', [t('No'), t('Yes')]],
 		'$feature_voting' => $feature_voting,
 		'$consensus' => ((array_key_exists('item',$x)) ? $x['item']['item_consensus'] : 0),
 		'$nocommenttitle' => t('Disable comments'),

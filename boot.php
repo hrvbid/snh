@@ -50,10 +50,14 @@ require_once('include/attach.php');
 require_once('include/bbcode.php');
 
 define ( 'PLATFORM_NAME',           'hubzilla' );
+<<<<<<< HEAD
 define ( 'STD_VERSION',             '4.6' );
+=======
+define ( 'STD_VERSION',             '4.7.3' );
+>>>>>>> 85c07d57fe0f468eb8cc84584f3636b590aa929f
 define ( 'ZOT_REVISION',            '6.0a' );
 
-define ( 'DB_UPDATE_VERSION',       1234 );
+define ( 'DB_UPDATE_VERSION',       1235 );
 
 define ( 'PROJECT_BASE',   __DIR__ );
 
@@ -103,6 +107,11 @@ define ( 'JPEG_QUALITY',            100  );
  * App::$config['system']['png_quality'] from 0 (uncompressed) to 9
  */
 define ( 'PNG_QUALITY',             8  );
+
+/**
+ * App::$config['system']['webp_quality'] from 1 (maximum compressed) to 100 (uncompressed)
+ */
+define ( 'WEBP_QUALITY',             80  );
 
 /**
  * Language detection parameters
@@ -468,7 +477,7 @@ define ( 'NAMESPACE_YMEDIA',          'http://search.yahoo.com/mrss/' );
 
 define ( 'ACTIVITYSTREAMS_JSONLD_REV', 'https://www.w3.org/ns/activitystreams' );
 
-define ( 'ZOT_APSCHEMA_REV', '/apschema/v1.8' );
+define ( 'ZOT_APSCHEMA_REV', '/apschema/v1.9' );
 /**
  * activity stream defines
  */
@@ -899,11 +908,12 @@ class App {
                 // Serve raw files from the file system in certain cases.
                 $filext = pathinfo(self::$cmd, PATHINFO_EXTENSION);
 
-                $serve_rawfiles=[
+                $serve_rawfiles = [
                         'jpg'=>'image/jpeg',
                         'jpeg'=>'image/jpeg',
                         'gif'=>'image/gif',
                         'png'=>'image/png',
+			'webp'=>'image/webp',
                         'ico'=>'image/vnd.microsoft.icon',
                         'css'=>'text/css',
                         'js'=>'text/javascript',
@@ -913,7 +923,8 @@ class App {
                         'ttf'=>'font/ttf',
                         'woff'=>'font/woff',
                         'woff2'=>'font/woff2',
-                        'svg'=>'image/svg+xml'];
+                        'svg'=>'image/svg+xml'
+		];
 
                 if (array_key_exists($filext, $serve_rawfiles) && file_exists(self::$cmd)) {
 			$staticfilecwd = getcwd();
@@ -1812,6 +1823,8 @@ function can_view_public_stream() {
  * @param string $s Text to display
  */
 function notice($s) {
+
+/*
 	if(! session_id())
 		return;
 
@@ -1827,6 +1840,40 @@ function notice($s) {
 	if(App::$interactive) {
 		$_SESSION['sysmsg'][] = $s;
 	}
+*/
+
+	$hash = get_observer_hash();
+	$sse_id = false;
+
+	if(! $hash) {
+		if(session_id()) {
+			$sse_id = true;
+			$hash = 'sse_id.' . session_id();
+		}
+		else {
+			return;
+		}
+	}
+
+	$t = get_xconfig($hash, 'sse', 'timestamp', NULL_DATE);
+
+	if(datetime_convert('UTC', 'UTC', $t) < datetime_convert('UTC', 'UTC', '- 30 seconds')) {
+		set_xconfig($hash, 'sse', 'notifications', []);
+	}
+
+	$x = get_xconfig($hash, 'sse', 'notifications');
+
+	if ($x === false)
+		$x = [];
+
+	if (isset($x['notice']) && in_array($s, $x['notice']['notifications']))
+		return;
+
+	if (App::$interactive) {
+		$x['notice']['notifications'][] = $s;
+		set_xconfig($hash, 'sse', 'notifications', $x);
+	}
+
 }
 
 /**
@@ -1840,8 +1887,11 @@ function notice($s) {
  * @param string $s Text to display
  */
 function info($s) {
+
+/*
 	if(! session_id())
 		return;
+
 	if(! x($_SESSION, 'sysmsg_info'))
 		$_SESSION['sysmsg_info'] = array();
 
@@ -1850,6 +1900,40 @@ function info($s) {
 
 	if(App::$interactive)
 		$_SESSION['sysmsg_info'][] = $s;
+*/
+
+	$hash = get_observer_hash();
+	$sse_id = false;
+
+	if(! $hash) {
+		if(session_id()) {
+			$sse_id = true;
+			$hash = 'sse_id.' . session_id();
+		}
+		else {
+			return;
+		}
+	}
+
+	$t = get_xconfig($hash, 'sse', 'timestamp', NULL_DATE);
+
+	if(datetime_convert('UTC', 'UTC', $t) < datetime_convert('UTC', 'UTC', '- 30 seconds')) {
+		set_xconfig($hash, 'sse', 'notifications', []);
+	}
+
+	$x = get_xconfig($hash, 'sse', 'notifications');
+
+	if($x === false)
+		$x = [];
+
+	if(isset($x['info']) && in_array($s, $x['info']['notifications']))
+		return;
+
+	if(App::$interactive) {
+		$x['info']['notifications'][] = $s;
+		set_xconfig($hash, 'sse', 'notifications', $x);
+	}
+
 }
 
 /**

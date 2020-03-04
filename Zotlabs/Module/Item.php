@@ -42,8 +42,6 @@ class Item extends Controller {
 
 		if (Libzot::is_zot_request()) {
 
-			$conversation = false;
-
 			$item_id = argv(1);
 
 			if (! $item_id)
@@ -273,7 +271,9 @@ class Item extends Controller {
 	
 		$consensus = intval($_REQUEST['consensus']);
 		$nocomment = intval($_REQUEST['nocomment']);
-	
+
+		$is_poll = ((trim($_REQUEST['poll_answers'][0]) != '' && trim($_REQUEST['poll_answers'][1]) != '') ? true : false);
+
 		// 'origin' (if non-zero) indicates that this network is where the message originated,
 		// for the purpose of relaying comments to other conversation members. 
 		// If using the API from a device (leaf node) you must set origin to 1 (default) or leave unset.
@@ -720,7 +720,6 @@ class Item extends Controller {
 			// BBCODE alert: the following functions assume bbcode input
 			// and will require alternatives for alternative content-types (text/html, text/markdown, text/plain, etc.)
 			// we may need virtual or template classes to implement the possible alternatives
-			
 
 			if(strpos($body,'[/summary]') !== false) {
                 $match = '';
@@ -924,6 +923,27 @@ class Item extends Controller {
 		}
 
 
+		if($is_poll) {
+			$poll = [
+				'question' => $body,
+				'answers' => $_REQUEST['poll_answers'],
+				'multiple_answers' => $_REQUEST['poll_multiple_answers'],
+				'expire_value' => $_REQUEST['poll_expire_value'],
+				'expire_unit' => $_REQUEST['poll_expire_unit']
+			];
+			$obj = $this->extract_poll_data($poll, [ 'item_private' => $private, 'allow_cid' => $str_contact_allow, 'allow_gid' => $str_contact_deny ]);
+		}
+		else {
+			$obj = $this->extract_bb_poll_data($body,[ 'item_private' => $private, 'allow_cid' => $str_contact_allow, 'allow_gid' => $str_contact_deny ]);
+		}
+
+		if ($obj) {
+			$obj['url'] = $mid;
+			$obj['attributedTo'] = channel_url($channel);
+			$datarray['obj'] = $obj;
+			$obj_type = 'Question';
+		}
+
 		if(! $parent_mid) {
 			$parent_mid = $mid;
 		}
@@ -972,7 +992,11 @@ class Item extends Controller {
 			$plink = z_root() . '/channel/' . $channel['channel_address'] . '/?f=&mid=' . gen_link_id($mid);
 			$plink = substr($plink,0,190);
 		}
-		
+
+		if ($datarray['obj']) {
+			$datarray['obj']['id'] = $mid;
+		}
+
 		$datarray['aid']                 = $channel['channel_account_id'];
 		$datarray['uid']                 = $profile_uid;
 		$datarray['uuid']                = $uuid;
@@ -1389,5 +1413,104 @@ class Item extends Controller {
 		return $ret;
 	}
 	
-	
+	function extract_bb_poll_data(&$body,$item) {
+
+		$multiple = false;
+
+		if (strpos($body,'[/question]') === false && strpos($body,'[/answer]') === false) {
+			return false;
+		}
+		if (strpos($body,'[nobb]') !== false) {
+			return false;
+		}
+
+
+		$obj = [];
+		$ptr = [];
+		$matches = null;
+		$obj['type'] = 'Question';
+
+		if (preg_match_all('/\[answer\](.*?)\[\/answer\]/ism',$body,$matches,PREG_SET_ORDER)) {
+			foreach ($matches as $match) {
+				$ptr[] = [ 'name' => $match[1], 'type' => 'Note', 'replies' => [ 'type' => 'Collection', 'totalItems' => 0 ]];
+				$body = str_replace('[answer]' . $match[1] . '[/answer]', EMPTY_STR, $body);
+			}
+		}
+
+		$matches = null;
+
+		if (preg_match('/\[question\](.*?)\[\/question\]/ism',$body,$matches)) {
+			$obj['content'] = bbcode($matches[1]);
+			$body = str_replace('[question]' . $matches[1] . '[/question]', $matches[1], $body);
+			$obj['oneOf'] = $ptr;
+		}
+
+		$matches = null;
+		
+		if (preg_match('/\[question=multiple\](.*?)\[\/question\]/ism',$body,$matches)) {
+			$obj['content'] = bbcode($matches[1]);
+			$body = str_replace('[question=multiple]' . $matches[1] . '[/question]', $matches[1], $body);
+			$obj['anyOf'] = $ptr;
+		}
+
+		$matches = null;
+		
+		if (preg_match('/\[ends\](.*?)\[\/ends\]/ism',$body,$matches)) {
+			$obj['endTime'] = datetime_convert(date_default_timezone_get(),'UTC', $matches[1],ATOM_TIME);
+			$body = str_replace('[ends]' . $matches[1] . '[/ends]', EMPTY_STR, $body);
+		}
+
+
+		if ($item['item_private']) {
+			$obj['to'] = Activity::map_acl($item);
+		}
+		else {
+			$obj['to'] = [ ACTIVITY_PUBLIC_INBOX ];
+		}
+
+		return $obj;
+
+	}
+
+
+	function extract_poll_data($poll, $item) {
+
+		$multiple = intval($poll['multiple_answers']);
+		$expire_value = intval($poll['expire_value']);
+		$expire_unit = $poll['expire_unit'];
+		$question = $poll['question'];
+		$answers = $poll['answers'];
+
+		$obj = [];
+		$ptr = [];
+		$obj['type'] = 'Question';
+		$obj['content'] = bbcode($question);
+
+		foreach($answers as $answer) {
+			if(trim($answer))
+				$ptr[] = [ 'name' => escape_tags($answer), 'type' => 'Note', 'replies' => [ 'type' => 'Collection', 'totalItems' => 0 ]];
+		}
+
+		if($multiple) {
+			$obj['anyOf'] = $ptr;
+		}
+		else {
+			$obj['oneOf'] = $ptr;
+		}
+
+		$obj['endTime'] = datetime_convert(date_default_timezone_get(), 'UTC', 'now + ' . $expire_value . ' ' . $expire_unit, ATOM_TIME);
+
+		if ($item['item_private']) {
+			$obj['to'] = Activity::map_acl($item);
+		}
+		else {
+			$obj['to'] = [ ACTIVITY_PUBLIC_INBOX ];
+		}
+
+		return $obj;
+
+	}
+
+
+
 }

@@ -217,9 +217,10 @@ function t($s, $ctx = '') {
  */
 
 function translate_projectname($s) {
-
-	return str_replace(array('$projectname','$Projectname'),array(Zotlabs\Lib\System::get_platform_name(),ucfirst(Zotlabs\Lib\System::get_platform_name())),$s);
-
+	if(strpos($s,'rojectname') !== false) {
+		return str_replace(array('$projectname','$Projectname'),array(Zotlabs\Lib\System::get_platform_name(),ucfirst(Zotlabs\Lib\System::get_platform_name())),$s);
+	}
+	return $s;
 }
 
 

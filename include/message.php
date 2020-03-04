@@ -299,10 +299,6 @@ function create_conversation($channel,$recipient,$subject) {
 }
 
 
-
-
-
-
 function private_messages_list($uid, $mailbox = '', $start = 0, $numitems = 0) {
 
 	$where = '';

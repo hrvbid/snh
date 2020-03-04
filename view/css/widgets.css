@@ -181,7 +181,6 @@ a.wikilist {
 
 .notifications-textinput {
 	padding: .75rem 0.85rem;
-	position: relative;
 }
 
 .notifications-textinput input {
@@ -232,4 +231,8 @@ a.wikilist {
 	margin-left: -25px;
 	margin-top: 25px;
 	opacity: 0.8;
+}
+
+#cid-filter-wrapper {
+	position: relative;
 }

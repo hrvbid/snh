@@ -68,6 +68,8 @@ class Embedphotos extends \Zotlabs\Web\Controller {
 				$ext = '.png';
 			elseif($r[0]['mimetype'] === 'image/gif')
 				$ext = '.gif';
+			elseif($r[0]['mimetype'] === 'image/webp')
+				$exp = '.webp';
 			else
 				$ext = EMPTY_STR;
 

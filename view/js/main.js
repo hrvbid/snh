@@ -23,17 +23,29 @@ var mediaPlaying = false;
 var contentHeightDiff = 0;
 var liveRecurse = 0;
 var savedTitle = '';
-var initialLoad = true;
+var followUpPageLoad = false;
+var window_needs_alert = true;
 
-// Clear the session and local storage if we switch channel or log out
-var cache_uid = '';
-if(sessionStorage.getItem('uid') !== null) {
-	cache_uid = sessionStorage.getItem('uid');
-}
-if(cache_uid !== localUser.toString()) {
-	sessionStorage.clear();
+var sse_bs_active = false;
+var sse_offset = 0;
+var sse_type;
+var sse_partial_result = false;
+
+// take care of tab/window reloads on channel change
+if(localStorage.getItem('uid') !== localUser.toString()) {
 	localStorage.clear();
-	sessionStorage.setItem('uid', localUser.toString());
+	sessionStorage.clear();
+	localStorage.setItem('uid', localUser.toString());
+}
+window.onstorage = function(e) {
+	if(e.key === 'uid' && parseInt(e.newValue) !== localUser) {
+		if(window_needs_alert) {
+			window_needs_alert = false; 
+			alert("Your identity has changed. Page reload required!");
+			window.location.reload();
+			return;
+		}
+	}
 }
 
 $.ajaxSetup({cache: false});
@@ -55,28 +67,116 @@ $(document).ready(function() {
 		}
 	});
 
-    var tf = new Function('n', 's', 'var k = s.split("/")['+aStr['plural_func']+']; return (k ? k : s);');
+	var tf = new Function('n', 's', 'var k = s.split("/")['+aStr['plural_func']+']; return (k ? k : s);');
 
-    jQuery.timeago.settings.strings = {
-        prefixAgo     : aStr['t01'],
-        prefixFromNow : aStr['t02'],
-        suffixAgo     : aStr['t03'],
-        suffixFromNow : aStr['t04'],
-        seconds       : aStr['t05'],
-        minute        : aStr['t06'],
-        minutes       : function(value){return tf(value, aStr['t07']);},
-        hour          : aStr['t08'],
-        hours         : function(value){return tf(value, aStr['t09']);},
-        day           : aStr['t10'],
-        days          : function(value){return tf(value, aStr['t11']);},
-        month         : aStr['t12'],
-        months        : function(value){return tf(value, aStr['t13']);},
-        year          : aStr['t14'],
-        years         : function(value){return tf(value, aStr['t15']);},
-        wordSeparator : aStr['t16'],
-        numbers       : aStr['t17'],
-    };
+	jQuery.timeago.settings.strings = {
+		prefixAgo     : aStr['t01'],
+		prefixFromNow : aStr['t02'],
+		suffixAgo     : aStr['t03'],
+		suffixFromNow : aStr['t04'],
+		seconds       : aStr['t05'],
+		minute        : aStr['t06'],
+		minutes       : function(value){return tf(value, aStr['t07']);},
+		hour          : aStr['t08'],
+		hours         : function(value){return tf(value, aStr['t09']);},
+		day           : aStr['t10'],
+		days          : function(value){return tf(value, aStr['t11']);},
+		month         : aStr['t12'],
+		months        : function(value){return tf(value, aStr['t13']);},
+		year          : aStr['t14'],
+		years         : function(value){return tf(value, aStr['t15']);},
+		wordSeparator : aStr['t16'],
+		numbers       : aStr['t17'],
+	};
 
+
+	if(typeof(window.SharedWorker) === 'undefined') {
+		// notifications with multiple tabs open will not work very well in this scenario 
+		var evtSource = new EventSource('/sse');
+
+		evtSource.addEventListener('notifications', function(e) {
+			var obj = JSON.parse(e.data);
+			sse_handleNotifications(obj, false, false);
+		}, false);
+
+		document.addEventListener('visibilitychange', function() {
+			if (!document.hidden) {
+				sse_offset = 0;
+				sse_bs_init();
+			}
+		}, false);
+
+	}
+	else {
+		var myWorker = new SharedWorker('/view/js/sse_worker.js', localUser);
+
+		myWorker.port.onmessage = function(e) {
+			obj = e.data;
+			console.log(obj);
+			sse_handleNotifications(obj, false, false);
+		}
+
+		myWorker.onerror = function(e) {
+			myWorker.port.close();
+		}
+
+		myWorker.port.start();
+	}
+
+	$('.notification-link').on('click', { replace: true, followup: false }, sse_bs_notifications);
+
+	$('.notification-filter').on('keypress', function(e) {
+		if(e.which == 13) { // enter
+			this.blur();
+			sse_offset = 0;
+			$("#nav-" + sse_type + "-menu").html('');
+			$("#nav-" + sse_type + "-loading").show();
+
+			var cn_val = $('#cn-' + sse_type + '-input').length ? $('#cn-' + sse_type + '-input').val().toString().toLowerCase() : '';
+
+			$.get('/sse_bs/' + sse_type + '/' + sse_offset + '?nquery=' + encodeURIComponent(cn_val), function(obj) {
+				console.log('sse: bootstraping ' + sse_type);
+				console.log(obj);
+
+				sse_bs_active = false;
+				sse_partial_result = true;
+				sse_offset = obj[sse_type].offset;
+				if(sse_offset < 0)
+					$("#nav-" + sse_type + "-loading").hide();
+
+				sse_handleNotifications(obj, true, false);
+
+			});
+		}
+	});
+
+	$('.notifications-textinput-clear').on('click', function(e) {
+		if(! sse_partial_result)
+			return;
+
+		$("#nav-" + sse_type + "-menu").html('');
+		$("#nav-" + sse_type + "-loading").show();
+		$.get('/sse_bs/' + sse_type, function(obj) {
+			console.log('sse: bootstraping ' + sse_type);
+			console.log(obj);
+
+			sse_bs_active = false;
+			sse_partial_result = false;
+			sse_offset = obj[sse_type].offset;
+			if(sse_offset < 0)
+				$("#nav-" + sse_type + "-loading").hide();
+
+			sse_handleNotifications(obj, true, false);
+
+		});
+	});
+
+	$('.notification-content').on('scroll', function() {
+		if(this.scrollTop > this.scrollHeight - this.clientHeight - (this.scrollHeight/7)) {
+			if(!sse_bs_active)
+				sse_bs_notifications(sse_type, false, true);
+		}
+	});
 
 	//mod_mail only
 	$(".mail-conv-detail .autotime").timeago();
@@ -84,24 +184,6 @@ $(document).ready(function() {
 	savedTitle = document.title;
 
 	updateInit();
-
-	$('a.notification-link').click(function(e){
-		var notifyType = $(this).data('type');
-
-		if(! $('#nav-' + notifyType + '-sub').hasClass('show')) {
-			loadNotificationItems(notifyType);
-			sessionStorage.setItem('notification_open', notifyType);
-		}
-		else {
-			sessionStorage.removeItem('notification_open');
-		}
-	});
-
-	if(sessionStorage.getItem('notification_open') !== null) {
-		var notifyType = sessionStorage.getItem('notification_open');
-		$('#nav-' + notifyType + '-sub').addClass('show');
-		loadNotificationItems(notifyType);
-	}
 
 	// Allow folks to stop the ajax page updates with the pause/break key
 	$(document).keydown(function(event) {
@@ -133,8 +215,6 @@ $(document).ready(function() {
 	var e = document.getElementById('content-complete');
 	if(e)
 		pageHasMoreContent = false;
-
-	initialLoad = false;
 
 });
 
@@ -197,7 +277,7 @@ function handle_comment_form(e) {
 				ex_form.find('.comment-edit-text').removeClass('expanded').attr('placeholder', aStr.comment);
 				ex_form.find(':not(.comment-edit-text)').hide();
 			}
-			i++
+			i++;
 		});
 	}
 
@@ -449,145 +529,16 @@ function closeMenu(theID) {
 
 function markRead(notifType) {
 	$.get('ping?f=&markRead='+notifType);
-	$('.' + notifType + '-button').hide();
-	$('#nav-' + notifType + '-sub').removeClass('show');
-	sessionStorage.removeItem(notifType + '_notifications_cache');
-	sessionStorage.removeItem('notification_open');
-	if(timer) clearTimeout(timer);
-	timer = setTimeout(updateInit,2000);
+	$('.' + notifType + '-button').fadeOut(function() {
+		$('#nav-' + notifType + '-sub').removeClass('show');
+		sessionStorage.removeItem('notification_open');
+		sse_setNotificationsStatus();
+	});
 }
 
 function markItemRead(itemId) {
 	$.get('ping?f=&markItemRead='+itemId);
 	$('.unseen-wall-indicator-'+itemId).hide();
-}
-
-function notificationsUpdate(cached_data) {
-	var pingCmd = 'ping' + ((localUser != 0) ? '?f=&uid=' + localUser : '');
-
-	if(cached_data !== undefined) {
-		handleNotifications(cached_data);
-	}
-	else {
-		$.get(pingCmd,function(data) {
-
-			// Put the object into storage
-			if(! data)
-				return;
-
-			sessionStorage.setItem('notifications_cache', JSON.stringify(data));
-
-			var fnotifs = [];
-			if(data.forums) {
-				$.each(data.forums_sub, function() {
-					fnotifs.push(this);
-				});
-				handleNotificationsItems('forums', fnotifs);
-			}
-
-			if(data.invalid == 1) {
-				window.location.href=window.location.href;
-			}
-
-			handleNotifications(data);
-
-			$.jGrowl.defaults.closerTemplate = '<div>[ ' + aStr.closeAll + ']</div>';
-
-			$(data.notice).each(function() {
-				$.jGrowl(this.message, { sticky: true, theme: 'notice' });
-			});
-
-			$(data.info).each(function(){
-				$.jGrowl(this.message, { sticky: false, theme: 'info', life: 10000 });
-			});
-		});
-	}
-
-	var notifyType = null;
-	if($('.notification-content.show').length) {
-		notifyType = $('.notification-content.show').data('type');
-	}
-	if(notifyType !== null) {
-		loadNotificationItems(notifyType);
-	}
-
-	if(timer) clearTimeout(timer);
-	timer = setTimeout(updateInit,updateInterval);
-}
-
-function handleNotifications(data) {
-	if(data.network || data.home || data.intros || data.register || data.mail || data.all_events || data.notify || data.files || data.pubs || data.forums) {
-		$('.notifications-btn').css('opacity', 1);
-		$('#no_notifications').hide();
-	}
-	else {
-		$('.notifications-btn').css('opacity', 0.5);
-		$('#navbar-collapse-1').removeClass('show');
-		$('#no_notifications').show();
-	}
-
-	if(data.home || data.intros || data.register || data.mail || data.notify || data.files) {
-		$('.notifications-btn-icon').removeClass('fa-exclamation-circle');
-		$('.notifications-btn-icon').addClass('fa-exclamation-triangle');
-	}
-	if(!data.home && !data.intros && !data.register && !data.mail && !data.notify && !data.files) {
-		$('.notifications-btn-icon').removeClass('fa-exclamation-triangle');
-		$('.notifications-btn-icon').addClass('fa-exclamation-circle');
-	}
-	if(data.all_events_today) {
-		$('.all_events-update').removeClass('badge-secondary');
-		$('.all_events-update').addClass('badge-danger');
-	}
-	else {
-		$('.all_events-update').removeClass('badge-danger');
-		$('.all_events-update').addClass('badge-secondary');
-	}
-
-	$.each(data, function(index, item) {
-		//do not process those
-		var arr = ['notice', 'info', 'invalid'];
-		if(arr.indexOf(index) !== -1)
-			return;
-
-		if(item == 0) {
-			$('.' + index + '-button').fadeOut();
-			sessionStorage.removeItem(index + '_notifications_cache');
-		} else {
-			$('.' + index + '-button').fadeIn();
-			$('.' + index + '-update').html(item);
-		}
-	});
-}
-
-function handleNotificationsItems(notifyType, data) {
-	var notifications_tpl = ((notifyType == 'forums') ? unescape($("#nav-notifications-forums-template[rel=template]").html()) : unescape($("#nav-notifications-template[rel=template]").html()));
-	var notify_menu = $("#nav-" + notifyType + "-menu");
-
-	notify_menu.html('');
-
-	$(data).each(function() {
-		html = notifications_tpl.format(this.notify_link,this.photo,this.name,this.addr,this.message,this.when,this.hclass,this.b64mid,this.notify_id,this.thread_top,this.unseen,this.private_forum);
-		notify_menu.append(html);
-	});
-
-	datasrc2src('#notifications .notification img[data-src]');
-
-	if($('#tt-' + notifyType + '-only').hasClass('active'))
-		$('#nav-' + notifyType + '-menu [data-thread_top=false]').hide();
-
-	if($('#cn-' + notifyType + '-input').length) {
-		var filter = $('#cn-' + notifyType + '-input').val().toString().toLowerCase();
-		if(filter) {
-			$('#nav-' + notifyType + '-menu .notification').each(function(i, el){
-				var cn = $(el).data('contact_name').toString().toLowerCase();
-				var ca = $(el).data('contact_addr').toString().toLowerCase();
-				if(cn.indexOf(filter) === -1 && ca.indexOf(filter) === -1)
-					$(el).addClass('d-none');
-				else
-					$(el).removeClass('d-none');
-			});
-		}
-	}
 }
 
 function contextualHelp() {
@@ -630,8 +581,10 @@ function contextualHelpFocus(target, openSidePanel) {
 function updatePageItems(mode, data) {
 
 	if(mode === 'append') {
+		newitemcount = 0;
 		$(data).each(function() {
 			$('#page-end').before($(this));
+			newitemcount++;
 		});
 
 		if(loadingPage) {
@@ -642,6 +595,10 @@ function updatePageItems(mode, data) {
 	var e = document.getElementById('content-complete');
 	if(e) {
 		pageHasMoreContent = false;
+	} else {
+		if (newitemcount < 1) {
+			pageUpdate();
+		}
 	}
 
 	collapseHeight();
@@ -718,13 +675,10 @@ function updateConvItems(mode,data) {
 			}
 		}
 
-
-
 		// trigger the autotime function on all newly created content
-
 		$("> .wall-item-outside-wrapper .autotime, > .thread-wrapper .autotime",this).timeago();
 		$("> .shared_header .autotime",this).timeago();
-		
+
 		if((mode === 'append' || mode === 'replace') && (loadingPage)) {
 			loadingPage = false;
 		}
@@ -743,6 +697,56 @@ function updateConvItems(mode,data) {
 			}
 		}
 	});
+
+	// take care of the notifications count updates
+	$('.thread-wrapper', data).each(function() {
+
+		var nmids = $(this).data('b64mids');
+
+		nmids.forEach(function(nmid, index) {
+			if($('.notification[data-b64mid=\'' + nmid + '\']').length) {
+				$('.notification[data-b64mid=\'' + nmid + '\']').each(function() {
+					var n = this.parentElement.id.split('-');
+					return sse_updateNotifications(n[1], nmid);
+				});
+			}
+
+			// special handling for forum notifications
+			$('.notification-forum').filter(function() {
+				var fmids = decodeURIComponent($(this).data('b64mids'));
+				var n = this.parentElement.id.split('-');
+				if(fmids.indexOf(nmid) > -1) {
+					var fcount = Number($('.' + n[1] + '-update').html());
+					fcount--;
+					$('.' + n[1] + '-update').html(fcount);
+					if(fcount < 1)
+						$('.' + n[1] + '-button').fadeOut();
+
+					var count = Number($(this).find('.badge-secondary').html());
+					count--;
+					$(this).find('.badge-secondary').html(count);
+					if(count < 1)
+						$(this).remove();
+				}
+			});
+
+
+		});
+
+		sse_setNotificationsStatus();
+
+	});
+
+	// We are actually dealing with counts in sse_updateNotifications()
+	// for notifications which are already visible. For the case where
+	// unseen items were loaded but their notifications are not yet visible
+	// we need to bootstrap counts here to stay in sync with the DB after
+	// the first page load.
+
+	if(followUpPageLoad)
+		sse_bs_counts();
+	else
+		sse_bs_init();
 
 	// reset rotators and cursors we may have set before reaching this place
 
@@ -798,32 +802,34 @@ function updateConvItems(mode,data) {
 		$(document.body).trigger("sticky_kit:recalc");
 	}
 
+	followUpPageLoad = true;
+
 }
 
 function scrollToItem() {
 	// auto-scroll to a particular comment in a thread (designated by mid) when in single-thread mode
-	// use the same method to generate the submid as we use in ThreadItem, 
-	// base64_encode + replace(['+','='],['','']);
 
 	if(justifiedGalleryActive)
 		return;
 
 	var submid = ((bParam_mid.length) ? bParam_mid : 'abcdefg');
 	var encoded = ((submid.substr(0,4) == 'b64.') ? true : false);
-	var submid_encoded = ((encoded) ? submid.substr(4) : window.btoa(submid));
+	var submid_encoded = ((encoded) ? submid : window.btoa(submid));
 
-	submid_encoded = submid_encoded.replace(/[\+\=]/g,'');
-	if($('.item_' + submid_encoded).length && !$('.item_' + submid_encoded).hasClass('toplevel_item')) {
-		if($('.collapsed-comments').length) {
-			var scrolltoid = $('.collapsed-comments').attr('id').substring(19);
-			$('#collapsed-comments-' + scrolltoid + ' .autotime').timeago();
-			$('#collapsed-comments-' + scrolltoid).show();
-			$('#hide-comments-' + scrolltoid).html(aStr.showfewer);
-			$('#hide-comments-total-' + scrolltoid).hide();
+	$('.thread-wrapper').filter(function() {
+		if($(this).data('b64mids').indexOf(submid_encoded) > -1 && !$(this).hasClass('toplevel_item')) {
+			if($('.collapsed-comments').length) {
+				var scrolltoid = $('.collapsed-comments').attr('id').substring(19);
+				$('#collapsed-comments-' + scrolltoid + ' .autotime').timeago();
+				$('#collapsed-comments-' + scrolltoid).show();
+				$('#hide-comments-' + scrolltoid).html(aStr.showfewer);
+				$('#hide-comments-total-' + scrolltoid).hide();
+			}
+			$('html, body').animate({ scrollTop: $(this).offset().top - $('nav').outerHeight(true) }, 'slow');
+			$(this).addClass('item-highlight');
 		}
-		$('html, body').animate({ scrollTop: $('.item_' + submid_encoded).offset().top - $('nav').outerHeight(true) }, 'slow');
-		$('.item_' + submid_encoded).addClass('item-highlight');
-	}
+	});
+
 }
 
 function collapseHeight() {
@@ -885,25 +891,11 @@ function updateInit() {
 	// if($('#live-cards').length)      { src = 'cards'; }
 	// if($('#live-articles').length)   { src = 'articles'; }
 
-	if (initialLoad && (sessionStorage.getItem('notifications_cache') !== null)) {
-		var cached_data = JSON.parse(sessionStorage.getItem('notifications_cache'));
-		notificationsUpdate(cached_data);
-
-		var fnotifs = [];
-		if(cached_data.forums) {
-			$.each(cached_data.forums_sub, function() {
-				fnotifs.push(this);
-			});
-			handleNotificationsItems('forums', fnotifs);
-		}
-
-	}
-
-	if(! src) {
-		notificationsUpdate();
+	if(src) {
+		liveUpdate();
 	}
 	else {
-		liveUpdate();
+		sse_bs_init();
 	}
 
 	if($('#live-photos').length || $('#live-cards').length || $('#live-articles').length ) {
@@ -1037,9 +1029,6 @@ function liveUpdate(notify_id) {
 
 		}
 
-	})
-	.done(function() {
-		notificationsUpdate();
 	});
 }
 
@@ -1088,38 +1077,6 @@ function justifyPhotosAjax(id) {
 	$('#' + id).justifiedGallery('norewind').on('jg.complete', function(e){ justifiedGalleryActive = false; });
 }
 
-function loadNotificationItems(notifyType) {
-	var pingExCmd = 'ping/' + notifyType + ((localUser != 0) ? '?f=&uid=' + localUser : '');
-
-	var clicked = $('[data-type=\'' + notifyType + '\']').data('clicked');
-
-	if((clicked === undefined) && (sessionStorage.getItem(notifyType + '_notifications_cache') !== null)) {
-		var cached_data = JSON.parse(sessionStorage.getItem(notifyType + '_notifications_cache'));
-		handleNotificationsItems(notifyType, cached_data);
-		$('[data-type=\'' + notifyType + '\']').data('clicked',true);
-		console.log('updating ' + notifyType + ' notifications from cache...');
-	}
-	else {
-		var cached_data = [];
-	}
-
-	console.log('updating ' + notifyType + ' notifications...');
-
-	$.get(pingExCmd, function(data) {
-		if(data.invalid == 1) {
-			window.location.href=window.location.href;
-		}
-
-		if(JSON.stringify(cached_data[0]) === JSON.stringify(data.notify[0])) {
-			console.log(notifyType + ' notifications cache up to date - update deferred');
-		}
-		else {
-			handleNotificationsItems(notifyType, data.notify);
-			sessionStorage.setItem(notifyType + '_notifications_cache', JSON.stringify(data.notify));
-		}
-	});
-}
-
 // Since our ajax calls are asynchronous, we will give a few
 // seconds for the first ajax call (setting like/dislike), then
 // run the updater to pick up any changes and display on the page.
@@ -1154,6 +1111,7 @@ function doreply(parent, ident, owner, hint) {
 }
 
 function doscroll(parent, hidden) {
+	var id;
 	var x = '#hide-comments-outer-' + hidden.toString();
 	var back = $('#back-to-reply');
 	if(back.length == 0)
@@ -1169,7 +1127,13 @@ function doscroll(parent, hidden) {
 		}
 	}
 	back.remove();
-	var id = $('[data-mid="' + parent + '"]');
+
+	$('.thread-wrapper').filter(function() {
+		if($(this).data('b64mids').indexOf(parent) > -1) {
+			id = $(this);
+		}
+	});
+
 	$('html, body').animate({scrollTop:(id.offset().top) - 50}, 'slow');
 	$('<a href="javascript:doscrollback(' + pos + ');" id="back-to-reply" class="float-right" title="' + aStr['to_reply'] + '"><i class="fa fa-angle-double-down">&nbsp;&nbsp;&nbsp;</i></a>').insertBefore('#wall-item-info-' + id.attr('id').replace(/\D/g,''));
 }
@@ -1179,22 +1143,54 @@ function doscrollback(pos) {
 	$(window).scrollTop(pos);
 }
 
-function dropItem(url, object) { 
+function dopin(id) {
+        id = id.toString();
+        $('#like-rotator-' + id).show();
+        $.post('pin/pin', { 'id' : id })
+                .done(function() {
+                        var i = $('#wall-item-pinned-' + id);
+                        var me = $('#item-pinnable-' + id);
+                        var pin = $('.pinned-item');
+                        if(pin.length) {
+                                $('html, body').animate({ scrollTop: $('#region_2').offset().top }, 'slow', function() {
+                                        pin.fadeTo('fast', 0.33, function() { this.remove(); });
+                                });
+                        };
+                        pin.remove();
+                        $('.dropdown-item-pinnable').html($('.dropdown-item-pinnable').html().replace(aStr['unpin_item'],aStr['pin_item']));
+                        $('.wall-item-pinned').remove()
+                        if(i.length == 0) {
+                                $('<span class="float-right wall-item-pinned" title="' + aStr['pinned'] + '" id="wall-item-pinned-' + id + '"><i class="fa fa-thumb-tack">&nbsp;</i></span>').insertBefore('#wall-item-info-' + id);
+                                me.html(me.html().replace(aStr['pin_item'],aStr['unpin_item']));
+                        };
+                })
+                .fail(function() {
+                        location.reload();
+                })
+                .always(function() {
+                        $('#like-rotator-' + id).hide();
+                });
+}
 
-	var confirm = confirmDelete();
-	if(confirm) {
-		$('body').css('cursor', 'wait');
-		$(object).fadeTo('fast', 0.33, function () {
-			$.get(url).done(function() {
-				$(object).remove();
-				$('body').css('cursor', 'auto');
-			});
-		});
-		return true;
-	}
-	else {
-		return false;
-	}
+function dropItem(url, object) {
+
+        var confirm = confirmDelete();
+        if(confirm) {
+                var id = url.split('/')[2];
+                $('body').css('cursor', 'wait');
+                $(object + ', #pinned-wrapper-' + id).fadeTo('fast', 0.33, function () {
+                        $.get(url).done(function() {
+                                $(object + ', #pinned-wrapper-' + id).remove();
+                                $('body').css('cursor', 'auto');
+                        });
+                });
+                if($('#wall-item-pinned-' + id).length)
+                    $.post('pin/pin', { 'id' : id });
+                return true;
+        }
+        else {
+                return false;
+        }
 }
 
 function dosubthread(ident) {
@@ -1276,6 +1272,20 @@ function filestorage(event, nick, id) {
 		last_filestorage_id = id;
 	});
 }
+
+function submitPoll(id) {
+
+	$.post('vote/' + id,
+		$('#question-form-' + id).serialize(),
+		function(data) {
+			$.jGrowl(data.message, { sticky: false, theme: ((data.success) ? 'info' : 'notice'), life: 10000 });
+			if(timer) clearTimeout(timer);
+			timer = setTimeout(updateInit,1500);
+		}
+	);
+
+}
+
 
 function post_comment(id) {
 	unpause();
@@ -1652,4 +1662,231 @@ function zid(s) {
 	s = s + achar + 'f=&zid=' + zid;
 
 	return s;
+}
+
+function sse_bs_init() {
+	if(sessionStorage.getItem('notification_open') !== null || typeof sse_type !== 'undefined' ) {
+		if(typeof sse_type === 'undefined')
+			sse_type = sessionStorage.getItem('notification_open');
+
+		$("#nav-" + sse_type + "-sub").addClass('show');
+		sse_bs_notifications(sse_type, true, false);
+	}
+	else {
+		sse_bs_counts();
+	}
+}
+
+function sse_bs_counts() {
+	$.get('/sse_bs',function(obj) {
+		console.log(obj);
+		sse_handleNotifications(obj, true, false);
+	});
+}
+
+function sse_bs_notifications(e, replace, followup) {
+	sse_bs_active = true;
+	var manual = false;
+
+	if(typeof replace === 'undefined')
+		replace = e.data.replace;
+
+	if(typeof followup === 'undefined')
+		followup = e.data.followup;
+
+	if(typeof e === 'string') {
+		sse_type = e;
+	}
+	else {
+		manual = true;
+		sse_offset = 0;
+		sse_type = e.target.dataset.sse_type;
+	}
+
+	if(typeof sse_type === 'undefined')
+		return;
+
+	if(followup || !manual || !($('#nav-' + sse_type + '-sub').hasClass('collapse') && $('#nav-' + sse_type + '-sub').hasClass('show'))) {
+
+		if(sse_offset >= 0) {
+			$("#nav-" + sse_type + "-loading").show();
+		}
+
+		sessionStorage.setItem('notification_open', sse_type);
+		if(sse_offset !== -1 || replace) {
+
+			var cn_val = (($('#cn-' + sse_type + '-input').length && sse_partial_result) ? $('#cn-' + sse_type + '-input').val().toString().toLowerCase() : '');
+
+			$.get('/sse_bs/' + sse_type + '/' + sse_offset + '?nquery=' + encodeURIComponent(cn_val), function(obj) {
+				console.log('sse: bootstraping ' + sse_type);
+				console.log(obj);
+
+				sse_bs_active = false;
+				sse_offset = obj[sse_type].offset;
+				if(sse_offset < 0)
+					$("#nav-" + sse_type + "-loading").hide();
+
+				sse_handleNotifications(obj, replace, followup);
+
+			});
+		}
+		else
+			$("#nav-" + sse_type + "-loading").hide();
+
+	}
+	else {
+		sessionStorage.removeItem('notification_open');
+	}
+}
+
+
+
+function sse_handleNotifications(obj, replace, followup) {
+
+	var primary_notifications = ['home', 'intros', 'register', 'mail', 'notify', 'files'];
+	var secondary_notifications = ['network', 'forums', 'all_events', 'pubs'];
+	var all_notifications = primary_notifications.concat(secondary_notifications);
+
+	all_notifications.forEach(function(type, index) {
+		if(obj[type] && obj[type].count) {
+			$('.' + type + '-button').fadeIn();
+			if(replace || followup)
+				$('.' + type + '-update').html(Number(obj[type].count));
+			else
+				$('.' + type + '-update').html(Number(obj[type].count) + Number($('.' + type + '-update').html()));
+		}
+		if(obj[type] && obj[type].notifications.length)
+			sse_handleNotificationsItems(type, obj[type].notifications, replace, followup);
+	});
+
+	sse_setNotificationsStatus();
+
+	// notice and info
+	$.jGrowl.defaults.closerTemplate = '<div>[ ' + aStr.closeAll + ']</div>';
+
+	if(obj.notice) {
+		$(obj.notice.notifications).each(function() {
+			$.jGrowl(this, { sticky: true, theme: 'notice' });
+		});
+	}
+
+	if(obj.info) {
+		$(obj.info.notifications).each(function(){
+			$.jGrowl(this, { sticky: false, theme: 'info', life: 10000 });
+		});
+	}
+
+}
+
+function sse_handleNotificationsItems(notifyType, data, replace, followup) {
+	var notifications_tpl = ((notifyType == 'forums') ? decodeURIComponent($("#nav-notifications-forums-template[rel=template]").html()) : decodeURIComponent($("#nav-notifications-template[rel=template]").html()));
+	var notify_menu = $("#nav-" + notifyType + "-menu");
+	var notify_loading = $("#nav-" + notifyType + "-loading");
+	var notify_count = $("." + notifyType + "-update");
+
+	if(replace && !followup) {
+		notify_menu.html('');
+		notify_loading.hide();
+	}
+
+	$(data).each(function() {
+		html = notifications_tpl.format(this.notify_link,this.photo,this.name,this.addr,this.message,this.when,this.hclass,this.b64mid,this.notify_id,this.thread_top,this.unseen,this.private_forum, encodeURIComponent(this.mids));
+		notify_menu.append(html);
+	});
+
+	if(!replace && !followup) {
+		$("#nav-" + notifyType + "-menu .notification").sort(function(a,b) {
+			a = new Date(a.dataset.when);
+			b = new Date(b.dataset.when);
+			return a > b ? -1 : a < b ? 1 : 0;
+		}).appendTo('#nav-' + notifyType + '-menu');
+	}
+
+	$(document.body).trigger("sticky_kit:recalc");
+	$("#nav-" + notifyType + "-menu .notifications-autotime").timeago();
+
+	if($('#tt-' + notifyType + '-only').hasClass('active'))
+		$('#nav-' + notifyType + '-menu [data-thread_top=false]').addClass('d-none');
+
+	if($('#cn-' + notifyType + '-input').length) {
+		var filter = $('#cn-' + notifyType + '-input').val().toString().toLowerCase();
+		if(filter) {
+			filter = filter.indexOf('%') == 0 ? filter.substring(1) : filter;
+
+			$('#nav-' + notifyType + '-menu .notification').each(function(i, el) {
+				var cn = $(el).data('contact_name').toString().toLowerCase();
+				var ca = $(el).data('contact_addr').toString().toLowerCase();
+				if(cn.indexOf(filter) === -1 && ca.indexOf(filter) === -1)
+					$(el).addClass('d-none');
+				else
+					$(el).removeClass('d-none');
+			});
+		}
+	}
+}
+
+function sse_updateNotifications(type, mid) {
+
+	if(type === 'pubs')
+		return true;
+
+	if(type === 'notify' && (mid !== bParam_mid || sse_type !== 'notify'))
+		return true;
+
+	var count = Number($('.' + type + '-update').html());
+
+	count--;
+
+	if(count < 1) {
+		$('.' + type + '-update').html(count);
+		$('.' + type + '-button').fadeOut(function() {
+			sse_setNotificationsStatus();
+		});
+	}
+	else {
+		$('.' + type + '-update').html(count);
+	}
+
+	$('#nav-' + type + '-menu .notification[data-b64mid=\'' + mid + '\']').fadeOut(function() {
+		this.remove();
+	});
+
+}
+
+function sse_setNotificationsStatus() {
+	var primary_notifications = ['home', 'intros', 'register', 'mail', 'notify', 'files'];
+	var secondary_notifications = ['network', 'forums', 'all_events', 'pubs'];
+	var all_notifications = primary_notifications.concat(secondary_notifications);
+
+	var primary_available = false;
+	var any_available = false;
+
+	all_notifications.forEach(function(type, index) {
+		if($('.' + type + '-button').css('display') == 'block') {
+			any_available = true;
+			if(primary_notifications.indexOf(type) > -1)
+				primary_available = true;
+		}
+	});
+
+	if(primary_available) {
+		$('.notifications-btn-icon').removeClass('fa-exclamation-circle');
+		$('.notifications-btn-icon').addClass('fa-exclamation-triangle');
+	}
+	else {
+		$('.notifications-btn-icon').removeClass('fa-exclamation-triangle');
+		$('.notifications-btn-icon').addClass('fa-exclamation-circle');
+	}
+
+	if(any_available) {
+		$('.notifications-btn').css('opacity', 1);
+		$('#no_notifications').hide();
+		$('#notifications').show();
+	}
+	else {
+		$('.notifications-btn').css('opacity', 0.5);
+		$('#navbar-collapse-1').removeClass('show');
+		$('#no_notifications').show();
+		$('#notifications').hide();
+	}
 }

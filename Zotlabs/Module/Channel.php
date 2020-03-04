@@ -419,6 +419,7 @@ class Channel extends Controller {
 				'$nouveau' => '0',
 				'$wall' => '1',
 				'$fh' => '0',
+				'$dm' => '0',
 				'$static'  => $static,
 				'$page' => ((App::$pager['page'] != 1) ? App::$pager['page'] : 1),
 				'$search' => $search,
@@ -468,6 +469,13 @@ class Channel extends Controller {
 				);
 			}
 		}
+		
+		// Add pinned content
+		if(! x($_REQUEST,'mid') && ! $search) {
+		    $pinned = new \Zotlabs\Widget\Pinned;
+		    $r = $pinned->widget(intval(App::$profile['profile_uid']), [ITEM_TYPE_POST]);
+		    $o .= $r['html'];
+        }
 
 		$mode = (($search) ? 'search' : 'channel');
 

@@ -7,8 +7,8 @@ import {
 } from './constants';
 import {
   addClass,
+  assign,
   dispatchEvent,
-  extend,
   getAdjustedSizes,
   getRotatedSizes,
   getTransforms,
@@ -101,8 +101,8 @@ export default {
     this.canvasData = canvasData;
     this.limited = (viewMode === 1 || viewMode === 2);
     this.limitCanvas(true, true);
-    this.initialImageData = extend({}, imageData);
-    this.initialCanvasData = extend({}, canvasData);
+    this.initialImageData = assign({}, imageData);
+    this.initialCanvasData = assign({}, canvasData);
   },
 
   limitCanvas(sizeLimited, positionLimited) {
@@ -158,7 +158,7 @@ export default {
         aspectRatio,
         width: minCanvasWidth,
         height: minCanvasHeight,
-      }, 'cover'));
+      }));
 
       canvasData.minWidth = minCanvasWidth;
       canvasData.minHeight = minCanvasHeight;
@@ -167,7 +167,7 @@ export default {
     }
 
     if (positionLimited) {
-      if (viewMode) {
+      if (viewMode > (cropped ? 0 : 1)) {
         const newCanvasLeft = containerData.width - canvasData.width;
         const newCanvasTop = containerData.height - canvasData.height;
 
@@ -231,13 +231,13 @@ export default {
       this.limitCanvas(true, false);
     }
 
-    if (canvasData.width > canvasData.maxWidth ||
-      canvasData.width < canvasData.minWidth) {
+    if (canvasData.width > canvasData.maxWidth
+      || canvasData.width < canvasData.minWidth) {
       canvasData.left = canvasData.oldLeft;
     }
 
-    if (canvasData.height > canvasData.maxHeight ||
-      canvasData.height < canvasData.minHeight) {
+    if (canvasData.height > canvasData.maxHeight
+      || canvasData.height < canvasData.minHeight) {
       canvasData.top = canvasData.oldTop;
     }
 
@@ -263,7 +263,7 @@ export default {
     canvasData.oldLeft = canvasData.left;
     canvasData.oldTop = canvasData.top;
 
-    setStyle(this.canvas, extend({
+    setStyle(this.canvas, assign({
       width: canvasData.width,
       height: canvasData.height,
     }, getTransforms({
@@ -283,16 +283,16 @@ export default {
     const width = imageData.naturalWidth * (canvasData.width / canvasData.naturalWidth);
     const height = imageData.naturalHeight * (canvasData.height / canvasData.naturalHeight);
 
-    extend(imageData, {
+    assign(imageData, {
       width,
       height,
       left: (canvasData.width - width) / 2,
       top: (canvasData.height - height) / 2,
     });
-    setStyle(this.image, extend({
+    setStyle(this.image, assign({
       width: imageData.width,
       height: imageData.height,
-    }, getTransforms(extend({
+    }, getTransforms(assign({
       translateX: imageData.left,
       translateY: imageData.top,
     }, imageData))));
@@ -304,7 +304,7 @@ export default {
 
   initCropBox() {
     const { options, canvasData } = this;
-    const { aspectRatio } = options;
+    const aspectRatio = options.aspectRatio || options.initialAspectRatio;
     const autoCropArea = Number(options.autoCropArea) || 0.8;
     const cropBoxData = {
       width: canvasData.width,
@@ -350,7 +350,7 @@ export default {
     cropBoxData.oldLeft = cropBoxData.left;
     cropBoxData.oldTop = cropBoxData.top;
 
-    this.initialCropBoxData = extend({}, cropBoxData);
+    this.initialCropBoxData = assign({}, cropBoxData);
   },
 
   limitCropBox(sizeLimited, positionLimited) {
@@ -366,14 +366,18 @@ export default {
     if (sizeLimited) {
       let minCropBoxWidth = Number(options.minCropBoxWidth) || 0;
       let minCropBoxHeight = Number(options.minCropBoxHeight) || 0;
-      let maxCropBoxWidth = Math.min(
+      let maxCropBoxWidth = limited ? Math.min(
         containerData.width,
-        limited ? canvasData.width : containerData.width,
-      );
-      let maxCropBoxHeight = Math.min(
+        canvasData.width,
+        canvasData.width + canvasData.left,
+        containerData.width - canvasData.left,
+      ) : containerData.width;
+      let maxCropBoxHeight = limited ? Math.min(
         containerData.height,
-        limited ? canvasData.height : containerData.height,
-      );
+        canvasData.height,
+        canvasData.height + canvasData.top,
+        containerData.height - canvasData.top,
+      ) : containerData.height;
 
       // The min/maxCropBoxWidth/Height must be less than container's width/height
       minCropBoxWidth = Math.min(minCropBoxWidth, containerData.width);
@@ -430,13 +434,13 @@ export default {
   renderCropBox() {
     const { options, containerData, cropBoxData } = this;
 
-    if (cropBoxData.width > cropBoxData.maxWidth ||
-      cropBoxData.width < cropBoxData.minWidth) {
+    if (cropBoxData.width > cropBoxData.maxWidth
+      || cropBoxData.width < cropBoxData.minWidth) {
       cropBoxData.left = cropBoxData.oldLeft;
     }
 
-    if (cropBoxData.height > cropBoxData.maxHeight ||
-      cropBoxData.height < cropBoxData.minHeight) {
+    if (cropBoxData.height > cropBoxData.maxHeight
+      || cropBoxData.height < cropBoxData.minHeight) {
       cropBoxData.top = cropBoxData.oldTop;
     }
 
@@ -464,11 +468,11 @@ export default {
 
     if (options.movable && options.cropBoxMovable) {
       // Turn to move the canvas when the crop box is equal to the container
-      setData(this.face, DATA_ACTION, cropBoxData.width >= containerData.width &&
-        cropBoxData.height >= containerData.height ? ACTION_MOVE : ACTION_ALL);
+      setData(this.face, DATA_ACTION, cropBoxData.width >= containerData.width
+        && cropBoxData.height >= containerData.height ? ACTION_MOVE : ACTION_ALL);
     }
 
-    setStyle(this.cropBox, extend({
+    setStyle(this.cropBox, assign({
       width: cropBoxData.width,
       height: cropBoxData.height,
     }, getTransforms({
@@ -487,9 +491,6 @@ export default {
 
   output() {
     this.preview();
-
-    if (this.complete) {
-      dispatchEvent(this.element, EVENT_CROP, this.getData());
-    }
+    dispatchEvent(this.element, EVENT_CROP, this.getData());
   },
 };

@@ -66,7 +66,10 @@ Hubzilla 4.6 (2019-12-04)
 	- New addon "workflow" with initial basic "issue tracker" capability
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 85c07d57fe0f468eb8cc84584f3636b590aa929f
 Hubzilla 4.4.1 (2019-08-16)
 	- Fix wrong profile photo displayed when previewing and editing profiles
 	- Fix regression from 4.4 which prevented encrypted signatures from being used for encrypted messages

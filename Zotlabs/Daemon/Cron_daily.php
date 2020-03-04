@@ -44,6 +44,15 @@ class Cron_daily {
 			db_utcnow(), db_quoteinterval('1 YEAR')
 		);
 
+<<<<<<< HEAD
+=======
+		// expire anonymous sse notification entries once a day
+
+		q("delete from xconfig where xchan like '%s'",
+			dbesc('sse_id.%')
+		);
+
+>>>>>>> 85c07d57fe0f468eb8cc84584f3636b590aa929f
 		// Clean up emdedded content cache
 		q("DELETE FROM cache WHERE updated < %s - INTERVAL %s",
 		    db_utcnow(),

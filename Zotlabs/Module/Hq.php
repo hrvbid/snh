@@ -152,8 +152,8 @@ class Hq extends \Zotlabs\Web\Controller {
 
 			if($target_item) {
 				// if the target item is not a post (eg a like) we want to address its thread parent
-				$mid = ((($target_item['verb'] == ACTIVITY_LIKE) || ($target_item['verb'] == ACTIVITY_DISLIKE)) ? $target_item['thr_parent'] : $target_item['mid']);
-
+				//$mid = ((($target_item['verb'] == ACTIVITY_LIKE) || ($target_item['verb'] == ACTIVITY_DISLIKE)) ? $target_item['thr_parent'] : $target_item['mid']);
+				$mid = $target_item['mid'];
 				// if we got a decoded hash we must encode it again before handing to javascript 
 				if($decoded)
 					$mid = 'b64.' . base64url_encode($mid);
@@ -179,6 +179,7 @@ class Hq extends \Zotlabs\Web\Controller {
 				'$conv'    => '0',
 				'$spam'    => '0',
 				'$fh'      => '0',
+				'$dm'      => '0',
 				'$nouveau' => '0',
 				'$wall'    => '0',
 				'$static'  => $static,

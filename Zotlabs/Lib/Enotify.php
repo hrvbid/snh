@@ -550,6 +550,11 @@ class Enotify {
 	if ((\App::$language === 'en' || (! \App::$language)) && strpos($msg,', '))
 		$msg = substr($msg,strpos($msg,', ')+1);	
 
+	$datarray['id'] = $notify_id;
+	$datarray['msg'] = $msg;
+
+	call_hooks('enotify_store_end', $datarray);
+
 	$r = q("update notify set msg = '%s' where id = %d and uid = %d",
 		dbesc($msg),
 		intval($notify_id),
@@ -805,11 +810,12 @@ class Enotify {
 		}
 		else {
 			$itemem_text = (($item['item_thread_top'])
-				? t('created a new post')
-				: sprintf( t('commented on %s\'s post'), $item['owner']['xchan_name']));
+				? (($item['obj_type'] === 'Question') ? t('created a new poll') : t('created a new post'))
+				: (($item['obj_type'] === 'Answer') ? sprintf( t('voted on %s\'s poll'), '[bdi]' . $item['owner']['xchan_name'] . '[/bdi]') : sprintf( t('commented on %s\'s post'), '[bdi]' . $item['owner']['xchan_name'] . '[/bdi]'))
+			);
 
 			if($item['verb'] === ACTIVITY_SHARE) {
-				$itemem_text = sprintf( t('repeated %s\'s post'), $item['author']['xchan_name']);
+				$itemem_text = sprintf( t('repeated %s\'s post'), '[bdi]' . $item['author']['xchan_name'] . '[/bdi]');
 			}
 
 		}
@@ -838,15 +844,16 @@ class Enotify {
 			'addr' => (($item[$who]['xchan_addr']) ? $item[$who]['xchan_addr'] : $item[$who]['xchan_url']),
 			'url' => $item[$who]['xchan_url'],
 			'photo' => $item[$who]['xchan_photo_s'],
-			'when' => relative_date(($edit)? $item['edited'] : $item['created']), 
+			'when' => (($edit) ? datetime_convert('UTC', date_default_timezone_get(), $item['edited']) : datetime_convert('UTC', date_default_timezone_get(), $item['created'])),
 			'class' => (intval($item['item_unseen']) ? 'notify-unseen' : 'notify-seen'),
-			'b64mid' => ((in_array($item['verb'], [ACTIVITY_LIKE, ACTIVITY_DISLIKE])) ? 'b64.' . base64url_encode($item['thr_parent']) : 'b64.' . base64url_encode($item['mid'])),
+			'b64mid' => 'b64.' . base64url_encode($item['mid']),
+			//'b64mid' => ((in_array($item['verb'], [ACTIVITY_LIKE, ACTIVITY_DISLIKE])) ? 'b64.' . base64url_encode($item['thr_parent']) : 'b64.' . base64url_encode($item['mid'])),
 			'notify_id' => 'undefined',
 			'thread_top' => (($item['item_thread_top']) ? true : false),
-			'message' => strip_tags(bbcode($itemem_text)),
+			'message' => bbcode(escape_tags($itemem_text)),
 			// these are for the superblock addon
 			'hash' => $item[$who]['xchan_hash'],
-			'uid' => local_channel(),
+			'uid' => $item['uid'],
 			'display' => true
 		);
 
@@ -858,4 +865,120 @@ class Enotify {
 		return $x;
 	}
 
+	static public function format_notify($tt) {
+
+		$message = trim(strip_tags(bbcode($tt['msg'])));
+
+		if(strpos($message, $tt['xname']) === 0)
+			$message = substr($message, strlen($tt['xname']) + 1);
+
+		$mid = basename($tt['link']);
+
+		$b64mid = ((strpos($mid, 'b64.') === 0) ? $mid : 'b64.' . base64url_encode($mid));
+
+		$x = [
+			'notify_link' => z_root() . '/notify/view/' . $tt['id'],
+			'name' => $tt['xname'],
+			'url' => $tt['url'],
+			'photo' => $tt['photo'],
+			'when' => datetime_convert('UTC', date_default_timezone_get(), $tt['created']),
+			'hclass' => (($tt['seen']) ? 'notify-seen' : 'notify-unseen'),
+			'b64mid' => (($tt['otype'] == 'item') ? $b64mid : 'undefined'),
+			'notify_id' => (($tt['otype'] == 'item') ? $tt['id'] : 'undefined'),
+			'message' => $message
+		];
+
+		return $x;
+
+	}
+
+	static public function format_intros($rr) {
+
+		$x = [
+			'notify_link' => z_root() . '/connections/ifpending',
+			'name' => $rr['xchan_name'],
+			'addr' => $rr['xchan_addr'],
+			'url' => $rr['xchan_url'],
+			'photo' => $rr['xchan_photo_s'],
+			'when' => datetime_convert('UTC', date_default_timezone_get(), $rr['abook_created']),
+			'hclass' => ('notify-unseen'),
+			'message' => t('added your channel')
+		];
+
+		return $x;
+
+	}
+
+	static public function format_files($rr) {
+
+		$x = [
+			'notify_link' => z_root() . '/sharedwithme',
+			'name' => $rr['author']['xchan_name'],
+			'addr' => $rr['author']['xchan_addr'],
+			'url' => $rr['author']['xchan_url'],
+			'photo' => $rr['author']['xchan_photo_s'],
+			'when' => datetime_convert('UTC', date_default_timezone_get(), $rr['created']),
+			'hclass' => ('notify-unseen'),
+			'message' => t('shared a file with you')
+		];
+
+		return $x;
+
+	}
+
+	static public function format_mail($rr) {
+
+		$x = [
+			'notify_link' => z_root() . '/mail/' . $rr['id'],
+			'name' => $rr['xchan_name'],
+			'addr' => $rr['xchan_addr'],
+			'url' => $rr['xchan_url'],
+			'photo' => $rr['xchan_photo_s'],
+			'when' => datetime_convert('UTC', date_default_timezone_get(), $rr['created']),
+			'hclass' => (intval($rr['mail_seen']) ? 'notify-seen' : 'notify-unseen'),
+			'message' => t('sent you a private message'),
+		];
+
+		return $x;
+
+	}
+
+	static public function format_all_events($rr) {
+
+		$bd_format = t('g A l F d') ; // 8 AM Friday January 18
+		$strt = datetime_convert('UTC', (($rr['adjust']) ? date_default_timezone_get() : 'UTC'), $rr['dtstart']);
+		$today = ((substr($strt, 0, 10) === datetime_convert('UTC', date_default_timezone_get(), 'now', 'Y-m-d')) ? true : false);
+		$when = day_translate(datetime_convert('UTC', (($rr['adjust']) ? date_default_timezone_get() : 'UTC'), $rr['dtstart'], $bd_format)) . (($today) ?  ' ' . t('[today]') : '');
+
+		$x = [
+			'notify_link' => z_root() . '/cdav/calendar/' . $rr['event_hash'],
+			'name'        => $rr['xchan_name'],
+			'addr'        => $rr['xchan_addr'],
+			'url'         => $rr['xchan_url'],
+			'photo'       => $rr['xchan_photo_s'],
+			'when'        => $when,
+			'hclass'       => ('notify-unseen'),
+			'message'     => t('posted an event')
+		];
+
+		return $x;
+
+	}
+
+	static public function format_register($rr) {
+
+		$x = [
+			'notify_link' => z_root() . '/admin/accounts',
+			'name' => $rr['account_email'],
+			'addr' => $rr['account_email'],
+			'url' => '',
+			'photo' => z_root() . '/' . get_default_profile_photo(48),
+			'when' => datetime_convert('UTC', date_default_timezone_get(),$rr['account_created']),
+			'hclass' => ('notify-unseen'),
+			'message' => t('requires approval')
+		];
+
+		return $x;
+
+	}
 }

@@ -74,7 +74,6 @@ class Apps {
 			'Directory',
 			'Search',
 			'Help',
-			'Mail',
 			'Profile Photo'
 		]);
 

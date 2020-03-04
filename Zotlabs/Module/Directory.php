@@ -2,15 +2,19 @@
 
 namespace Zotlabs\Module;
 
+use App;
+use Zotlabs\Web\Controller;
+
 require_once('include/socgraph.php');
 require_once('include/dir_fns.php');
 require_once('include/bbcode.php');
+require_once('include/html2plain.php');
 
 
-class Directory extends \Zotlabs\Web\Controller {
+class Directory extends Controller {
 
 	function init() {
-		\App::set_pager_itemspage(60);
+		App::set_pager_itemspage(60);
 	
 		if(local_channel() && x($_GET,'ignore')) {
 			q("insert into xign ( uid, xchan ) values ( %d, '%s' ) ",
@@ -21,7 +25,7 @@ class Directory extends \Zotlabs\Web\Controller {
 		}
 
 		if(local_channel())
-			\App::$profile_uid = local_channel();
+			App::$profile_uid = local_channel();
 	
 		$observer = get_observer_hash();
 		$global_changed = false;
@@ -140,9 +144,15 @@ class Directory extends \Zotlabs\Web\Controller {
 	
 		$dirmode = intval(get_config('system','directory_mode'));
 	
+		$directory_admin = false;
+
 		if(($dirmode == DIRECTORY_MODE_PRIMARY) || ($dirmode == DIRECTORY_MODE_STANDALONE)) {
 			$url = z_root() . '/dirsearch';
-		}
+			if (is_site_admin()) {
+				$directory_admin = true;
+			}
+ 		}
+
 		if(! $url) {
 			$directory = find_upstream_directory($dirmode);
 			if((! $directory) || (! array_key_exists('url',$directory)) || (! $directory['url']))
@@ -182,7 +192,7 @@ class Directory extends \Zotlabs\Web\Controller {
 				$query .= '&t=' . $token;
 	
 			if(! $globaldir)
-				$query .= '&hub=' . \App::get_hostname();
+				$query .= '&hub=' . App::get_hostname();
 	
 			if($search)
 				$query .= '&name=' . urlencode($search) . '&keywords=' . urlencode($search);
@@ -204,8 +214,8 @@ class Directory extends \Zotlabs\Web\Controller {
 			if($sort_order)
 				$query .= '&order=' . urlencode($sort_order);
 				
-			if(\App::$pager['page'] != 1)
-				$query .= '&p=' . \App::$pager['page'];
+			if(App::$pager['page'] != 1)
+				$query .= '&p=' . App::$pager['page'];
 	
 			logger('mod_directory: query: ' . $query);
 	
@@ -283,12 +293,19 @@ class Directory extends \Zotlabs\Web\Controller {
 							$marital = ((x($profile,'marital') == 1) ?  t('Status: ') . $profile['marital']: False);
 			
 							$homepage = ((x($profile,'homepage') == 1) ?  t('Homepage: ') : False);
-							$homepageurl = ((x($profile,'homepage') == 1) ?  $profile['homepage'] : ''); 
+							$homepageurl = ((x($profile,'homepage') == 1) ?  html2plain($profile['homepage']) : ''); 
 	
-							$hometown = ((x($profile,'hometown') == 1) ? $profile['hometown']  : False);
+<<<<<<< HEAD
+							$about = ((x($profile,'about') == 1) ? zidify_links(bbcode($profile['about'], ['tryoembed' => false])) : False);
+=======
+							$hometown = ((x($profile,'hometown') == 1) ? html2plain($profile['hometown'])  : False);
+>>>>>>> 85c07d57fe0f468eb8cc84584f3636b590aa929f
 	
 							$about = ((x($profile,'about') == 1) ? zidify_links(bbcode($profile['about'], ['tryoembed' => false])) : False);
-	
+							if ($about && $safe_mode) {
+								$about = html2plain($about);
+							}
+							
 							$keywords = ((x($profile,'keywords')) ? $profile['keywords'] : '');
 	
 
@@ -343,9 +360,11 @@ class Directory extends \Zotlabs\Web\Controller {
 								'canrate' => (($rating_enabled && local_channel()) ? true : false),
 								'pdesc'	=> $pdesc,
 								'pdesc_label' => t('Description:'),
+								'censor' => (($directory_admin) ? 'dircensor/' . $rr['hash'] : ''),
+								'censor_label' => (($rr['censored']) ? t('Uncensor') : t('Censor')),
 								'marital'  => $marital,
 								'homepage' => $homepage,
-								'homepageurl' => linkify($homepageurl, true),
+								'homepageurl' => (($safe_mode) ? $homepageurl : linkify($homepageurl)),
 								'hometown' => $hometown,
 								'hometown_label' => t('Hometown:'),
 								'about' => $about,
@@ -387,7 +406,7 @@ class Directory extends \Zotlabs\Web\Controller {
 						ksort($entries); // Sort array by key so that foreach-constructs work as expected
 	
 						if($j['keywords']) {
-							\App::$data['directory_keywords'] = $j['keywords'];
+							App::$data['directory_keywords'] = $j['keywords'];
 						}
 	
 						logger('mod_directory: entries: ' . print_r($entries,true), LOGGER_DATA);
@@ -438,7 +457,7 @@ class Directory extends \Zotlabs\Web\Controller {
 							echo $o;
 							killme();
 						}
-						if(\App::$pager['page'] == 1 && $j['records'] == 0 && strpos($search,'@')) {
+						if(App::$pager['page'] == 1 && $j['records'] == 0 && strpos($search,'@')) {
 							goaway(z_root() . '/chanview/?f=&address=' . $search);
 						}
 						info( t("No entries (some entries may be hidden).") . EOL);

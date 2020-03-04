@@ -83,7 +83,7 @@ class Libsync {
 
 		$info = (($packet) ? $packet : array());
 		$info['type'] = 'sync';
-		$info['encoding'] = 'red'; // note: not zot, this packet is very platform specific
+		$info['encoding'] = 'hz'; // note: not zot, this packet is very platform specific
 		$info['relocate'] = ['channel_address' => $channel['channel_address'], 'url' => z_root() ];
 
 		if(array_key_exists($uid,\App::$config) && array_key_exists('transient',\App::$config[$uid])) {
@@ -144,7 +144,7 @@ class Libsync {
 
 		foreach($synchubs as $hub) {
 			$hash = random_string();
-			$n = Libzot::build_packet($channel,'sync',$env_recips,json_encode($info),'red',$hub['hubloc_sitekey'],$hub['site_crypto']);
+			$n = Libzot::build_packet($channel,'sync',$env_recips,json_encode($info),'hz',$hub['hubloc_sitekey'],$hub['site_crypto']);
 			Queue::insert(array(
 				'hash'       => $hash,
 				'account_id' => $channel['channel_account_id'],
@@ -244,7 +244,13 @@ class Libsync {
 
 			if(array_key_exists('app',$arr) && $arr['app'])
 				sync_apps($channel,$arr['app']);
-	
+				
+			if(array_key_exists('addressbook',$arr) && $arr['addressbook'])
+				sync_addressbook($channel,$arr['addressbook']);
+
+			if(array_key_exists('calendar',$arr) && $arr['calendar'])
+				sync_calendar($channel,$arr['calendar']);
+
 			if(array_key_exists('chatroom',$arr) && $arr['chatroom'])
 				sync_chatrooms($channel,$arr['chatroom']);
 

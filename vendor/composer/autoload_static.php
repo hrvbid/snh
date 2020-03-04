@@ -16,6 +16,7 @@ class ComposerStaticInit7b34d7e50a62201ec5d5e526a5b8b35d
         'ebdb698ed4152ae445614b69b5e4bb6a' => __DIR__ . '/..' . '/sabre/http/lib/functions.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
+        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -1270,6 +1271,7 @@ class ComposerStaticInit7b34d7e50a62201ec5d5e526a5b8b35d
         'Zotlabs\\Module\\Cover_photo' => __DIR__ . '/../..' . '/Zotlabs/Module/Cover_photo.php',
         'Zotlabs\\Module\\Dav' => __DIR__ . '/../..' . '/Zotlabs/Module/Dav.php',
         'Zotlabs\\Module\\Defperms' => __DIR__ . '/../..' . '/Zotlabs/Module/Defperms.php',
+        'Zotlabs\\Module\\Dircensor' => __DIR__ . '/../..' . '/Zotlabs/Module/Dircensor.php',
         'Zotlabs\\Module\\Directory' => __DIR__ . '/../..' . '/Zotlabs/Module/Directory.php',
         'Zotlabs\\Module\\Dirsearch' => __DIR__ . '/../..' . '/Zotlabs/Module/Dirsearch.php',
         'Zotlabs\\Module\\Display' => __DIR__ . '/../..' . '/Zotlabs/Module/Display.php',
@@ -1346,6 +1348,7 @@ class ComposerStaticInit7b34d7e50a62201ec5d5e526a5b8b35d
         'Zotlabs\\Module\\Permcats' => __DIR__ . '/../..' . '/Zotlabs/Module/Permcats.php',
         'Zotlabs\\Module\\Photo' => __DIR__ . '/../..' . '/Zotlabs/Module/Photo.php',
         'Zotlabs\\Module\\Photos' => __DIR__ . '/../..' . '/Zotlabs/Module/Photos.php',
+        'Zotlabs\\Module\\Pin' => __DIR__ . '/../..' . '/Zotlabs/Module/Pin.php',
         'Zotlabs\\Module\\Ping' => __DIR__ . '/../..' . '/Zotlabs/Module/Ping.php',
         'Zotlabs\\Module\\Poco' => __DIR__ . '/../..' . '/Zotlabs/Module/Poco.php',
         'Zotlabs\\Module\\Poke' => __DIR__ . '/../..' . '/Zotlabs/Module/Poke.php',
@@ -1402,6 +1405,8 @@ class ComposerStaticInit7b34d7e50a62201ec5d5e526a5b8b35d
         'Zotlabs\\Module\\Smilies' => __DIR__ . '/../..' . '/Zotlabs/Module/Smilies.php',
         'Zotlabs\\Module\\Snap' => __DIR__ . '/../..' . '/Zotlabs/Module/Snap.php',
         'Zotlabs\\Module\\Sources' => __DIR__ . '/../..' . '/Zotlabs/Module/Sources.php',
+        'Zotlabs\\Module\\Sse' => __DIR__ . '/../..' . '/Zotlabs/Module/Sse.php',
+        'Zotlabs\\Module\\Sse_bs' => __DIR__ . '/../..' . '/Zotlabs/Module/Sse_bs.php',
         'Zotlabs\\Module\\Sslify' => __DIR__ . '/../..' . '/Zotlabs/Module/Sslify.php',
         'Zotlabs\\Module\\Starred' => __DIR__ . '/../..' . '/Zotlabs/Module/Starred.php',
         'Zotlabs\\Module\\Subthread' => __DIR__ . '/../..' . '/Zotlabs/Module/Subthread.php',
@@ -1745,6 +1750,7 @@ class ComposerStaticInit7b34d7e50a62201ec5d5e526a5b8b35d
         'Zotlabs\\Widget\\Photo' => __DIR__ . '/../..' . '/Zotlabs/Widget/Photo.php',
         'Zotlabs\\Widget\\Photo_albums' => __DIR__ . '/../..' . '/Zotlabs/Widget/Photo_albums.php',
         'Zotlabs\\Widget\\Photo_rand' => __DIR__ . '/../..' . '/Zotlabs/Widget/Photo_rand.php',
+        'Zotlabs\\Widget\\Pinned' => __DIR__ . '/../..' . '/Zotlabs/Widget/Pinned.php',
         'Zotlabs\\Widget\\Portfolio' => __DIR__ . '/../..' . '/Zotlabs/Widget/Portfolio.php',
         'Zotlabs\\Widget\\Profile' => __DIR__ . '/../..' . '/Zotlabs/Widget/Profile.php',
         'Zotlabs\\Widget\\Pubsites' => __DIR__ . '/../..' . '/Zotlabs/Widget/Pubsites.php',

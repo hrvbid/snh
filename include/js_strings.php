@@ -33,7 +33,10 @@ function js_strings() {
 		'$name_empty'  => t('A channel name is required.'),
 		'$name_ok1'    => t('This is a '),
 		'$name_ok2'    => t(' channel name'),
-		'$to_reply'	   => t('Back to reply'),
+		'$to_reply'    => t('Back to reply'),
+		'$pinned'      => t('Pinned'),
+		'$pin_item'    => t('Pin to the top'),
+		'$unpin_item'  => t('Unpin from the top'),
 
 		// translatable prefix and suffix strings for jquery.timeago -
 		// using the defaults set below if left untranslated, empty strings if

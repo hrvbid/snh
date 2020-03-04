@@ -13,12 +13,16 @@ class PhotoGd extends PhotoDriver {
 	 * @see \Zotlabs\Photo\PhotoDriver::supportedTypes()
 	 */
 	public function supportedTypes() {
+
 		$t = [];
+
 		$t['image/jpeg'] = 'jpg';
 		if(imagetypes() & IMG_PNG)
 			$t['image/png'] = 'png';
 		if(imagetypes() & IMG_GIF)
 			$t['image/gif'] = 'gif';
+		if(imagetypes() & IMG_WEBP)
+			$t['image/webp'] = 'webp';
 
 		return $t;
 	}
@@ -142,6 +146,7 @@ class PhotoGd extends PhotoDriver {
 	 * @see \Zotlabs\Photo\PhotoDriver::imageString()
 	 */
 	public function imageString() {
+
 		if(! $this->is_valid())
 			return false;
 
@@ -150,23 +155,32 @@ class PhotoGd extends PhotoDriver {
 		ob_start();
 
 		switch($this->getType()){
+
 			case 'image/png':
 				$quality = get_config('system', 'png_quality');
 				if((! $quality) || ($quality > 9))
 					$quality = PNG_QUALITY;
-
 				\imagepng($this->image, NULL, $quality);
 				break;
+
+			case 'image/webp':
+			    $quality = get_config('system', 'webp_quality');
+			    if((! $quality) || ($quality > 100))
+			        $quality = WEBP_QUALITY;
+			    \imagewebp($this->image, NULL, $quality);
+			    break;
+
 			case 'image/jpeg':
 			// gd can lack imagejpeg(), but we verify during installation it is available
+
 			default:
 				$quality = get_config('system', 'jpeg_quality');
 				if((! $quality) || ($quality > 100))
 					$quality = JPEG_QUALITY;
-
 				\imagejpeg($this->image, NULL, $quality);
 				break;
 		}
+
 		$string = ob_get_contents();
 		ob_end_clean();
 

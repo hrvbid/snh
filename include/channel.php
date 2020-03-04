@@ -796,7 +796,7 @@ function get_default_export_sections() {
  * @return array
  *     See function for details
  */
-function identity_basic_export($channel_id, $sections = null) {
+function identity_basic_export($channel_id, $sections = null, $zap_compat = false) {
 
 	/*
 	 * basic channel export
@@ -812,11 +812,15 @@ function identity_basic_export($channel_id, $sections = null) {
 	// with a non-standard platform and version.
 
 	$ret['compatibility'] = [
-		'project' => PLATFORM_NAME,
+		'project' => (($zap_compat) ? 'zap' : PLATFORM_NAME),
 		'version' => STD_VERSION,
 		'database' => DB_UPDATE_VERSION,
 		'server_role' => System::get_server_role()
 	];
+
+	if ($zap_compat) {
+		$ret['compatibility']['codebase'] = 'zap';
+	}
 
 	/*
 	 * Process channel information regardless of it is one of the sections desired
@@ -834,6 +838,13 @@ function identity_basic_export($channel_id, $sections = null) {
 			unset($ret['channel']['channel_password']);
 			unset($ret['channel']['channel_salt']);
 		}
+		if ($zap_compat) {
+			$channel['channel_guid_sig'] = 'sha256.' . $channel['channel_guid_sig'];
+			$channel['channel_hash'] = $channel['channel_portable_id'];
+			unset($channel['channel_portable_id']);
+		}
+
+
 	}
 
 	if(in_array('channel',$sections) || in_array('profile',$sections)) {
@@ -853,7 +864,7 @@ function identity_basic_export($channel_id, $sections = null) {
 			$ret['photo'] = [
 				'type' => $r[0]['mimetype'],
 				'data' => (($r[0]['os_storage'])
-					? base64url_encode(file_get_contents($r[0]['content'])) : base64url_encode($r[0]['content']))
+					? base64url_encode(file_get_contents($r[0]['content'])) : base64url_encode(dbunescbin($r[0]['content'])))
 			];
 		}
 	}
@@ -867,11 +878,38 @@ function identity_basic_export($channel_id, $sections = null) {
 			$ret['abook'] = $r;
 
 			for($x = 0; $x < count($ret['abook']); $x ++) {
+			
 				$xchans[] = $ret['abook'][$x]['abook_xchan'];
+				$my_perms = [];
+				$their_perms = [];
+				$newconfig = [];
 				$abconfig = load_abconfig($channel_id,$ret['abook'][$x]['abook_xchan']);
-				if($abconfig)
-					$ret['abook'][$x]['abconfig'] = $abconfig;
+				if($abconfig) {
+					foreach ($abconfig as $abc) {
+
+						if ($abc['cat'] === 'my_perms' && intval($abc['v'])) {
+							$my_perms[] = $abc['k'];
+							continue;
+						}
+						if ($abc['cat'] === 'their_perms' && intval($abc['v'])) {
+							$their_perms[] = $abc['k'];
+							continue;
+						}
+						if ($zap_compat && preg_match('|^a:[0-9]+:{.*}$|s', $abc['v'])) {
+							$abc['v'] = serialise(unserialize($abc['v']));
+						}
+						$newconfig[] = $abc;
+					}
+					
+					$ret['abook'][$x]['abconfig'] = $newconfig;
+					if ($zap_compat) {
+						$ret['abook'][$x]['abconfig'][] = [ 'chan' => $channel_id, 'xchan' => $ret['abook'][$x]['abook_chan'], 'cat' => 'system', 'k' => 'my_perms', 'v' => implode(',',$my_perms) ];
+						$ret['abook'][$x]['abconfig'][] = [ 'chan' => $channel_id, 'xchan' => $ret['abook'][$x]['abook_chan'], 'cat' => 'system', 'k' => 'their_perms', 'v' => implode(',',$their_perms) ];
+					}	
+				}
+
 				translate_abook_perms_outbound($ret['abook'][$x]);
+				
 			}
 
 			// pick up the zot6 xchan and hublocs also
@@ -911,8 +949,17 @@ function identity_basic_export($channel_id, $sections = null) {
 		$r = q("select * from pconfig where uid = %d",
 			intval($channel_id)
 		);
-		if($r)
+
+		if($r) {
+			if ($zap_compat) {
+				for($x = 0; $x < count($r); $x ++) {
+					if (preg_match('|^a:[0-9]+:{.*}$|s', $r[$x]['v'])) {
+						$r[$x]['v'] = serialise(unserialize($r[$x]['v']));
+					}
+				}
+			}
 			$ret['config'] = $r;
+		}
 
 		// All other term types will be included in items, if requested.
 
@@ -2952,4 +2999,9 @@ function pchan_to_chan($pchan) {
 
 function channel_url($channel) {
 	return (($channel) ? z_root() . '/channel/' . $channel['channel_address'] : z_root());
+}
+
+function get_channel_hashes() {
+	$r = q("SELECT channel_hash FROM channel WHERE channel_removed = 0");
+	return flatten_array_recursive($r);
 }

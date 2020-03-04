@@ -62,6 +62,11 @@ class Pubstream extends \Zotlabs\Web\Controller {
 		$static = ((array_key_exists('static',$_REQUEST)) ? intval($_REQUEST['static']) : 0);
 		$net    = ((array_key_exists('net',$_REQUEST))    ? escape_tags($_REQUEST['net']) : '');
 
+		$title = replace_macros(get_markup_template("section_title.tpl"),array(
+			'$title' => (($hashtags) ? '#' . htmlspecialchars($hashtags, ENT_COMPAT,'UTF-8') : '')
+		));
+
+		$o = (($hashtags) ? $title : '');
 
 		if(local_channel() && (! $update)) {
 	
@@ -94,7 +99,7 @@ class Pubstream extends \Zotlabs\Web\Controller {
 				'reset'               => t('Reset form')
 			);
 	
-			$o = '<div id="jot-popup">';
+			$o .= '<div id="jot-popup">';
 			$o .= status_editor($a,$x,false,'Pubstream');
 			$o .= '</div>';
 		}
@@ -139,6 +144,7 @@ class Pubstream extends \Zotlabs\Web\Controller {
 				'$conv'    => '0',
 				'$spam'    => '0',
 				'$fh'      => '1',
+				'$dm'      => '0',
 				'$nouveau' => '0',
 				'$wall'    => '0',
 				'$list'    => '0',
@@ -285,7 +291,7 @@ class Pubstream extends \Zotlabs\Web\Controller {
 		}
 	
 		// fake it
-		$mode = ('pubstream');
+		$mode = (($hashtags) ? 'search' : 'pubstream');
 	
 		$o .= conversation($items,$mode,$update,$page_mode);
 

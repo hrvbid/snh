@@ -64,11 +64,11 @@ class MarkdownTest extends UnitTestCase {
 				],
 				'HTML entities, lt does not work' => [
 						'& gt > lt <',
-						'& gt > lt'
+						'&amp; gt &gt; lt'
 				],
 				'escaped HTML entities' => [
 						'&amp; lt &lt; gt &gt;',
-						'& lt < gt >'
+						'&amp; lt &lt; gt &gt;'
 				],
 				'linebreak' => [
 						"line1<br>line2\nline3",

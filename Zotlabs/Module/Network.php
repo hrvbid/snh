@@ -69,6 +69,7 @@ class Network extends \Zotlabs\Web\Controller {
 		$category   = ((x($_REQUEST,'cat')) ? $_REQUEST['cat'] : '');
 		$hashtags   = ((x($_REQUEST,'tag')) ? $_REQUEST['tag'] : '');
 		$verb       = ((x($_REQUEST,'verb')) ? $_REQUEST['verb'] : '');
+		$dm         = ((x($_REQUEST,'dm')) ? $_REQUEST['dm'] : 0);
 
 
 		$order = get_pconfig(local_channel(), 'mod_network', 'order', 0);
@@ -339,7 +340,7 @@ class Network extends \Zotlabs\Web\Controller {
 			// The special div is needed for liveUpdate to kick in for this page.
 			// We only launch liveUpdate if you aren't filtering in some incompatible
 			// way and also you aren't writing a comment (discovered in javascript).
-	
+
 			$maxheight = get_pconfig(local_channel(),'system','network_divmore_height');
 			if(! $maxheight)
 				$maxheight = 400;
@@ -363,6 +364,7 @@ class Network extends \Zotlabs\Web\Controller {
 				'$conv'    => (($conv) ? $conv : '0'),
 				'$spam'    => (($spam) ? $spam : '0'),
 				'$fh'      => '0',
+				'$dm'      => (($dm) ? $dm : '0'),
 				'$nouveau' => (($nouveau) ? $nouveau : '0'),
 				'$wall'    => '0',
 				'$static'  => $static, 
@@ -409,14 +411,32 @@ class Network extends \Zotlabs\Web\Controller {
 			}
 		}
 	
-		if($verb) {
-			$sql_extra .= sprintf(" AND item.verb like '%s' ",
-				dbesc(protect_sprintf('%' . $verb . '%'))
-			);
+		if ($verb) {
+
+			// the presence of a leading dot in the verb determines
+			// whether to match the type of activity or the child object.
+			// The name 'verb' is a holdover from the earlier XML
+			// ActivityStreams specification.
+
+			if (substr($verb,0,1) === '.') {
+				$verb = substr($verb,1);
+				$sql_extra .= sprintf(" AND item.obj_type like '%s' ",
+					dbesc(protect_sprintf('%' . $verb . '%'))
+				);
+			}
+			else {
+				$sql_extra .= sprintf(" AND item.verb like '%s' ",
+					dbesc(protect_sprintf('%' . $verb . '%'))
+				);
+			}
 		}
 	
 		if(strlen($file)) {
 			$sql_extra .= term_query('item',$file,TERM_FILE);
+		}
+
+		if ($dm) {
+			$sql_extra .= " AND item_private = 2 ";
 		}
 	
 		if($conv) {

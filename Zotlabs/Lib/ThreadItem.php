@@ -78,7 +78,7 @@ class ThreadItem {
 	 */
 
 	public function get_template_data($conv_responses, $thread_level=1, $conv_flags = []) {
-	
+
 		$result = array();
 
 		$item     = $this->get_data();
@@ -95,7 +95,7 @@ class ThreadItem {
 		$total_children = $this->count_descendants();
 		$unseen_comments = (($item['real_uid']) ? 0 : $this->count_unseen_descendants());
 
-		$conv = $this->get_conversation();
+ 		$conv = $this->get_conversation();
 		$observer = $conv->get_observer();
 
 		$lock = (((intval($item['item_private'])) || (($item['uid'] == local_channel()) && (strlen($item['allow_cid']) || strlen($item['allow_gid']) 
@@ -202,6 +202,10 @@ class ThreadItem {
 				$isevent = true;
 				$attend = array( t('I will attend'), t('I will not attend'), t('I might attend'));
 			}
+		}
+
+		if($item['obj_type'] === 'Question') {
+			$response_verbs[] = 'answer';
 		}
 
 		$consensus = (intval($item['item_consensus']) ? true : false);
@@ -346,7 +350,7 @@ class ThreadItem {
 			$viewthread = z_root() . '/channel/' . $owner_address . '?f=&mid=' . urlencode(gen_link_id($item['mid']));
 
 		$comment_count_txt = sprintf( tt('%d comment','%d comments',$total_children),$total_children );
-		$list_unseen_txt = (($unseen_comments) ? sprintf('%d unseen',$unseen_comments) : '');
+		$list_unseen_txt = (($unseen_comments) ? sprintf( t('%d unseen'),$unseen_comments) : '');
 		
 		$children = $this->get_children();
 
@@ -356,11 +360,28 @@ class ThreadItem {
                 call_hooks('dropdown_extras',$dropdown_extras_arr);
                 $dropdown_extras = $dropdown_extras_arr['dropdown_extras'];
 
+		$midb64 = 'b64.' . base64url_encode($item['mid']);
+		$mids = [ $midb64 ];
+		$response_mids = [];
+		foreach($response_verbs as $v) {
+			if(isset($conv_responses[$v]['mids'][$item['mid']])) {
+				$response_mids = array_merge($response_mids, $conv_responses[$v]['mids'][$item['mid']]);
+			}
+		}
+
+		$mids = array_merge($mids, $response_mids);
+		$json_mids = json_encode($mids);
+
+		// Pinned item processing
+		$allowed_type = (in_array($item['item_type'], get_config('system', 'pin_types', [ ITEM_TYPE_POST ])) ? true : false);
+		$pinned_items = ($allowed_type ? get_pconfig($item['uid'], 'pinned', $item['item_type'], []) : []);
+		$pinned = ((!empty($pinned_items) && in_array($midb64, $pinned_items)) ? true : false);
+
 		$tmp_item = array(
 			'template' => $this->get_template(),
 			'mode' => $mode,
 			'item_type' => intval($item['item_type']),			
-			'type' => implode("",array_slice(explode("/",$item['verb']),-1)),
+			//'type' => implode("",array_slice(explode("/",$item['verb']),-1)),
 			'body' => $body['html'],
 			'tags' => $body['tags'],
 			'categories' => $body['categories'],
@@ -369,7 +390,8 @@ class ThreadItem {
 			'folders' => $body['folders'],
 			'text' => strip_tags($body['html']),
 			'id' => $this->get_id(),
-			'mid' => $item['mid'],
+			'mid' => $midb64,
+			'mids' => $json_mids,
 			'parent' => $item['parent'],
 			'author_id' => (($item['author']['xchan_addr']) ? $item['author']['xchan_addr'] : $item['author']['xchan_url']),
 			'isevent' => $isevent,
@@ -377,8 +399,8 @@ class ThreadItem {
 			'consensus' => $consensus,
 			'conlabels' => $conlabels,
 			'canvote' => $canvote,
-			'linktitle' => sprintf( t('View %s\'s profile - %s'), $profile_name, (($item['author']['xchan_addr']) ? $item['author']['xchan_addr'] : $item['author']['xchan_url'])),
-			'olinktitle' => sprintf( t('View %s\'s profile - %s'), $this->get_owner_name(), (($item['owner']['xchan_addr']) ? $item['owner']['xchan_addr'] : $item['owner']['xchan_url'])),
+			'linktitle' => (($item['author']['xchan_addr']) ? $item['author']['xchan_addr'] : $item['author']['xchan_url']),
+			'olinktitle' => (($item['owner']['xchan_addr']) ? $item['owner']['xchan_addr'] : $item['owner']['xchan_url']),
 			'llink' => $item['llink'],
 			'viewthread' => $viewthread,
 			'to' => t('to'),
@@ -396,7 +418,7 @@ class ThreadItem {
 			'sparkle' => $sparkle,
 			'title' => $item['title'],
 			'title_tosource' => get_pconfig($conv->get_profile_owner(),'system','title_tosource'),
-			'ago' => relative_date($item['created']),
+			//'ago' => relative_date($item['created']),
 			'app' => $item['app'],
 			'str_app' => sprintf( t('from %s'), $item['app']),
 			'isotime' => datetime_convert('UTC', date_default_timezone_get(), $item['created'], 'c'),
@@ -437,6 +459,9 @@ class ThreadItem {
 			'star'      => ((feature_enabled($conv->get_profile_owner(),'star_posts') && ($item['item_type'] == ITEM_TYPE_POST)) ? $star : ''),
 			'tagger'    => ((feature_enabled($conv->get_profile_owner(),'commtag')) ? $tagger : ''),
 			'filer'     => ((feature_enabled($conv->get_profile_owner(),'filing') && ($item['item_type'] == ITEM_TYPE_POST)) ? $filer : ''),
+			'pinned'    => ($pinned ? t('Pinned post') : ''),
+			'pinnable'  => (($this->is_toplevel() && local_channel() && $item['owner_xchan'] == $observer['xchan_hash'] && $allowed_type && $item['item_private'] == 0) ? '1' : ''),
+			'pinme'     => ($pinned ? t('Unpin from the top') : t('Pin to the top')),
 			'bookmark'  => (($conv->get_profile_owner() == local_channel() && local_channel() && $has_bookmarks) ? t('Save Bookmarks') : ''),
 			'addtocal'  => (($has_event) ? t('Add to Calendar') : ''),
 			'drop'      => $drop,
@@ -467,10 +492,9 @@ class ThreadItem {
 			'previewing' => ($conv->is_preview() ? true : false ),
 			'preview_lbl' => t('This is an unsaved preview'),
 			'wait' => t('Please wait'),
-			'submid' => str_replace(['+','='], ['',''], base64_encode($item['mid'])),
 			'thread_level' => $thread_level,
 			'settings' => $settings,
-			'thr_parent' => (($item['parent_mid'] != $item['thr_parent']) ? $item['thr_parent'] : '')
+			'thr_parent' => (($item['parent_mid'] != $item['thr_parent']) ? 'b64.' . base64url_encode($item['thr_parent']) : '')
 		);
 
 		$arr = array('item' => $item, 'output' => $tmp_item);
@@ -862,8 +886,5 @@ class ThreadItem {
 	private function is_visiting() {
 		return $this->visiting;
 	}
-
-
-
 
 }

@@ -3,6 +3,7 @@
 namespace Zotlabs\Daemon;
 
 use Zotlabs\Lib\Libzot;
+use Zotlabs\Lib\Activity;
 
 require_once('include/queue_fn.php');
 require_once('include/html2plain.php');
@@ -366,8 +367,17 @@ class Notifier {
 				$activity = json_decode($m,true);
 			}
 			else {
-				$activity = \Zotlabs\Lib\Activity::encode_activity($target_item);
+				$activity = array_merge(['@context' => [
+                    ACTIVITYSTREAMS_JSONLD_REV,
+                    'https://w3id.org/security/v1',
+                    z_root() . ZOT_APSCHEMA_REV
+                    ]], Activity::encode_activity($target_item)
+				);
 			}		
+
+			logger('target_item: ' . print_r($target_item,true), LOGGER_DEBUG);
+			logger('encoded: ' . print_r($activity,true), LOGGER_DEBUG);
+
 
 			// Send comments to the owner to re-deliver to everybody in the conversation
 			// We only do this if the item in question originated on this site. This prevents looping.

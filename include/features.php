@@ -299,6 +299,22 @@ function get_features($filtered = true, $level = (-1)) {
 			t('Network'),
 
 			[
+				'events_tab',
+				t('Events Filter'),
+				t('Ability to display only events'),
+				false,
+				get_config('feature_lock','events_tab')
+			],
+
+			[
+				'polls_tab',
+				t('Polls Filter'),
+				t('Ability to display only polls'),
+				false,
+				get_config('feature_lock','polls_tab')
+			],
+
+			[
 				'savedsearch',    
 				t('Saved Searches'),			
 				t('Save search terms for re-use'),

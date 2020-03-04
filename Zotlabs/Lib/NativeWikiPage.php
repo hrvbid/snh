@@ -530,8 +530,11 @@ class NativeWikiPage {
 			foreach ($match[1] as $m) {
 				// TODO: Why do we need to double urlencode for this to work?
 				//$pageURLs[] = urlencode(urlencode(escape_tags($m)));
-				$pageURLs[] = Zlib\NativeWiki::name_encode(escape_tags($m));
-				$pages[] = $m;
+				$titleUri = explode('|',$m);
+				$page = $titleUri[0] ?? '';
+				$title = $titleUri[1] ?? $page;
+				$pageURLs[] = Zlib\NativeWiki::name_encode(escape_tags($page));
+				$pages[] = $title;
 			}
 			$idx = 0;
 			while(strpos($s,'[[') !== false) {

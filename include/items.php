@@ -9,6 +9,7 @@ use Zotlabs\Lib\MarkdownSoap;
 use Zotlabs\Lib\MessageFilter;
 use Zotlabs\Lib\ThreadListener;
 use Zotlabs\Lib\IConfig;
+use Zotlabs\Lib\Activity;
 use Zotlabs\Access\PermissionLimits;
 use Zotlabs\Access\AccessList;
 use Zotlabs\Daemon\Master;
@@ -930,8 +931,19 @@ function import_author_xchan($x) {
 	}
 
 	// if we were told that it's a zot connection, don't probe/import anything else
-	if(array_key_exists('network',$x) && $x['network'] === 'zot')
+	if(array_key_exists('network',$x) && $x['network'] === 'zot') {
+		if($x['url']) {
+			// check if we already have the zot6 xchan of this xchan_url. if not import it.
+			$r = q("SELECT xchan_hash FROM xchan WHERE xchan_url = '%s' AND xchan_network = 'zot6'",
+				dbesc($x['url'])
+			);
+
+			if(! $r)
+				discover_by_webbie($x['url'], 'zot6');
+		}
+
 		return $y;
+	}
 
 	// perform zot6 discovery
 
@@ -1936,6 +1948,11 @@ function item_store($arr, $allow_exec = false, $deliver = true) {
 
 			if(intval($r[0]['item_uplink']) && (! $r[0]['item_private']))
 				$arr['item_private'] = 0;
+
+			if(in_array($arr['obj_type'], ['Note','Answer']) && $r[0]['obj_type'] === 'Question' && intval($r[0]['item_wall'])) {
+				Activity::update_poll($r[0],$arr);
+			}
+
 		}
 		else {
 			logger('item_store: item parent was not found - ignoring item');

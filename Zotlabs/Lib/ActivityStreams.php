@@ -101,7 +101,13 @@ class ActivityStreams {
 					$this->actor = $this->get_actor('attributedTo',$this->obj);
 				}
 			}
+
+			// fetch recursive or embedded activities
 			
+			if ($this->obj && is_array($this->obj) && array_key_exists('object',$this->obj)) {
+				$this->obj['object'] = $this->get_compound_property($this->obj['object']);
+			}
+
 			if($this->obj && is_array($this->obj) && $this->obj['actor'])
 				$this->obj['actor'] = $this->get_actor('actor',$this->obj);
 			if($this->tgt && is_array($this->tgt) && $this->tgt['actor'])

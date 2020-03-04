@@ -14865,12 +14865,20 @@ msgstr "repetida la entrada de %s"
 #: ../../Zotlabs/Lib/Enotify.php:821
 #, php-format
 msgid "edited a post dated %s"
+<<<<<<< HEAD
 msgstr "ha editado una entrada con fecha de %s"
+=======
+msgstr "ha editado una entrada %s"
+>>>>>>> 85c07d57fe0f468eb8cc84584f3636b590aa929f
 
 #: ../../Zotlabs/Lib/Enotify.php:825
 #, php-format
 msgid "edited a comment dated %s"
+<<<<<<< HEAD
 msgstr "ha editado un comentario con fecha de %s"
+=======
+msgstr "ha editado un comentario %s"
+>>>>>>> 85c07d57fe0f468eb8cc84584f3636b590aa929f
 
 #: ../../Zotlabs/Lib/Chatroom.php:23
 msgid "Missing room name"

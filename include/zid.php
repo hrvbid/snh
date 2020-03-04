@@ -1,6 +1,7 @@
 <?php
 
 use Zotlabs\Lib\Verify;
+use Zotlabs\Zot\Finger;
 
 function is_matrix_url($url) {
 

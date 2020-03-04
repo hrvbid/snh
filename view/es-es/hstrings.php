@@ -3365,8 +3365,13 @@ App::$strings["[\$Projectname:Notify]"] = "[\$Projectname:Aviso]";
 App::$strings["created a new post"] = "ha creado una nueva entrada";
 App::$strings["commented on %s's post"] = "ha comentado la entrada de %s";
 App::$strings["repeated %s's post"] = "repetida la entrada de %s";
+<<<<<<< HEAD
 App::$strings["edited a post dated %s"] = "ha editado una entrada con fecha de %s";
 App::$strings["edited a comment dated %s"] = "ha editado un comentario con fecha de %s";
+=======
+App::$strings["edited a post dated %s"] = "ha editado una entrada %s";
+App::$strings["edited a comment dated %s"] = "ha editado un comentario %s";
+>>>>>>> 85c07d57fe0f468eb8cc84584f3636b590aa929f
 App::$strings["Missing room name"] = "Sala de chat sin nombre";
 App::$strings["Duplicate room name"] = "Nombre de sala duplicado.";
 App::$strings["Invalid room specifier."] = "Especificador de sala no válido.";

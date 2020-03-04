@@ -79,6 +79,7 @@ Options are:
   [*= system.optimize_items ] Runs optimise_table during some tasks to keep your database nice and  defragmented.  This comes at a performance cost while the operations are running, but also keeps things a bit faster while it's not.   There also exist CLI utilities for performing this operation, which you may prefer, especially if you're a large site.
   [*= system.override_poll_lockfile ] Ignore the lock file in the poller process to allow more than one process to run at a time.
   [*= system.paranoia ] As the pconfig, but on a site-wide basis.  Can be overwritten by member settings.
+  [*= system.pin_types ] Array of allowed item types for pinning. Defaults depend on module but can be redifined here.
   [*= system.photo_cache_time ] How long to cache photos, in seconds. Default is 86400 (1 day). Longer time increases performance, but it also means it takes longer for changed permissions to apply.
   [*= system.platform_name ] What to report as the platform name in webpages and statistics. (*) Must be set in .htconfig.php
   [*= system.rating_enabled ] Distributed reputation reporting and data collection. This feature is currently being re-worked.

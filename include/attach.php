@@ -56,6 +56,7 @@ function z_mime_content_type($filename) {
 	'jpeg' => 'image/jpeg',
 	'jpg'  => 'image/jpeg',
 	'gif'  => 'image/gif',
+	'webp' => 'image/webp',
 	'bmp'  => 'image/bmp',
 	'ico'  => 'image/vnd.microsoft.icon',
 	'tiff' => 'image/tiff',
@@ -616,7 +617,7 @@ function attach_store($channel, $observer_hash, $options = '', $arr = null) {
 	$is_photo = 0;
 	$gis = @getimagesize($src);
 	logger('getimagesize: ' . print_r($gis,true), LOGGER_DATA);
-	if(($gis) && ($gis[2] === IMAGETYPE_GIF || $gis[2] === IMAGETYPE_JPEG || $gis[2] === IMAGETYPE_PNG)) {
+	if(($gis) && ($gis[2] === IMAGETYPE_GIF || $gis[2] === IMAGETYPE_JPEG || $gis[2] === IMAGETYPE_PNG || $gis[2] === IMAGETYPE_WEBP)) {
 		$is_photo = 1;
 		if($gis[2] === IMAGETYPE_GIF)
 			$def_extension =  '.gif';
@@ -624,6 +625,8 @@ function attach_store($channel, $observer_hash, $options = '', $arr = null) {
 			$def_extension =  '.jpg';
 		if($gis[2] === IMAGETYPE_PNG)
 			$def_extension =  '.png';
+                if($gis[2] === IMAGETYPE_WEBP)
+                        $def_extension =  '.webp';
 	}
 
 	// If we know it's a photo, over-ride the type in case the source system could not determine what it was
@@ -908,7 +911,7 @@ function attach_store($channel, $observer_hash, $options = '', $arr = null) {
 		);
 	}
 
-	if($is_photo) {
+	if($is_photo && $r) {
 
 		$args = array( 'source' => $source, 'visible' => $visible, 'resource_id' => $hash, 'album' => $pathname, 'os_syspath' => $os_basepath . $os_relpath, 'os_path' => $os_path, 'display_path' => $display_path, 'filename' => $filename, 'getimagesize' => $gis, 'directory' => $direct, 'options' => $options );
 		if($arr['contact_allow'])
@@ -942,9 +945,15 @@ function attach_store($channel, $observer_hash, $options = '', $arr = null) {
 		$args['deliver'] = $dosync;
 
 		$p = photo_upload($channel,$observer,$args);
-		if($p['success']) {
-			$ret['body'] = $p['body'];
+		if($p['success'])
+		    $ret['body'] = $p['body'];
+		else {
+		    // Attach as ordinary file if image processing is failed
+		    $x = q("UPDATE attach SET is_photo = 0 WHERE hash = '%s'",
+		        dbesc($hash)
+		    );
 		}
+
 	}
 
 	if(($options !== 'update') && ($remove_when_processed))
@@ -2654,5 +2663,3 @@ function save_chunk($channel,$start,$end,$len) {
 	$result['length']  = intval(filesize($new_path));
 	return $result;
 }
-
-

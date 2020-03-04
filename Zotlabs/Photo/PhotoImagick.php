@@ -8,19 +8,16 @@ namespace Zotlabs\Photo;
 class PhotoImagick extends PhotoDriver {
 
 	public function supportedTypes() {
-		return [
+
+		$ret = [
 			'image/jpeg' => 'jpg',
 			'image/png' => 'png',
-			'image/gif' => 'gif',
+			'image/gif' => 'gif'
 		];
-	}
+		if(\Imagick::queryFormats("WEBP"))
+			$ret['image/webp'] = 'webp';
 
-	private function get_FormatsMap() {
-		return [
-			'image/jpeg' => 'JPG',
-			'image/png' => 'PNG',
-			'image/gif' => 'GIF',
-		];
+		return $ret;
 	}
 
 
@@ -42,8 +39,8 @@ class PhotoImagick extends PhotoDriver {
 		 * Setup the image to the format it will be saved to
 		 */
 
-		$map = $this->get_FormatsMap();
-		$format = $map[$type];
+		$map = $this->supportedTypes();
+		$format = strtoupper($map[$type]);
 
 		if($this->image) {
 			$this->image->setFormat($format);
@@ -58,6 +55,7 @@ class PhotoImagick extends PhotoDriver {
 			 * setup the compression here, so we'll do it only once
 			 */
 			switch($this->getType()) {
+
 				case 'image/png':
 					$quality = get_config('system', 'png_quality');
 					if((! $quality) || ($quality > 9))
@@ -73,11 +71,21 @@ class PhotoImagick extends PhotoDriver {
 					$quality = $quality * 10;
 					$this->image->setCompressionQuality($quality);
 					break;
+
 				case 'image/jpeg':
 					$quality = get_config('system', 'jpeg_quality');
 					if((! $quality) || ($quality > 100))
 						$quality = JPEG_QUALITY;
 					$this->image->setCompressionQuality($quality);
+					break;
+
+				case 'image/webp':
+				    $quality = get_config('system', 'webp_quality');
+				    if((! $quality) || ($quality > 100))
+				        $quality = WEBP_QUALITY;
+				    $this->image->setCompressionQuality($quality);
+				    break;
+
 				default:
 					break;
 			}

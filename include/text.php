@@ -1016,10 +1016,27 @@ function contact_block() {
 				// There is no setting to discover if you are bi-directionally connected
 				// Use the ability to post comments as an indication that this relationship is more
 				// than wishful thinking; even though soapbox channels and feeds will disable it.
-
-				if(! intval(get_abconfig(App::$profile['uid'],$rr['xchan_hash'],'their_perms','post_comments'))) {
-					$rr['oneway'] = true;
+				$rr['perminfo']['connpermcount']=0;
+				$rr['perminfo']['connperms']=t('Accepts').': ';
+				if(intval(get_abconfig(App::$profile['uid'],$rr['xchan_hash'],'their_perms','post_comments'))) {
+					$rr['perminfo']['connpermcount']++;
+					$rr['perminfo']['connperms'] .= t('Comments');
 				}
+				if(intval(get_abconfig(App::$profile['uid'],$rr['xchan_hash'],'their_perms','send_stream'))) {
+					$rr['perminfo']['connpermcount']++;
+					$rr['perminfo']['connperms'] = ($rr['perminfo']['connperms']) ? $rr['perminfo']['connperms'] . ', ' : $rr['perminfo']['connperms'] ;
+					$rr['perminfo']['connperms'] .= t('Stream items');
+				}
+				if(intval(get_abconfig(App::$profile['uid'],$rr['xchan_hash'],'their_perms','post_wall'))) {
+					$rr['perminfo']['connpermcount']++;
+					$rr['perminfo']['connperms'] = ($rr['perminfo']['connperms']) ? $rr['perminfo']['connperms'] . ', ' : $rr['perminfo']['connperms'] ;
+					$rr['perminfo']['connperms'] .= t('Wall posts');
+				}
+
+				if ($rr['perminfo']['connpermcount'] == 0) {
+					$rr['perminfo']['connperms'] .= t('Nothing');
+				}
+
 				$micropro[] = micropro($rr,true,'mpfriend');
 			}
 		}
@@ -1086,6 +1103,7 @@ function micropro($contact, $redirect = false, $class = '', $mode = false) {
 		'$click' => (($contact['click']) ? $contact['click'] : ''),
 		'$class' => $class . (($contact['archived']) ? ' archived' : ''),
 		'$oneway' => (($contact['oneway']) ? true : false),
+		'$perminfo' => $contact['perminfo'],
 		'$url' => $url,
 		'$photo' => $contact['xchan_photo_s'],
 		'$name' => $contact['xchan_name'],
@@ -1713,6 +1731,11 @@ function prepare_body(&$item,$attach = false,$opts = false) {
 		}
 	}
 
+	$poll = (($item['obj_type'] === 'Question' && in_array($item['verb'],[ ACTIVITY_POST, ACTIVITY_UPDATE, ACTIVITY_SHARE ])) ? format_poll($item, $s, $opts) : false);
+	if ($poll) {
+		$s = $poll;
+	}
+
 	$event = (($item['obj_type'] === ACTIVITY_OBJ_EVENT) ? format_event_obj($item['obj']) : false);
 
 	$prep_arr = [
@@ -1794,6 +1817,89 @@ function prepare_binary($item) {
 		'$url'       => z_root() . '/viewsrc/' . $item['id'] . '/download'
 	]);
 }
+
+
+function format_poll($item,$s,$opts) {
+
+	if (! is_array($item['obj'])) {
+		$act = json_decode($item['obj'],true);
+	}
+	else {
+		$act = $item['obj'];
+	}
+
+	if (! is_array($act)) {
+		return EMPTY_STR;
+	}
+
+	$commentable = can_comment_on_post(((local_channel()) ? get_observer_hash() : EMPTY_STR),$item);
+
+	//logger('format_poll: ' . print_r($item,true));
+	$activated = ((local_channel() && local_channel() == $item['uid']) ? true : false);
+	$output = $s . EOL. EOL;
+
+	if ($act['type'] === 'Question') {
+		if ($activated and $commentable) {
+			$output .= '<form id="question-form-' . $item['id'] . '" >';
+		}
+		if (array_key_exists('anyOf',$act) && is_array($act['anyOf'])) {
+			foreach ($act['anyOf'] as $poll) {
+				if (array_key_exists('name',$poll) && $poll['name']) {
+					$text = html2plain(purify_html($poll['name']),256);
+					if (array_path_exists('replies/totalItems',$poll)) {
+						$total = $poll['replies']['totalItems'];
+					}
+					else {
+						$total = 0;
+					}
+					if ($activated && $commentable) {
+						$output .= '<input type="checkbox" name="answer[]" value="' . htmlspecialchars($text) . '"> ' . $text . '</input>' . ' (' . $total . ')' . EOL;
+					}
+					else {
+						$output .= '[ ] ' . $text . ' (' . $total . ')' . EOL;
+					}
+				}
+			}
+		}
+		if (array_key_exists('oneOf',$act) && is_array($act['oneOf'])) {
+			foreach ($act['oneOf'] as $poll) {
+				if (array_key_exists('name',$poll) && $poll['name']) {
+					$text = html2plain(purify_html($poll['name']),256);
+					if (array_path_exists('replies/totalItems',$poll)) {
+						$total = $poll['replies']['totalItems'];
+					}
+					else {
+						$total = 0;
+					}
+					if ($activated && $commentable) {
+						$output .= '<input type="radio" name="answer" value="' . htmlspecialchars($text) . '"> ' . $text . '</input>' . ' (' . $total . ')' . EOL;
+					}
+					else {
+						$output .= '( ) ' . $text . ' (' . $total . ')' . EOL;
+					}
+				}
+			}
+		}
+		if ($item['comments_closed'] > NULL_DATE) {
+			$t = datetime_convert('UTC',date_default_timezone_get(), $item['comments_closed'], 'Y-m-d h:i');
+			$closed = ((datetime_convert() > $item['comments_closed']) ? true : false);
+			if ($closed) {
+				$message = t('Poll has ended.');
+			}
+			else {
+				$message = sprintf(t('Poll ends: %s'),$t);
+			}
+			$output .= EOL . '<div>' . $message . '</div>';
+		}
+		if ($activated and $commentable) {
+			$output .= EOL . '<input type="button" class="btn btn-std btn-success" name="vote" value="vote" onclick="submitPoll(' . $item['id'] . '); return false;">'. '</form>';
+		}
+
+	}
+	return $output;
+}
+
+
 
 
 /**
@@ -2974,6 +3080,7 @@ function getIconFromType($type) {
 		'image/jpeg' => 'fa-picture-o',
 		'image/png' => 'fa-picture-o',
 		'image/gif' => 'fa-picture-o',
+		'image/webp' => 'fa-picture-o',
 		'image/svg+xml' => 'fa-picture-o',
 		//Archive
 		'application/zip' => 'fa-file-archive-o',
@@ -3625,7 +3732,7 @@ function array_path_exists($str,$arr) {
 
 	if($search) {
 		foreach($search as $s) {
-			if(array_key_exists($s,$ptr)) {
+			if($ptr && array_key_exists($s,$ptr)) {
 				$ptr = $ptr[$s];
 			}
 			else {
@@ -3675,3 +3782,18 @@ function svg2bb($s) {
 	}
 	return EMPTY_STR;
 }
+
+
+
+function serialise($x) {
+	return ((is_array($x)) ? 'json:' . json_encode($x) : $x);
+}
+
+function unserialise($x) {
+	if (is_array($x)) {
+		return $x;
+	}
+	$y = ((substr($x,0,5) === 'json:') ? json_decode(substr($x,5),true) : '');
+	return ((is_array($y)) ? $y : $x);
+}
+

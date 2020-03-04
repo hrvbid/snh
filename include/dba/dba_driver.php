@@ -307,6 +307,10 @@ function db_use_index($str) {
 	return \DBA::$dba->use_index($str);
 }
 
+function db_str_to_date($str) {
+	return \DBA::$dba->str_to_date($str);
+}
+
 /**
  * @brief Execute a SQL query with printf style args.
  *

@@ -169,7 +169,7 @@ class File extends DAV\Node implements DAV\IFile {
 				}
 				$gis = @getimagesize($f);
 				logger('getimagesize: ' . print_r($gis,true), LOGGER_DATA);
-				if(($gis) && ($gis[2] === IMAGETYPE_GIF || $gis[2] === IMAGETYPE_JPEG || $gis[2] === IMAGETYPE_PNG)) {
+				if(($gis) && ($gis[2] === IMAGETYPE_GIF || $gis[2] === IMAGETYPE_JPEG || $gis[2] === IMAGETYPE_PNG || $gis[2] === IMAGETYPE_WEBP)) {
 					$is_photo = 1;
 				}
 

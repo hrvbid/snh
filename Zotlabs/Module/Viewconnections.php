@@ -74,6 +74,29 @@ class Viewconnections extends \Zotlabs\Web\Controller {
 			if(! intval(get_abconfig(\App::$profile['uid'],$rr['xchan_hash'],'their_perms','post_comments'))) {
 				$oneway = true;
 			}
+
+			$perminfo=[];
+			$perminfo['connpermcount']=0;
+			$perminfo['connperms']=t('Accepts').': ';
+			if(intval(get_abconfig(\App::$profile['uid'],$rr['xchan_hash'],'their_perms','post_comments'))) {
+				$perminfo['connpermcount']++;
+				$perminfo['connperms'] .= t('Comments');
+			}
+			if(intval(get_abconfig(\App::$profile['uid'],$rr['xchan_hash'],'their_perms','send_stream'))) {
+				$perminfo['connpermcount']++;
+				$perminfo['connperms'] = ($perminfo['connperms']) ? $perminfo['connperms'] . ', ' : $perminfo['connperms'] ;
+				$perminfo['connperms'] .= t('Stream items');
+			}
+			if(intval(get_abconfig(\App::$profile['uid'],$rr['xchan_hash'],'their_perms','post_wall'))) {
+				$perminfo['connpermcount']++;
+				$perminfo['connperms'] = ($perminfo['connperms']) ? $perminfo['connperms'] . ', ' : $perminfo['connperms'] ;
+				$perminfo['connperms'] .= t('Wall posts');
+			}
+
+			if ($perminfo['connpermcount'] == 0) {
+				$perminfo['connperms'] .= t('Nothing');
+			}
+
 	
 			$url = chanlink_hash($rr['xchan_hash']);
 			if($url) {
@@ -88,6 +111,7 @@ class Viewconnections extends \Zotlabs\Web\Controller {
 					'sparkle' => '',
 					'itemurl' => $rr['url'],
 					'network' => '',
+					'perminfo' => $perminfo,
 					'oneway' => $oneway
 				);
 			}

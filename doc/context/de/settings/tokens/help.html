@@ -1,0 +1,20 @@
+<dl class="dl-horizontal">
+    <dt><a href="/help/member/member_guide#Guest_Access_Tokens">Gastzugangs-Token</a></dt>
+    <dd>
+        Hubzilla verwendet befristete "Wegwerf"-Logins oder "Zot Access Tokens", um das Teilen privater Informationen mit Nichtmitgliedern oder Mitgliedern im Fediverse zu ermöglichen, deren Knoten nur eingeschränkte Möglichkeiten zur Identifizierung bieten. Diese Token können zur Authentifizierung an einem Hub für den Zweck verwendet werden privilegierte oder zugangskontrollierte Ressourcen (Dateien, Fotos, Beiträge, Webseiten, Chaträume, usw.) zugänglich zu machen. 
+    </dd>    
+    <dt>Einen Token erzeugen</dt>
+        <dd>
+            Das Formular zur Erzeugung von Token benötigt drei Parameter: einen lesbaren Zugangsnamen, ein Passwort oder Zugangs-Token, und optional ein Verfallsdatum. Ein verfallenes Token kann nicht länger verwendet werden und wird von der Liste befristeter Zugänge entfernt. <i>Hinweis</i> Das Passwort-Feld zeigt das Token oder Passwort im Klartext.
+        </dd>
+    <dt>Einen Token teilen</dt>
+        <dd>
+            Wir geben keine Mechanismen für das Teilen der Zugangs-Token vor, jede Kommunikationsmethode ist recht. Alle Token, die du erzeugt hast, werden zu den Listen für die Zugangskontrolle hinzugefügt und können von überall verwendet werden, wo anhand dieser Listen authentifiziert werden kann.
+
+            <b>Ein Beispiel:</b> Ein Besucher trifft auf deine Seite. Er hat ein von dir zur Verfügung gestelltes Zugangs-Token für eines Deiner Fotoalben, das nur von Dir und eben diesem befristeten Zugangsnamen betrachtet werden darf. Der Besucher erhält zunächst keinen Zugang.
+
+            Nun wählt er "Login" aus der Navigation und erhält die Loginseite angezeigt, in die er seine Zugangsdaten eingibt. Ab sofort erhält er Zugang zum Fotoalbum.
+
+            Alternativ kannst du einen Link mit deinem Besucher teilen, dessen URL um den Parameter "&zat=abc123" erweitert ist, wobei "abc123" das Zugangs-Token oder das Passwort für den befristeten Login ist. Mit dieser Erweiterung ist kein Login erforderlich, der Besucher erhält sofort den Zugang.
+        </dd>
+</dl>
